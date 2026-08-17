@@ -263,6 +263,10 @@ export const AboutSection: React.FC = () => {
                 <img
                   src="https://res.cloudinary.com/ixyonosn/image/upload/v1786987684/1.png"
                   alt="Adnan Aydin"
+                  width={390}
+                  height={488}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover object-top filter brightness-[0.94] contrast-[1.06] saturate-[1.02] group-hover:brightness-105 group-hover:contrast-[1.12] transition-all duration-700 ease-out"
                 />
 

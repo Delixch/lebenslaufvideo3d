@@ -188,7 +188,7 @@ const MobileProjectsAccordion: React.FC<{ projects: Project[] }> = ({ projects }
                   }, 320);
                 }
               }}
-              className="w-full text-left p-6 flex justify-between items-center focus:outline-none cursor-pointer"
+              className="w-full text-left p-6 flex justify-between items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-inset cursor-pointer"
             >
               <div className="flex flex-col space-y-1.5 pr-4">
                 <div className="flex items-center space-x-2 text-[10px] font-mono tracking-[0.2em]">

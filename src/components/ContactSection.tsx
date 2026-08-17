@@ -112,47 +112,59 @@ export const ContactSection: React.FC = () => {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <span className="block text-[9.5px] font-mono tracking-[0.2em] uppercase text-[#8C6D4F] mb-2">
+                    <label
+                      htmlFor="contact-name"
+                      className="block text-[9.5px] font-mono tracking-[0.2em] uppercase text-[#8C6D4F] mb-2"
+                    >
                       // NAME
-                    </span>
+                    </label>
                     <input
+                      id="contact-name"
                       type="text"
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Ihr Name"
-                      className="w-full bg-[#120F0C] border border-[#8C6D4F]/30 focus:border-[#D4AF37] text-xs text-white placeholder-[#8C6D4F]/50 px-4 py-3 outline-none rounded-sm transition-colors"
+                      className="w-full bg-[#120F0C] border border-[#8C6D4F]/30 focus:border-[#D4AF37] focus-visible:ring-2 focus-visible:ring-[#D4AF37]/60 text-xs text-white placeholder-[#8C6D4F]/50 px-4 py-3 outline-none rounded-sm transition-colors"
                       style={{ fontFamily: "'Montserrat', sans-serif" }}
                     />
                   </div>
 
                   <div>
-                    <span className="block text-[9.5px] font-mono tracking-[0.2em] uppercase text-[#8C6D4F] mb-2">
+                    <label
+                      htmlFor="contact-email"
+                      className="block text-[9.5px] font-mono tracking-[0.2em] uppercase text-[#8C6D4F] mb-2"
+                    >
                       // E-MAIL
-                    </span>
+                    </label>
                     <input
+                      id="contact-email"
                       type="email"
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="Ihre E-Mail-Adresse"
-                      className="w-full bg-[#120F0C] border border-[#8C6D4F]/30 focus:border-[#D4AF37] text-xs text-white placeholder-[#8C6D4F]/50 px-4 py-3 outline-none rounded-sm transition-colors"
+                      className="w-full bg-[#120F0C] border border-[#8C6D4F]/30 focus:border-[#D4AF37] focus-visible:ring-2 focus-visible:ring-[#D4AF37]/60 text-xs text-white placeholder-[#8C6D4F]/50 px-4 py-3 outline-none rounded-sm transition-colors"
                       style={{ fontFamily: "'Montserrat', sans-serif" }}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <span className="block text-[9.5px] font-mono tracking-[0.2em] uppercase text-[#8C6D4F] mb-2">
+                  <label
+                    htmlFor="contact-message"
+                    className="block text-[9.5px] font-mono tracking-[0.2em] uppercase text-[#8C6D4F] mb-2"
+                  >
                     // NACHRICHT
-                  </span>
+                  </label>
                   <textarea
+                    id="contact-message"
                     required
                     rows={4}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder="Worum geht es?"
-                    className="w-full bg-[#120F0C] border border-[#8C6D4F]/30 focus:border-[#D4AF37] text-xs text-white placeholder-[#8C6D4F]/50 p-4 outline-none rounded-sm transition-colors resize-none"
+                    className="w-full bg-[#120F0C] border border-[#8C6D4F]/30 focus:border-[#D4AF37] focus-visible:ring-2 focus-visible:ring-[#D4AF37]/60 text-xs text-white placeholder-[#8C6D4F]/50 p-4 outline-none rounded-sm transition-colors resize-none"
                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                   />
                 </div>

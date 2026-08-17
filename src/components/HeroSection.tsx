@@ -81,36 +81,51 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         {/* Desktop Video — landscape, right-aligned */}
         {/* Nur ein Element im DOM: autoPlay laedt auch versteckte Videos komplett,
             display:none haette den zweiten Clip trotzdem heruntergeladen. */}
+        {/* Maske liegt auf einem Wrapper-Div, nicht auf dem <video> selbst:
+            Chrome rendert CSS-Masken auf Video-Elementen oft erst, sobald ein
+            dekodiertes Frame da ist — waehrend des Poster-Zustands (langsames
+            Netz, preload="metadata") blieb das Foto davor unmaskiert und
+            bildschirmfuellend stehen, der Text dahinter unsichtbar. */}
         {isMobile ? (
-          <video
-            src={MOBILE_CLIP}
-            poster={HERO_POSTER}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 h-full w-full object-cover object-[50%_top]"
+          <div
+            className="absolute inset-0 h-full w-full overflow-hidden"
             style={{
               maskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
               WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
             }}
-          />
+          >
+            <video
+              src={MOBILE_CLIP}
+              poster={HERO_POSTER}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+              className="h-full w-full object-cover object-[50%_top]"
+            />
+          </div>
         ) : (
-          <video
-            src={DESKTOP_CLIP}
-            poster={HERO_POSTER}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
+          <div
+            className="absolute inset-0 h-full w-full overflow-hidden"
             style={{
               maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
               WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
             }}
-          />
+          >
+            <video
+              src={DESKTOP_CLIP}
+              poster={HERO_POSTER}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+              className="h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
+            />
+          </div>
         )}
 
         {/* Seamless Soft Left Edge Blend */}
