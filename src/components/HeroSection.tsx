@@ -72,7 +72,7 @@ export const HeroSection: React.FC = () => {
           muted
           loop
           playsInline
-          className="absolute inset-0 h-full w-full object-cover object-[100%_top] md:object-[100%_top] scale-[0.94] origin-top translate-y-[6vh]"
+          className="absolute inset-0 h-full w-full object-cover object-[100%_top] md:object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
           style={{
             // Der Clip hat keinen reinschwarzen Hintergrund, darum löst eine Maske
             // die linke Kante auf, statt sie mit einem Verlauf zu überdecken.
