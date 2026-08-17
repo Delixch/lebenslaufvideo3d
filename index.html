@@ -115,6 +115,21 @@
       }
     </style>
     <div id="root"></div>
+    <script>
+      // Notbremse: bleibt das Bundle aus, verschwindet die Startschicht trotzdem.
+      window.__bootStart = Date.now();
+      window.__dropBoot = function () {
+        var boot = document.getElementById('boot');
+        if (!boot) return;
+        window.__bootRemovedAfter = Date.now() - window.__bootStart;
+        boot.style.transition = 'opacity 400ms ease';
+        boot.style.opacity = '0';
+        setTimeout(function () {
+          boot.remove();
+        }, 450);
+      };
+      setTimeout(window.__dropBoot, 3500);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

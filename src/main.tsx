@@ -10,18 +10,19 @@ createRoot(document.getElementById('root')!).render(
 );
 
 // Die Startschicht aus index.html blendet aus, sobald React gerendert hat.
-// Kein requestAnimationFrame: im Hintergrundtab wird der gedrosselt, dann
-// bliebe die Schicht ueber der Seite liegen.
-window.setTimeout(() => {
-  const boot = document.getElementById('boot');
-  if (!boot) {
-    return;
+// Das Aufraeumen selbst steht inline im HTML, damit es auch greift, wenn dieses
+// Bundle spaet oder gar nicht ankommt.
+declare global {
+  interface Window {
+    __dropBoot?: () => void;
+    __bootStart?: number;
+    __bootRemovedAfter?: number;
+    __appReadyAfter?: number;
   }
+}
 
-  boot.style.transition = 'opacity 500ms ease';
-  boot.style.opacity = '0';
-  window.setTimeout(() => boot.remove(), 600);
-}, 60);
+window.__appReadyAfter = Date.now() - (window.__bootStart ?? Date.now());
+window.setTimeout(() => window.__dropBoot?.(), 60);
 
 // Messmodus für unterwegs: /?debug zeigt die Ladezeiten direkt auf dem Gerät.
 if (new URLSearchParams(window.location.search).has('debug')) {
@@ -55,7 +56,9 @@ if (new URLSearchParams(window.location.search).has('debug')) {
         'position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#0A0806ee;color:#EAD8C7;font:11px/1.6 monospace;padding:10px 12px;border-top:1px solid #8C6D4F';
       panel.innerHTML = `TTFB ${Math.round(navigation.responseStart)}ms · DOM ${Math.round(
         navigation.domContentLoadedEventEnd,
-      )}ms · load ${Math.round(navigation.loadEventEnd)}ms<br>${paint}<br>${heaviest}`;
+      )}ms · load ${Math.round(navigation.loadEventEnd)}ms<br>${paint} · JS aktiv: ${
+        window.__appReadyAfter ?? '?'
+      }ms · Startschicht weg: ${window.__bootRemovedAfter ?? '?'}ms<br>${heaviest}`;
       document.body.append(panel);
     }, 500);
   });
