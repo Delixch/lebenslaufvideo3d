@@ -31,8 +31,8 @@ const fadeUpVariants: Variants = {
 
 const DESKTOP_CLIP = '/videos/333.mp4';
 // Hochformat: auf dem Handy bliebe vom Querformat-Clip nur ein Ausschnitt uebrig.
-const MOBILE_CLIP = '/videos/3.mp4';
-const HERO_POSTER = '/hero-poster.png';
+const MOBILE_CLIP = '/videos/mobile.mp4';
+const HERO_POSTER = '/hero-poster.jpg';
 const MOBILE_QUERY = '(max-width: 767px)';
 
 interface HeroSectionProps {
