@@ -31,7 +31,7 @@ const fadeUpVariants: Variants = {
 
 const DESKTOP_CLIP = '/videos/333.mp4';
 // Hochformat: auf dem Handy bliebe vom Querformat-Clip nur ein Ausschnitt uebrig.
-const MOBILE_CLIP = 'https://res.cloudinary.com/ixyonosn/video/upload/v1786987634/3.mp4';
+const MOBILE_CLIP = '/videos/3.mp4';
 const HERO_POSTER = 'https://res.cloudinary.com/ixyonosn/image/upload/v1786987684/1.png';
 const MOBILE_QUERY = '(max-width: 767px)';
 
