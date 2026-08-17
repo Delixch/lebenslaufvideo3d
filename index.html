@@ -6,11 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Ein Aufruf statt drei: dieselben Familien, ohne dreifache Wartezeit. -->
+    <!--
+      Schriften duerfen das Rendern nicht blockieren: haengt fonts.googleapis.com
+      im Mobilfunknetz, wartet der Browser sonst bis zum Timeout und die Seite
+      bleibt schwarz. media="print" laedt die Datei nebenher, onload schaltet sie
+      scharf; ohne JavaScript greift das <noscript>-Fallback.
+    -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Allura&family=Bebas+Neue&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Herr+Von+Muellerhoff&family=Montserrat:wght@200;300;400;500;600;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Allura&family=Bebas+Neue&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Herr+Von+Muellerhoff&family=Montserrat:wght@200;300;400;500;600;700&display=swap"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Allura&family=Bebas+Neue&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Herr+Von+Muellerhoff&family=Montserrat:wght@200;300;400;500;600;700&display=swap"
+      />
+    </noscript>
+    <link rel="preload" as="image" href="/hero-poster.jpg" fetchpriority="high" />
     <title>Adnan Aydin — Web-Entwickler in Zürich</title>
     <meta
       name="description"
