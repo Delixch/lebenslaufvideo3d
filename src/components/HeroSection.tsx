@@ -29,7 +29,8 @@ const fadeUpVariants: Variants = {
 
 
 
-const CLIP = '/videos/333.mp4';
+const DESKTOP_CLIP = '/videos/333.mp4';
+const MOBILE_CLIP = 'https://res.cloudinary.com/ixyonosn/video/upload/v1786987634/3.mp4';
 const HERO_POSTER = '/hero-poster.jpg';
 
 interface HeroSectionProps {
@@ -67,18 +68,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
       {/* ================= 2. FIXED VIDEO LAYER ================= */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end">
+        {/* Desktop Video — landscape, right-aligned */}
         <video
-          src={CLIP}
+          src={DESKTOP_CLIP}
           poster={HERO_POSTER}
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          className="absolute inset-0 h-full w-full object-cover object-[100%_top] md:scale-[0.94] origin-top-right md:translate-y-[6vh]"
+          className="hidden md:block absolute inset-0 h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
           style={{
             maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
             WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+          }}
+        />
+
+        {/* Mobile Video — portrait, full screen centered */}
+        <video
+          src={MOBILE_CLIP}
+          poster={HERO_POSTER}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="block md:hidden absolute inset-0 h-full w-full object-cover object-[50%_top]"
+          style={{
+            maskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
           }}
         />
 
