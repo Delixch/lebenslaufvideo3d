@@ -117,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 180 }}
-            className="fixed top-0 left-0 w-full h-[70vh] bg-[#0A0908]/98 backdrop-blur-2xl border-b border-[#D4AF37]/15 shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-40 flex flex-col justify-between px-8 py-10 pt-28 pointer-events-auto"
+            className="fixed top-0 left-0 w-full h-[70vh] bg-[#0A0908]/98 backdrop-blur-2xl border-b border-[#D4AF37]/15 shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-[49] flex flex-col justify-between px-8 py-10 pt-28 pointer-events-auto"
             style={{
               background: 'radial-gradient(circle at center, rgba(212,175,55,0.05) 0%, transparent 70%), #0A0908',
             }}

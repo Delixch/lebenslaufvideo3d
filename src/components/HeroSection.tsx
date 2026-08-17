@@ -62,7 +62,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   }, []);
 
   return (
-    <section className="relative z-40 md:z-auto w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
+    <section className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
       {/* ================= 1. MINIMAL CUSTOM CURSOR ================= */}
       {cursorPos.x >= 0 && (
         <motion.div
