@@ -32,7 +32,7 @@ const fadeUpVariants: Variants = {
 const DESKTOP_CLIP = '/videos/333.mp4';
 // Hochformat: auf dem Handy bliebe vom Querformat-Clip nur ein Ausschnitt uebrig.
 const MOBILE_CLIP = '/videos/3.mp4';
-const HERO_POSTER = 'https://res.cloudinary.com/ixyonosn/image/upload/v1786987684/1.png';
+const HERO_POSTER = '/hero-poster.png';
 const MOBILE_QUERY = '(max-width: 767px)';
 
 interface HeroSectionProps {
@@ -82,11 +82,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end">
         <video
           key={isMobile ? 'mobile' : 'desktop'}
+          src={isMobile ? MOBILE_CLIP : DESKTOP_CLIP}
           poster={HERO_POSTER}
           autoPlay
           muted
           loop
           playsInline
+          preload="auto"
           className={
             isMobile
               ? 'absolute inset-0 h-full w-full object-cover object-[50%_top] scale-100 origin-top'
@@ -103,9 +105,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               ? 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)'
               : 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
           }}
-        >
-          <source src={isMobile ? MOBILE_CLIP : DESKTOP_CLIP} type="video/mp4" />
-        </video>
+        />
 
         {/* Seamless Soft Left Edge Blend */}
         <div className="absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-black via-black/80 to-transparent pointer-events-none md:block" />
