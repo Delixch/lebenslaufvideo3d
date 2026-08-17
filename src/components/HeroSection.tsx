@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import watermarkImg from '../assets/watermark.png';
+import watermarkImg from '../assets/watermark.webp';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -135,7 +135,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             >
               <img
                 src={watermarkImg}
-                alt="Insignia"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
                 className="w-28 h-28 lg:w-32 lg:h-32 object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.25)]"
               />
             </motion.div>
