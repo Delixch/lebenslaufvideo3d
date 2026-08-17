@@ -22,7 +22,15 @@ declare global {
 }
 
 window.__appReadyAfter = Date.now() - (window.__bootStart ?? Date.now());
-window.setTimeout(() => window.__dropBoot?.(), 60);
+
+// Boot erst weg, wenn das Hero-Poster wirklich da ist: ein blinder 60ms-Timer
+// riss die Startschicht auf langsamem Mobilfunk weg, bevor das Foto geladen
+// war — sichtbar als kurzer schwarzer Leerraum, bevor das Bild nachkam. Die
+// harte 3.5s-Bremse in index.html bleibt als letzte Sicherung bestehen.
+const heroPoster = new Image();
+heroPoster.onload = heroPoster.onerror = () => window.__dropBoot?.();
+heroPoster.src = '/hero-poster.jpg';
+if (heroPoster.complete) window.__dropBoot?.();
 
 // Messmodus für unterwegs: /?debug zeigt die Ladezeiten direkt auf dem Gerät.
 if (new URLSearchParams(window.location.search).has('debug')) {
