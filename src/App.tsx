@@ -4,6 +4,7 @@ import { ProjectsSection } from './components/ProjectsSection';
 import { SkillsSection } from './components/SkillsSection';
 import { ExperienceSection } from './components/ExperienceSection';
 import { ContactSection } from './components/ContactSection';
+import { AmbientSound } from './components/AmbientSound';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <SkillsSection />
       <ExperienceSection />
       <ContactSection />
+      <AmbientSound />
     </div>
   );
 }

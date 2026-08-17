@@ -177,6 +177,26 @@ export const ContactSection: React.FC = () => {
             ADNAN AYDIN // ZÜRICH · SCHWEIZ
           </span>
           <span className="text-[10px] font-mono text-[#8C6D4F]">
+            Musik:{' '}
+            <a
+              href="https://www.scottbuckley.com.au/library/titan/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#D4AF37] transition-colors"
+            >
+              «Titan» von Scott Buckley
+            </a>{' '}
+            —{' '}
+            <a
+              href="https://creativecommons.org/licenses/by/4.0/"
+              target="_blank"
+              rel="noopener noreferrer license"
+              className="hover:text-[#D4AF37] transition-colors"
+            >
+              CC BY 4.0
+            </a>
+          </span>
+          <span className="text-[10px] font-mono text-[#8C6D4F]">
             © {new Date().getFullYear()} • ADNAN.AYDIN@BLUEWIN.CH
           </span>
         </div>
