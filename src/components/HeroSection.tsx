@@ -35,9 +35,25 @@ const navItems = [
   { name: 'KONTAKT', href: '#contact' },
 ];
 
+const DESKTOP_CLIP = 'https://res.cloudinary.com/ixyonosn/video/upload/v1786992110/7.mp4';
+// Hochformat: auf dem Handy bliebe vom Querformat-Clip nur ein Ausschnitt uebrig.
+const MOBILE_CLIP = 'https://res.cloudinary.com/ixyonosn/video/upload/v1786987634/3.mp4';
+const HERO_POSTER = 'https://res.cloudinary.com/ixyonosn/image/upload/v1786987684/1.png';
+const MOBILE_QUERY = '(max-width: 767px)';
+
 export const HeroSection: React.FC = () => {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches,
+  );
+
+  useEffect(() => {
+    const query = window.matchMedia(MOBILE_QUERY);
+    const update = () => setIsMobile(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -67,26 +83,34 @@ export const HeroSection: React.FC = () => {
       {/* ================= 2. FIXED VIDEO LAYER ================= */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end">
         <video
-          poster="https://res.cloudinary.com/ixyonosn/image/upload/v1786987684/1.png"
+          key={isMobile ? 'mobile' : 'desktop'}
+          poster={HERO_POSTER}
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 h-full w-full object-cover object-[100%_top] md:object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
+          className={
+            isMobile
+              ? 'absolute inset-0 h-full w-full object-cover object-[50%_top] scale-100 origin-top'
+              : 'absolute inset-0 h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]'
+          }
           style={{
             // Der Clip hat keinen reinschwarzen Hintergrund, darum löst eine Maske
-            // die linke Kante auf, statt sie mit einem Verlauf zu überdecken.
-            maskImage:
-              'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
-            WebkitMaskImage:
-              'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+            // die Kante auf, statt sie mit einem Verlauf zu überdecken. Hochkant
+            // steht die Schrift unter der Figur, darum blendet dort der Fuss ab.
+            maskImage: isMobile
+              ? 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)'
+              : 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+            WebkitMaskImage: isMobile
+              ? 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)'
+              : 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
           }}
         >
-          <source src="https://res.cloudinary.com/ixyonosn/video/upload/v1786992110/7.mp4" type="video/mp4" />
+          <source src={isMobile ? MOBILE_CLIP : DESKTOP_CLIP} type="video/mp4" />
         </video>
 
         {/* Seamless Soft Left Edge Blend */}
-        <div className="absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-black via-black/80 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-black via-black/80 to-transparent pointer-events-none md:block" />
 
         {/* ================= 3. ANIMATED WATERMARK EMBLEM ================= */}
         <div className="absolute bottom-6 right-6 lg:bottom-10 lg:right-12 pointer-events-none flex items-center justify-center z-10">
