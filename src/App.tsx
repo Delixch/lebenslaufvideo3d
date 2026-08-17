@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { AboutSection } from './components/AboutSection';
 import { ProjectsSection } from './components/ProjectsSection';
@@ -7,9 +9,12 @@ import { ContactSection } from './components/ContactSection';
 import { AmbientSound } from './components/AmbientSound';
 
 function App() {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div className="w-full min-h-screen bg-black text-[#E8DFD8] selection:bg-[#cbb59d] selection:text-black">
-      <HeroSection />
+      <Header setIsHovered={setIsHovered} />
+      <HeroSection isHovered={isHovered} setIsHovered={setIsHovered} />
       <AboutSection />
       <ProjectsSection />
       <SkillsSection />
