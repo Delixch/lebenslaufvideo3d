@@ -30,7 +30,7 @@ const fadeUpVariants: Variants = {
 
 
 const DESKTOP_CLIP = '/videos/333.mp4';
-const MOBILE_CLIP = 'https://res.cloudinary.com/ixyonosn/video/upload/v1786987634/3.mp4';
+const MOBILE_CLIP = '/videos/mobile.mp4';
 const HERO_POSTER = '/hero-poster.jpg';
 
 interface HeroSectionProps {
@@ -38,8 +38,18 @@ interface HeroSectionProps {
   setIsHovered: (hovered: boolean) => void;
 }
 
+const MOBILE_QUERY = '(max-width: 767px)';
+
 export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovered }) => {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
+
+  useEffect(() => {
+    const query = window.matchMedia(MOBILE_QUERY);
+    const update = () => setIsMobile(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -69,36 +79,39 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       {/* ================= 2. FIXED VIDEO LAYER ================= */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end">
         {/* Desktop Video — landscape, right-aligned */}
-        <video
-          src={DESKTOP_CLIP}
-          poster={HERO_POSTER}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="hidden md:block absolute inset-0 h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
-          style={{
-            maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
-          }}
-        />
-
-        {/* Mobile Video — portrait, full screen centered */}
-        <video
-          src={MOBILE_CLIP}
-          poster={HERO_POSTER}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="block md:hidden absolute inset-0 h-full w-full object-cover object-[50%_top]"
-          style={{
-            maskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
-          }}
-        />
+        {/* Nur ein Element im DOM: autoPlay laedt auch versteckte Videos komplett,
+            display:none haette den zweiten Clip trotzdem heruntergeladen. */}
+        {isMobile ? (
+          <video
+            src={MOBILE_CLIP}
+            poster={HERO_POSTER}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 h-full w-full object-cover object-[50%_top]"
+            style={{
+              maskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
+            }}
+          />
+        ) : (
+          <video
+            src={DESKTOP_CLIP}
+            poster={HERO_POSTER}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+            }}
+          />
+        )}
 
         {/* Seamless Soft Left Edge Blend */}
         <div className="absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-black via-black/80 to-transparent pointer-events-none md:block" />
