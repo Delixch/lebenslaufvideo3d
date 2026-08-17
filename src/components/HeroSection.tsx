@@ -35,7 +35,7 @@ const navItems = [
   { name: 'KONTAKT', href: '#contact' },
 ];
 
-const DESKTOP_CLIP = 'https://res.cloudinary.com/ixyonosn/video/upload/v1786992110/7.mp4';
+const DESKTOP_CLIP = '/videos/333.mp4';
 // Hochformat: auf dem Handy bliebe vom Querformat-Clip nur ein Ausschnitt uebrig.
 const MOBILE_CLIP = 'https://res.cloudinary.com/ixyonosn/video/upload/v1786987634/3.mp4';
 const HERO_POSTER = 'https://res.cloudinary.com/ixyonosn/image/upload/v1786987684/1.png';
