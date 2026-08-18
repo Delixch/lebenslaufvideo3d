@@ -3,17 +3,34 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
 
-// TypeScript tür denetimine takılmadan güvenli çağrı
-if (typeof window !== 'undefined') {
-  (window as any).__dropBoot?.();
-  (window as any).__appReadyAfter = Date.now() - ((window as any).__bootStart ?? Date.now());
-}
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
   </StrictMode>,
 );
+
+// Die Startschicht aus index.html blendet aus, sobald React gerendert hat.
+// Das Aufraeumen selbst steht inline im HTML, damit es auch greift, wenn dieses
+// Bundle spaet oder gar nicht ankommt.
+declare global {
+  interface Window {
+    __dropBoot?: () => void;
+    __bootStart?: number;
+    __bootRemovedAfter?: number;
+    __appReadyAfter?: number;
+  }
+}
+
+window.__appReadyAfter = Date.now() - (window.__bootStart ?? Date.now());
+
+// Boot erst weg, wenn das Hero-Poster wirklich da ist: ein blinder 60ms-Timer
+// riss die Startschicht auf langsamem Mobilfunk weg, bevor das Foto geladen
+// war — sichtbar als kurzer schwarzer Leerraum, bevor das Bild nachkam. Die
+// harte 3.5s-Bremse in index.html bleibt als letzte Sicherung bestehen.
+const heroPoster = new Image();
+heroPoster.onload = heroPoster.onerror = () => window.__dropBoot?.();
+heroPoster.src = '/hero-poster.jpg';
+if (heroPoster.complete) window.__dropBoot?.();
 
 // Messmodus für unterwegs: /?debug zeigt die Ladezeiten direkt auf dem Gerät.
 if (new URLSearchParams(window.location.search).has('debug')) {
@@ -48,8 +65,8 @@ if (new URLSearchParams(window.location.search).has('debug')) {
       panel.innerHTML = `TTFB ${Math.round(navigation.responseStart)}ms · DOM ${Math.round(
         navigation.domContentLoadedEventEnd,
       )}ms · load ${Math.round(navigation.loadEventEnd)}ms<br>${paint} · JS aktiv: ${
-        (window as any).__appReadyAfter ?? '?'
-      }ms · Startschicht weg: ${(window as any).__bootRemovedAfter ?? '?'}ms<br>${heaviest}`;
+        window.__appReadyAfter ?? '?'
+      }ms · Startschicht weg: ${window.__bootRemovedAfter ?? '?'}ms<br>${heaviest}`;
       document.body.append(panel);
     }, 500);
   });
