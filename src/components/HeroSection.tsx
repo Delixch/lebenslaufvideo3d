@@ -214,43 +214,52 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const soundPlayedRef = useRef(false);
 
   // Aus hero-lamp.png ausgemessen: Mitte des Laternenglases und seine Breite,
-  // jeweils als Anteil am Bild. Damit sitzt das Licht bei jedem Zuschnitt im Glas.
-  const BULB_X = 0.452;
-  const BULB_Y = 0.15;
+  // jeweils als Anteil am Bild.
+  const BULB_X = 0.456;
+  const BULB_Y = 0.16;
   const BULB_SIZE = 0.055;
-  const IMAGE_RATIO = 1672 / 941;
 
+  const lampImageRef = useRef<HTMLImageElement | null>(null);
   const [lampCoords, setLampCoords] = useState({
-    top: '15%',
-    left: '45.2%',
+    top: '16%',
+    left: '45.6%',
     right: 'auto',
     width: '60px',
     height: '60px',
   });
 
   useEffect(() => {
+    // Nicht am Fenster rechnen, sondern am Bild selbst: der Container wird
+    // skaliert und verschoben, und object-cover schneidet je nach Seitenformat
+    // anders zu. Die eigene Groesse des <img> kennt beides bereits.
     const handleResize = () => {
-      const containerW = window.innerWidth;
-      const containerH = window.innerHeight;
-      const screenRatio = containerW / containerH;
-
-      // object-cover: die kuerzere Achse fuellt, die laengere wird beschnitten.
-      let renderedW: number;
-      let renderedH: number;
-      if (screenRatio >= IMAGE_RATIO) {
-        renderedW = containerW;
-        renderedH = containerW / IMAGE_RATIO;
-      } else {
-        renderedH = containerH;
-        renderedW = containerH * IMAGE_RATIO;
+      const image = lampImageRef.current;
+      if (!image || !image.naturalWidth) {
+        return;
       }
 
-      const offsetX = (containerW - renderedW) / 2;
-      const offsetY = (containerH - renderedH) / 2;
+      const box = image.getBoundingClientRect();
+      const parent = image.parentElement?.getBoundingClientRect();
+      const imageRatio = image.naturalWidth / image.naturalHeight;
+      const boxRatio = box.width / box.height;
+
+      let renderedW: number;
+      let renderedH: number;
+      if (boxRatio >= imageRatio) {
+        renderedW = box.width;
+        renderedH = box.width / imageRatio;
+      } else {
+        renderedH = box.height;
+        renderedW = box.height * imageRatio;
+      }
+
+      // Offsets relativ zum Container, in dem die Leuchtpunkte liegen.
+      const originX = box.left - (parent?.left ?? 0) + (box.width - renderedW) / 2;
+      const originY = box.top - (parent?.top ?? 0) + (box.height - renderedH) / 2;
 
       setLampCoords({
-        top: `${offsetY + BULB_Y * renderedH}px`,
-        left: `${offsetX + BULB_X * renderedW}px`,
+        top: `${originY + BULB_Y * renderedH}px`,
+        left: `${originX + BULB_X * renderedW}px`,
         right: 'auto',
         width: `${BULB_SIZE * renderedW}px`,
         height: `${BULB_SIZE * renderedW}px`,
@@ -636,6 +645,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             >
               {/* Sabit Görsel - Ortalanmış konumda */}
               <img 
+                ref={lampImageRef}
+                onLoad={() => window.dispatchEvent(new Event('resize'))}
                 src="/hero-lamp.png" 
                 alt="Adnan Aydin - Final"
                 className="h-full w-full object-cover object-center"
@@ -674,11 +685,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 style={{
                   top: lampCoords.top,
                   left: lampCoords.left,
-                  width: `calc(${lampCoords.width} * 4.2)`,
-                  height: `calc(${lampCoords.width} * 4.2)`,
+                  width: `calc(${lampCoords.width} * 2.8)`,
+                  height: `calc(${lampCoords.width} * 2.8)`,
                   transform: 'translate(-50%, -50%)',
                   background:
-                    'radial-gradient(circle, rgba(255,206,140,0.16) 0%, rgba(226,150,70,0.08) 40%, rgba(150,90,35,0.03) 68%, transparent 100%)',
+                    'radial-gradient(circle, rgba(255,214,155,0.20) 0%, rgba(248,186,110,0.12) 18%, rgba(226,150,70,0.06) 38%, rgba(180,110,45,0.025) 60%, rgba(120,70,30,0.01) 80%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
                   filter: 'blur(18px)',
