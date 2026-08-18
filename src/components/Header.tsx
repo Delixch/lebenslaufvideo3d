@@ -209,12 +209,10 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
                           document.activeElement.blur();
                         }
                         setMenuOpen(false);
-                        setTimeout(() => {
-                          const element = document.getElementById(item.id);
-                          if (element) {
-                            element.scrollIntoView({ behavior: 'smooth' });
-                          }
-                        }, 300);
+                        const element = document.getElementById(item.id);
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'auto' });
+                        }
                       } else {
                         setMenuOpen(false);
                       }
