@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Project {
@@ -158,7 +158,20 @@ const projects: Project[] = [
 ];
 
 export const MobileProjectsSection: React.FC = () => {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+  );
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsMobile(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null); // Hepsi kapalı gelsin
+
+  if (!isMobile) return null;
 
   return (
     <section
