@@ -261,7 +261,7 @@ export const AboutSection: React.FC = () => {
               <div className="relative overflow-hidden w-full max-w-[390px] aspect-[4/5] bg-black rounded-sm">
                 {/* Main Portrait */}
                 <img
-                  src="https://res.cloudinary.com/ixyonosn/image/upload/v1786987684/1.png"
+                  src="https://res.cloudinary.com/ixyonosn/image/upload/v1787056936/koltuk.png"
                   alt="Adnan Aydin"
                   width={390}
                   height={488}
