@@ -218,6 +218,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const BULB_X = 0.456;
   const BULB_Y = 0.16;
   const BULB_SIZE = 0.055;
+  // Bildausschnitt: 0.5 = mittig, groesser = weiter rechts im Bild. Damit
+  // ruecken Laterne und Mann nach links und die leere Flaeche schrumpft.
+  const IMAGE_FOCUS_X = 0.62;
 
   const lampImageRef = useRef<HTMLImageElement | null>(null);
   const [lampCoords, setLampCoords] = useState({
@@ -254,7 +257,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       }
 
       // Offsets relativ zum Container, in dem die Leuchtpunkte liegen.
-      const originX = box.left - (parent?.left ?? 0) + (box.width - renderedW) / 2;
+      const originX = box.left - (parent?.left ?? 0) + (box.width - renderedW) * IMAGE_FOCUS_X;
       const originY = box.top - (parent?.top ?? 0) + (box.height - renderedH) / 2;
 
       setLampCoords({
@@ -649,7 +652,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 onLoad={() => window.dispatchEvent(new Event('resize'))}
                 src="/hero-lamp.png" 
                 alt="Adnan Aydin - Final"
-                className="h-full w-full object-cover object-center"
+                className="h-full w-full object-cover"
+                style={{ objectPosition: `${IMAGE_FOCUS_X * 100}% center` }}
               />
 
               {/* Altın Sarısı Yanan Sokak Lambası Glow Efekti (Kodla Yanma) */}
