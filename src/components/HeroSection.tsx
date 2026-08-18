@@ -676,7 +676,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   // Strassenlaternen brennen fast weiss; das Warme kommt erst
                   // im Abfall dazu, nicht schon im Kern.
                   background:
-                    'radial-gradient(circle, rgba(255,253,248,0.98) 0%, rgba(255,250,236,0.82) 16%, rgba(252,240,214,0.5) 34%, rgba(240,220,180,0.26) 52%, rgba(214,180,130,0.1) 72%, rgba(160,130,90,0.03) 88%, transparent 100%)',
+                    'radial-gradient(circle, rgba(255,255,253,0.98) 0%, rgba(255,253,246,0.84) 16%, rgba(252,248,236,0.54) 34%, rgba(244,238,222,0.28) 52%, rgba(226,216,196,0.11) 72%, rgba(190,180,160,0.03) 88%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
                   animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
@@ -691,14 +691,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 style={{
                   top: lampCoords.top,
                   left: lampCoords.left,
-                  width: `calc(${lampCoords.width} * 2.8)`,
-                  height: `calc(${lampCoords.width} * 2.8)`,
+                  width: `calc(${lampCoords.width} * 5.5)`,
+                  height: `calc(${lampCoords.width} * 5.5)`,
                   transform: 'translate(-50%, -50%)',
+                  // Weiss statt Gold und weit auslaufend: ein kleiner, satter
+                  // Kreis liest sich sonst als Ring statt als Licht.
                   background:
-                    'radial-gradient(circle, rgba(255,251,240,0.16) 0%, rgba(248,238,214,0.09) 20%, rgba(226,206,170,0.045) 42%, rgba(180,158,124,0.02) 64%, rgba(120,104,80,0.008) 82%, transparent 100%)',
+                    'radial-gradient(circle, rgba(255,255,252,0.11) 0%, rgba(252,250,244,0.07) 14%, rgba(246,242,232,0.045) 28%, rgba(236,230,216,0.028) 42%, rgba(220,212,196,0.016) 56%, rgba(196,188,172,0.008) 70%, rgba(160,152,138,0.003) 84%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
-                  filter: 'blur(18px)',
+                  filter: 'blur(55px)',
                   animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
                 }}
               />
