@@ -16,7 +16,7 @@ export const ScrollRail: React.FC = () => {
       type="button"
       onClick={toTop}
       aria-label="Zum Seitenanfang"
-      className="group fixed right-0 top-1/2 z-40 h-[76px] w-[61px] -translate-y-1/2 cursor-pointer md:h-[104px] md:w-[84px]"
+      className="group fixed right-0 top-1/2 z-40 h-[76px] w-[51px] -translate-y-1/2 cursor-pointer md:h-[104px] md:w-[70px]"
     >
       <img
         src="/ziplama.webp"
