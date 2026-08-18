@@ -566,10 +566,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
           </div>
         ) : (
           <>
-            {/* Arka Planda Sabit Duran Sokak Lambalı ve Pozlu Görsel */}
+            {/* Arka Planda Sabit Duran Sokak Lambalı und Pozlu Görsel */}
             <div 
-              className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2000ms] ease-out ${
-                isVideoDissolved ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-[0.97] blur-[15px] pointer-events-none'
+              className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2000ms] ease-out origin-top-right ${
+                isVideoDissolved 
+                  ? 'opacity-100 scale-[0.94] translate-y-[6vh] blur-0' 
+                  : 'opacity-0 scale-[0.91] translate-y-[8vh] blur-[15px] pointer-events-none'
               }`}
               style={{
                 maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
@@ -580,7 +582,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               <img 
                 src="/hero-lamp.png" 
                 alt="Adnan Aydin - Final"
-                className="h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
+                className="h-full w-full object-cover object-[100%_top]"
               />
 
               {/* Altın Sarısı Yanan Sokak Lambası Glow Efekti (Kodla Yanma) */}
@@ -591,9 +593,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                     : 'opacity-0 scale-90 blur-sm'
                 }`}
                 style={{
-                  // Sokak lambasının ampul koordinatı (görselin 16:9 oranındaki ampul yerine hizalanmış)
-                  top: '13.5%',
-                  left: '46.1%',
+                  // Sokak lambasının ampul koordinatı (görselin sağ kenardan mesafesiyle sabitlenmiş responsive hizalama)
+                  top: '24.0%',
+                  right: '53.9%',
+                  left: 'auto',
+                  transform: isVideoDissolved ? 'translate(50%, -50%)' : 'scale(0.9) translate(50%, -50%)',
                   width: '7.8%',
                   height: '13.5%',
                   background: 'radial-gradient(circle, rgba(255,253,222,1) 0%, rgba(254,240,138,1) 20%, rgba(234,179,8,0.85) 50%, rgba(202,138,4,0.35) 75%, transparent 100%)',
