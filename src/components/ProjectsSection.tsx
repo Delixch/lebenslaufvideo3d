@@ -100,6 +100,62 @@ const projects: Project[] = [
       { label: 'STATUS', value: 'Live' },
     ],
   },
+  {
+    number: '06',
+    title: 'Portfolie EAydin',
+    category: 'PERSÖNLICHES PORTFOLIO',
+    description:
+      'Meine erste Arbeit nach vielen Jahren zurück im Web: ein eigenes Portfolio, gebaut, um wieder in die aktuelle Front-End-Welt hineinzukommen. Aufbau, Layout und Animationen sind von Hand gesetzt, ohne Baukasten.',
+    githubUrl: 'https://erenworks.vercel.app/',
+    tech: ['HTML', 'CSS', 'SCSS', 'JavaScript', 'Responsive Design', 'Motion Design'],
+    metrics: [
+      { label: 'JAHR', value: '2025' },
+      { label: 'ANLASS', value: 'Rückkehr ins Web' },
+      { label: 'AUFBAU', value: 'Alles von Hand' },
+    ],
+  },
+  {
+    number: '07',
+    title: 'iPhone Shortcuts',
+    category: 'CREATIVE WEB DEVELOPMENT',
+    description:
+      'Eine 2025 entstandene Webseite, inspiriert von den iPhone-Kurzbefehlen. Interaktive Karten in einem klaren, modernen Layout — das Projekt stiess bei vielen Leuten auf Interesse.',
+    githubUrl: 'https://superonline.vercel.app/',
+    tech: ['React', 'Tailwind CSS', 'JavaScript', 'HTML', 'CSS', 'Responsive Design'],
+    metrics: [
+      { label: 'JAHR', value: '2025' },
+      { label: 'IDEE', value: 'iPhone-Kurzbefehle' },
+      { label: 'KERN', value: 'Interaktive Karten' },
+    ],
+  },
+  {
+    number: '08',
+    title: 'Vokabeltrainer',
+    category: 'BILDUNG / KI-GESTÜTZTES LERNEN',
+    description:
+      'Webseite für Sekundar- und Primarschüler zum Vokabeltraining: Schüler fotografieren eine side aus ihrem Lehrbuch, und mithilfe von KI entstehen daraus Lernkarten. Das Projekt wurde nie ganz fertiggestellt.',
+    githubUrl: 'https://vokabel-hazel.vercel.app/',
+    tech: ['React', 'Tailwind CSS', 'JavaScript', 'AI Integration', 'Responsive Design'],
+    metrics: [
+      { label: 'JAHR', value: '2024' },
+      { label: 'FÜR', value: 'Schulkinder' },
+      { label: 'STATUS', value: 'Unvollendet' },
+    ],
+  },
+  {
+    number: '09',
+    title: 'Portfolie',
+    category: 'PERSÖNLICHES PORTFOLIO',
+    description:
+      'Eines meiner ersten Projekte, entstanden 2024. Damals hatte ich noch wenig Erfahrung und bin mit der Unterstützung eines türkischen Entwicklers vorangekommen — der Anfang von allem, was danach kam.',
+    githubUrl: 'https://lebenslauf-xi.vercel.app/',
+    tech: ['React', 'Tailwind CSS', 'JavaScript', 'HTML', 'CSS'],
+    metrics: [
+      { label: 'JAHR', value: '2024' },
+      { label: 'ROLLE', value: 'Erste Schritte' },
+      { label: 'HILFE', value: 'Mit Mentor gebaut' },
+    ],
+  },
 ];
 
 export const ProjectsSection: React.FC = () => {
