@@ -159,6 +159,52 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
   return (
     <section className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
+      <style>{`
+        @keyframes lampFlicker {
+          0%, 100% {
+            opacity: 0.96;
+            transform: scale(1);
+            filter: blur(8px) brightness(1);
+            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
+          }
+          30% {
+            opacity: 0.90;
+            transform: scale(0.98);
+            filter: blur(9px) brightness(0.92);
+            box-shadow: 0 0 40px rgba(234,179,8,0.7), 0 0 85px rgba(234,179,8,0.3);
+          }
+          35% {
+            opacity: 0.98;
+            transform: scale(1.02);
+            filter: blur(7px) brightness(1.05);
+            box-shadow: 0 0 55px rgba(234,179,8,0.85), 0 0 110px rgba(234,179,8,0.45);
+          }
+          40% {
+            opacity: 0.93;
+            transform: scale(0.99);
+            filter: blur(8.5px) brightness(0.96);
+            box-shadow: 0 0 45px rgba(234,179,8,0.75), 0 0 95px rgba(234,179,8,0.35);
+          }
+          70% {
+            opacity: 0.96;
+            transform: scale(1);
+            filter: blur(8px) brightness(1);
+            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
+          }
+          85% {
+            opacity: 0.91;
+            transform: scale(0.97);
+            filter: blur(9px) brightness(0.90);
+            box-shadow: 0 0 35px rgba(234,179,8,0.65), 0 0 80px rgba(234,179,8,0.25);
+          }
+          90% {
+            opacity: 0.99;
+            transform: scale(1.03);
+            filter: blur(6.5px) brightness(1.08);
+            box-shadow: 0 0 60px rgba(234,179,8,0.9), 0 0 120px rgba(234,179,8,0.5);
+          }
+        }
+      `}</style>
       {/* ================= 1. MINIMAL CUSTOM CURSOR ================= */}
       {cursorPos.x >= 0 && (
         <motion.div
@@ -226,7 +272,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               <div 
                 className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
                   isVideoDissolved 
-                    ? 'opacity-100 scale-100 blur-[8px]' 
+                    ? 'opacity-100 scale-100' 
                     : 'opacity-0 scale-90 blur-sm'
                 }`}
                 style={{
@@ -235,10 +281,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   left: '46.1%',
                   width: '7.8%',
                   height: '13.5%',
-                  background: 'radial-gradient(circle, rgba(254,240,138,1) 0%, rgba(234,179,8,0.7) 45%, rgba(202,138,4,0.3) 70%, transparent 100%)',
+                  background: 'radial-gradient(circle, rgba(255,253,222,1) 0%, rgba(254,240,138,1) 20%, rgba(234,179,8,0.85) 50%, rgba(202,138,4,0.35) 75%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
-                  boxShadow: '0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4)',
+                  animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
                 }}
               />
             </div>

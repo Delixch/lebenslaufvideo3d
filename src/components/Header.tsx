@@ -172,13 +172,14 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
             href="#contact"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="group hidden sm:flex items-center space-x-2 text-[11px] tracking-[0.24em] font-light uppercase py-2 px-4 border border-[#8C6D4F]/50 hover:border-[#D4AF37] text-[#EAD8C7] transition-all duration-300"
+            className="group hidden sm:flex items-center space-x-2 text-[11px] tracking-[0.24em] font-light uppercase py-2 px-4 border border-[#8C6D4F]/50 hover:border-[#D4AF37] text-[#EAD8C7] transition-all duration-300 relative overflow-hidden"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             <span>REDEN WIR</span>
             <span className="text-xs transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
               ↗
             </span>
+            <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#8C6D4F] via-[#D4AF37] to-[#F7E7C4] transition-all duration-500 group-hover:w-full" />
           </a>
 
           {/* Hamburger: Linien werden zum Kreuz, ein Ring pulst beim Öffnen */}
