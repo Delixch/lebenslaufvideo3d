@@ -199,7 +199,26 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
                   <motion.a
                     key={item.name}
                     href={item.href}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={(e) => {
+                      if (window.innerWidth < 768) {
+                        e.preventDefault();
+                        setMenuOpen(false);
+                        setTimeout(() => {
+                          const element = document.getElementById(item.id);
+                          if (element) {
+                            const elementRect = element.getBoundingClientRect();
+                            const absoluteElementTop = elementRect.top + window.scrollY;
+                            const offset = 80; // Mobile header height offset
+                            window.scrollTo({
+                              top: absoluteElementTop - offset,
+                              behavior: 'smooth',
+                            });
+                          }
+                        }, 120);
+                      } else {
+                        setMenuOpen(false);
+                      }
+                    }}
                     initial={{ opacity: 0, x: -28, filter: 'blur(6px)' }}
                     animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                     transition={{
