@@ -430,55 +430,57 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   return (
     <section className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
       <style>{`
+        @keyframes haloBreathe {
+          0%, 100% { opacity: 0.85; }
+          8% { opacity: 0.35; }
+          14% { opacity: 0.95; }
+          52% { opacity: 0.5; }
+          58% { opacity: 0.9; }
+          86% { opacity: 0.45; }
+          92% { opacity: 0.88; }
+        }
+
         @keyframes lampFlicker {
           /* 0s - 2.4s: Initial Broken Neon Sparks (hizli yanip sonme) */
           0% {
             opacity: 0;
             transform: scale(0.92);
             filter: blur(14px) brightness(0);
-            box-shadow: none;
           }
           5% {
             opacity: 0.95;
             transform: scale(1.02);
             filter: blur(6px) brightness(1.2);
-            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
           8% {
             opacity: 0.05;
             transform: scale(0.95);
             filter: blur(12px) brightness(0.1);
-            box-shadow: 0 0 10px rgba(234,179,8,0.1);
           }
           12% {
             opacity: 0.9;
             transform: scale(1.0);
             filter: blur(7.5px) brightness(1.0);
-            box-shadow: 0 0 45px rgba(234,179,8,0.7), 0 0 90px rgba(234,179,8,0.3);
           }
           14% {
             opacity: 0;
             transform: scale(0.93);
             filter: blur(13px) brightness(0);
-            box-shadow: none;
           }
           18% {
             opacity: 0.98;
             transform: scale(1.03);
             filter: blur(5px) brightness(1.3);
-            box-shadow: 0 0 60px rgba(234,179,8,0.95), 0 0 115px rgba(234,179,8,0.5);
           }
           21% {
             opacity: 0.15;
             transform: scale(0.96);
             filter: blur(10px) brightness(0.2);
-            box-shadow: 0 0 20px rgba(234,179,8,0.2);
           }
           24% {
             opacity: 1;
             transform: scale(1.0);
             filter: blur(7px) brightness(1.0);
-            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
           
           /* 24% - 50%: Stable Glow */
@@ -486,13 +488,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             opacity: 0.96;
             transform: scale(1);
             filter: blur(7.5px) brightness(1.0);
-            box-shadow: 0 0 48px rgba(234,179,8,0.78), 0 0 98px rgba(234,179,8,0.38);
           }
           42% {
             opacity: 0.98;
             transform: scale(1.01);
             filter: blur(7px) brightness(1.03);
-            box-shadow: 0 0 52px rgba(234,179,8,0.82), 0 0 102px rgba(234,179,8,0.42);
           }
           
           /* 50% - 55%: Sudden Power Dip / Flicker (gider gelir) */
@@ -500,37 +500,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             opacity: 0.95;
             transform: scale(1);
             filter: blur(7.5px) brightness(1.0);
-            box-shadow: 0 0 48px rgba(234,179,8,0.78), 0 0 98px rgba(234,179,8,0.38);
           }
           51% {
             opacity: 0.1;
             transform: scale(0.96);
             filter: blur(11px) brightness(0.2);
-            box-shadow: 0 0 15px rgba(234,179,8,0.15);
           }
           52% {
             opacity: 0.85;
             transform: scale(1.01);
             filter: blur(8px) brightness(0.9);
-            box-shadow: 0 0 42px rgba(234,179,8,0.68), 0 0 88px rgba(234,179,8,0.28);
           }
           53% {
             opacity: 0.03;
             transform: scale(0.94);
             filter: blur(12px) brightness(0.05);
-            box-shadow: none;
           }
           54% {
             opacity: 0.93;
             transform: scale(1.02);
             filter: blur(6px) brightness(1.15);
-            box-shadow: 0 0 55px rgba(234,179,8,0.88), 0 0 108px rgba(234,179,8,0.45);
           }
           55% {
             opacity: 1;
             transform: scale(1);
             filter: blur(7px) brightness(1.0);
-            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
           
           /* 55% - 85%: Stable Glow */
@@ -538,13 +532,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             opacity: 0.97;
             transform: scale(1);
             filter: blur(7px) brightness(1.0);
-            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
           78% {
             opacity: 0.95;
             transform: scale(0.99);
             filter: blur(7.5px) brightness(0.98);
-            box-shadow: 0 0 47px rgba(234,179,8,0.76), 0 0 96px rgba(234,179,8,0.36);
           }
           
           /* 85% - 90%: Quick Double Flicker */
@@ -552,31 +544,26 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             opacity: 0.96;
             transform: scale(1);
             filter: blur(7px) brightness(1.0);
-            box-shadow: 0 0 48px rgba(234,179,8,0.78), 0 0 98px rgba(234,179,8,0.38);
           }
           86% {
             opacity: 0.15;
             transform: scale(0.95);
             filter: blur(10px) brightness(0.22);
-            box-shadow: 0 0 18px rgba(234,179,8,0.18);
           }
           87% {
             opacity: 0.98;
             transform: scale(1.02);
             filter: blur(6.5px) brightness(1.1);
-            box-shadow: 0 0 54px rgba(234,179,8,0.86), 0 0 104px rgba(234,179,8,0.44);
           }
           88% {
             opacity: 0.12;
             transform: scale(0.95);
             filter: blur(11px) brightness(0.18);
-            box-shadow: 0 0 15px rgba(234,179,8,0.15);
           }
           89% {
             opacity: 1;
             transform: scale(1);
             filter: blur(7px) brightness(1.0);
-            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
           
           /* 90% - 100%: Stable End State */
@@ -584,7 +571,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             opacity: 0.96;
             transform: scale(1);
             filter: blur(7px) brightness(1.0);
-            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
         }
       `}</style>
@@ -691,8 +677,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 style={{
                   top: lampCoords.top,
                   left: lampCoords.left,
-                  width: `calc(${lampCoords.width} * 5.5)`,
-                  height: `calc(${lampCoords.width} * 5.5)`,
+                  width: `calc(${lampCoords.width} * 4.0)`,
+                  height: `calc(${lampCoords.width} * 4.0)`,
                   transform: 'translate(-50%, -50%)',
                   // Weiss statt Gold und weit auslaufend: ein kleiner, satter
                   // Kreis liest sich sonst als Ring statt als Licht.
@@ -701,7 +687,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
                   filter: 'blur(55px)',
-                  animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
+                  // Nach unten ausblenden: der Mann steht vor der Laterne, das
+                  // Licht darf nicht ueber ihm liegen.
+                  maskImage:
+                    'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
+                  WebkitMaskImage:
+                    'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
+                  animation: isVideoDissolved ? 'haloBreathe 6s infinite ease-in-out' : 'none',
                 }}
               />
             </div>
