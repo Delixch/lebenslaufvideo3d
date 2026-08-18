@@ -85,6 +85,57 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   // Video saniyesine duyarlı telefon gösterim ve dumanla yok olma (smoke dissolve) tetikleyicisi
   const [showPhone, setShowPhone] = useState(false);
   const [isVideoDissolved, setIsVideoDissolved] = useState(false);
+  const soundPlayedRef = useRef(false);
+
+  // Web Audio API ile tamamen kodla üretilen fütüristik hologram beliriş sesi (woosh & chime)
+  const playHologramSound = () => {
+    // Sadece sitenin sesi açıksa çal (arka plan videosu sessiz değilse)
+    const videoElement = document.querySelector('video');
+    if (!videoElement || videoElement.muted) return;
+
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const now = ctx.currentTime;
+
+      // 1. Sweeping Oscillator (Woosh Efekti)
+      const osc1 = ctx.createOscillator();
+      const gainNode1 = ctx.createGain();
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(80, now);
+      osc1.frequency.exponentialRampToValueAtTime(700, now + 0.45);
+      osc1.frequency.exponentialRampToValueAtTime(300, now + 1.0);
+      
+      gainNode1.gain.setValueAtTime(0, now);
+      gainNode1.gain.linearRampToValueAtTime(0.06, now + 0.2);
+      gainNode1.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+
+      // 2. Chime Oscillator (Yüksek Altın Tınılı Çınlama)
+      const osc2 = ctx.createOscillator();
+      const gainNode2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(200, now);
+      osc2.frequency.exponentialRampToValueAtTime(950, now + 0.4);
+      osc2.frequency.exponentialRampToValueAtTime(523.25, now + 1.2); // Do Notası
+
+      gainNode2.gain.setValueAtTime(0, now);
+      gainNode2.gain.linearRampToValueAtTime(0.08, now + 0.35);
+      gainNode2.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+
+      osc1.connect(gainNode1);
+      osc2.connect(gainNode2);
+      gainNode1.connect(ctx.destination);
+      gainNode2.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 1.4);
+      osc2.stop(now + 1.4);
+    } catch (e) {
+      console.warn("Hologram ses sentezleyici hatası:", e);
+    }
+  };
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
@@ -93,6 +144,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     if (video.currentTime >= 7.4) {
       setShowPhone(true);
       setIsVideoDissolved(true); // Adam duman/sis efektiyle yok olmaya başlar
+      
+      // Yürüyüş adım seslerini (videonun sesini) anında kapat
+      video.muted = true;
+
+      // Hologram ses efektini bir kez çal
+      if (!soundPlayedRef.current) {
+        soundPlayedRef.current = true;
+        playHologramSound();
+      }
     }
   };
 
@@ -360,10 +420,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                     setIsHovered(true); // Enlarge the custom cursor
                   }}
                   onMouseLeave={handlePhoneMouseLeave}
-                  initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(8px)' }}
+                  initial={{ opacity: 0, y: 50, scale: 0.45, filter: 'blur(18px)' }}
                   animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: 30, scale: 0.9, filter: 'blur(4px)' }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  exit={{ opacity: 0, y: 30, scale: 0.7, filter: 'blur(8px)' }}
+                  transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
                   className="relative flex flex-col items-center pointer-events-auto cursor-pointer"
                 >
                   {/* Text above the phone */}
