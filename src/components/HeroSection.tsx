@@ -332,7 +332,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   </div>
 
                   {/* Phone Outer Frame */}
-                  <div className="relative w-[170px] h-[340px] rounded-[2rem] p-[3px] border-[3px] border-[#C99E5D] bg-[#0A0806] shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_15px_rgba(201,158,93,0.15)] overflow-hidden transition-all duration-300 hover:border-[#D4AF37] hover:shadow-[0_25px_60px_rgba(0,0,0,1),0_0_25px_rgba(212,175,55,0.22)]">
+                  <div className={`relative w-[170px] h-[340px] rounded-[2rem] p-[3px] border-[3px] bg-[#0A0806] overflow-hidden transition-all duration-300 ${
+                    isPhoneHovered 
+                      ? 'border-[#D4AF37] shadow-[0_25px_60px_rgba(0,0,0,1),0_0_25px_rgba(212,175,55,0.22)]' 
+                      : 'border-[#C99E5D] shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_15px_rgba(201,158,93,0.15)]'
+                  }`}>
                     {/* Dynamic Notch */}
                     <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-3 bg-black rounded-full z-30 pointer-events-none" />
 
