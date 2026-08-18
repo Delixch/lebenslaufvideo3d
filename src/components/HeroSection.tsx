@@ -82,16 +82,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     phoneMouseY.set(0);
   };
 
-  // Video saniyesine duyarlı telefon gösterim tetikleyicisi
+  // Video saniyesine duyarlı telefon gösterim ve dumanla yok olma (smoke dissolve) tetikleyicisi
   const [showPhone, setShowPhone] = useState(false);
+  const [isVideoDissolved, setIsVideoDissolved] = useState(false);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
-    // Parmak şıklatma videosunun 7.4. saniyesinde (biraz daha gecikmeli) telefonu göster, döngü başa sardığında gizle
+    
+    // Parmak şıklatma videosunun 7.4. saniyesinde telefonu göster ve kalıcı yap (bir daha yok olmasın)
     if (video.currentTime >= 7.4) {
       setShowPhone(true);
-    } else {
+      setIsVideoDissolved(true); // Adam duman/sis efektiyle yok olmaya başlar
+    }
+    
+    // Döngü başa sardığında (videonun ilk 1 saniyesi) durumu sıfırla ki döngü başlasın
+    if (video.currentTime < 1.0) {
       setShowPhone(false);
+      setIsVideoDissolved(false);
     }
   };
 
@@ -143,7 +150,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
           </div>
         ) : (
           <div
-            className="absolute inset-0 h-full w-full overflow-hidden"
+            className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2200ms] ease-out origin-center ${
+              isVideoDissolved 
+                ? 'opacity-0 scale-[0.98] blur-[30px] pointer-events-none' 
+                : 'opacity-100 scale-100 blur-0'
+            }`}
             style={{
               maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
               WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
