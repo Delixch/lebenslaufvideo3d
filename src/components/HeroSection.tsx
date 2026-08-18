@@ -215,8 +215,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
   // Aus hero-lamp.png ausgemessen: Mitte des Laternenglases und seine Breite,
   // jeweils als Anteil am Bild.
-  const BULB_X = 0.456;
-  const BULB_Y = -0.163;
+  const BULB_X = 0.471;
+  const BULB_Y = 0.047;
   const BULB_SIZE = 0.055;
   // Bildausschnitt: 0.5 = mittig, groesser = weiter rechts im Bild. Damit
   // ruecken Laterne und Mann nach links und die leere Flaeche schrumpft.
