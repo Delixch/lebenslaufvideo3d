@@ -217,12 +217,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
   // Aus hero-lamp.png ausgemessen: Mitte des Laternenglases und seine Breite,
   // jeweils als Anteil am Bild.
-  const BULB_X = 0.457;
-  const BULB_Y = 0.099;
-  const BULB_SIZE = 0.055;
+  // Beide Bilder wurden einzeln ausgemessen; das Handybild ist hochkant und
+  // zeigt die Laterne weiter oben rechts.
+  const BULB_X = isMobile ? 0.670 : 0.457;
+  const BULB_Y = isMobile ? 0.159 : 0.099;
+  const BULB_SIZE = isMobile ? 0.075 : 0.055;
   // Bildausschnitt: 0.5 = mittig, groesser = weiter rechts im Bild. Damit
   // ruecken Laterne und Mann nach links und die leere Flaeche schrumpft.
-  const IMAGE_FOCUS_X = 0.92;
+  const IMAGE_FOCUS_X = isMobile ? 0.5 : 0.92;
 
   const lampImageRef = useRef<HTMLImageElement | null>(null);
   const lampCoreRef = useRef<HTMLDivElement | null>(null);
@@ -282,7 +284,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
-  }, []);
+  }, [BULB_X, BULB_Y, BULB_SIZE, IMAGE_FOCUS_X]);
 
   // Neon Uğultu ve Kıvılcım Sentezleyici Ref'leri
   const neonSynthRef = useRef<NeonBuzzSynth | null>(null);
@@ -429,6 +431,79 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       }
     }
   };
+
+  // Laternenlicht, Falter und Brummen: identisch fuer Handy und Desktop, nur
+  // die ausgemessenen Koordinaten unterscheiden sich.
+  const lampLight = (
+    <>
+  {/* Altın Sarısı Yanan Sokak Lambası Glow Efekti (Kodla Yanma) */}
+  <div 
+    ref={lampCoreRef}
+    className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
+      isVideoDissolved 
+        ? 'opacity-100 scale-100' 
+        : 'opacity-0 scale-90 blur-sm'
+    }`}
+    style={{
+      // Sokak lambasının ampul koordinatı (görselin merkezinden yatay olarak hizalanmış responsive konum)
+      top: lampCoords.top,
+      right: lampCoords.right,
+      left: lampCoords.left,
+      width: lampCoords.width,
+      height: lampCoords.height,
+      transform: isVideoDissolved ? 'translate(-50%, -50%)' : 'scale(0.9) translate(-50%, -50%)',
+      // Natriumdampflampe: warmweisser Kern, der ueber Bernstein
+      // ausblutet — nicht das satte Postgelb von vorher.
+      // Strassenlaternen brennen fast weiss; das Warme kommt erst
+      // im Abfall dazu, nicht schon im Kern.
+      background:
+        'radial-gradient(circle, rgba(255,255,253,0.98) 0%, rgba(255,253,246,0.84) 16%, rgba(252,248,236,0.54) 34%, rgba(244,238,222,0.28) 52%, rgba(226,216,196,0.11) 72%, rgba(190,180,160,0.03) 88%, transparent 100%)',
+      borderRadius: '50%',
+      mixBlendMode: 'screen',
+      animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
+    }}
+  />
+
+  {/* Lichthof: traegt die Helligkeit in die Umgebung, ohne zu leuchten */}
+  <div
+    className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
+      isVideoDissolved ? 'opacity-100' : 'opacity-0'
+    }`}
+    style={{
+      top: lampCoords.top,
+      left: lampCoords.left,
+      width: `calc(${lampCoords.width} * 4.0)`,
+      height: `calc(${lampCoords.width} * 4.0)`,
+      transform: 'translate(-50%, -50%)',
+      // Weiss statt Gold und weit auslaufend: ein kleiner, satter
+      // Kreis liest sich sonst als Ring statt als Licht.
+      background:
+        'radial-gradient(circle, rgba(255,255,252,0.11) 0%, rgba(252,250,244,0.07) 14%, rgba(246,242,232,0.045) 28%, rgba(236,230,216,0.028) 42%, rgba(220,212,196,0.016) 56%, rgba(196,188,172,0.008) 70%, rgba(160,152,138,0.003) 84%, transparent 100%)',
+      borderRadius: '50%',
+      mixBlendMode: 'screen',
+      filter: 'blur(55px)',
+      // Nach unten ausblenden: der Mann steht vor der Laterne, das
+      // Licht darf nicht ueber ihm liegen.
+      maskImage:
+        'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
+      WebkitMaskImage:
+        'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
+      animation: isVideoDissolved ? 'haloBreathe 6s infinite ease-in-out' : 'none',
+    }}
+  />
+
+  {/* Nachtfalter um die Laterne */}
+  <LampMoths
+    centerX={parseFloat(lampCoords.left)}
+    centerY={parseFloat(lampCoords.top)}
+    bulbSize={parseFloat(lampCoords.width)}
+    active={isVideoDissolved}
+  />
+
+  {/* Netzbrummen und Knistern, synchron zum Flackern */}
+  <LampBuzz active={isVideoDissolved} flickerTarget={lampCoreRef} />
+    </>
+  );
 
   return (
     <section className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
@@ -603,24 +678,54 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             Netz, preload="metadata") blieb das Foto davor unmaskiert und
             bildschirmfuellend stehen, der Text dahinter unsichtbar. */}
         {isMobile ? (
-          <div
-            className="absolute inset-0 h-full w-full overflow-hidden"
-            style={{
-              maskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
-            }}
-          >
-            <video
-              src="/videos/mobile.mp4"
-              poster={HERO_POSTER}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="h-full w-full object-cover object-[50%_top]"
-            />
-          </div>
+          <>
+            {/* Standbild hinter dem Video, taucht beim Aufloesen auf */}
+            <div
+              className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2000ms] ease-out ${
+                isVideoDissolved
+                  ? 'opacity-100 scale-100 blur-0'
+                  : 'opacity-0 scale-[0.97] blur-[15px] pointer-events-none'
+              }`}
+              style={{
+                maskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
+              }}
+            >
+              <img
+                ref={lampImageRef}
+                onLoad={() => window.dispatchEvent(new Event('resize'))}
+                src="/mobilstopimages.jpg"
+                alt="Adnan Aydin"
+                className="h-full w-full object-cover object-[50%_top]"
+              />
+
+              {lampLight}
+            </div>
+
+            {/* Video darueber: laeuft einmal und verschwindet im Nebel */}
+            <div
+              className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2200ms] ease-out ${
+                isVideoDissolved
+                  ? 'opacity-0 scale-[0.98] blur-[30px] pointer-events-none'
+                  : 'opacity-100 scale-100 blur-0'
+              }`}
+              style={{
+                maskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
+              }}
+            >
+              <video
+                src="/videos/mobile.mp4"
+                poster={HERO_POSTER}
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                onEnded={() => setIsVideoDissolved(true)}
+                className="h-full w-full object-cover object-[50%_top]"
+              />
+            </div>
+          </>
         ) : (
           <>
             {/* Arka Planda Sabit Duran Sokak Lambalı und Pozlu Görsel */}
@@ -645,72 +750,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 style={{ objectPosition: `${IMAGE_FOCUS_X * 100}% center` }}
               />
 
-              {/* Altın Sarısı Yanan Sokak Lambası Glow Efekti (Kodla Yanma) */}
-              <div 
-                ref={lampCoreRef}
-                className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
-                  isVideoDissolved 
-                    ? 'opacity-100 scale-100' 
-                    : 'opacity-0 scale-90 blur-sm'
-                }`}
-                style={{
-                  // Sokak lambasının ampul koordinatı (görselin merkezinden yatay olarak hizalanmış responsive konum)
-                  top: lampCoords.top,
-                  right: lampCoords.right,
-                  left: lampCoords.left,
-                  width: lampCoords.width,
-                  height: lampCoords.height,
-                  transform: isVideoDissolved ? 'translate(-50%, -50%)' : 'scale(0.9) translate(-50%, -50%)',
-                  // Natriumdampflampe: warmweisser Kern, der ueber Bernstein
-                  // ausblutet — nicht das satte Postgelb von vorher.
-                  // Strassenlaternen brennen fast weiss; das Warme kommt erst
-                  // im Abfall dazu, nicht schon im Kern.
-                  background:
-                    'radial-gradient(circle, rgba(255,255,253,0.98) 0%, rgba(255,253,246,0.84) 16%, rgba(252,248,236,0.54) 34%, rgba(244,238,222,0.28) 52%, rgba(226,216,196,0.11) 72%, rgba(190,180,160,0.03) 88%, transparent 100%)',
-                  borderRadius: '50%',
-                  mixBlendMode: 'screen',
-                  animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
-                }}
-              />
-
-              {/* Lichthof: traegt die Helligkeit in die Umgebung, ohne zu leuchten */}
-              <div
-                className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
-                  isVideoDissolved ? 'opacity-100' : 'opacity-0'
-                }`}
-                style={{
-                  top: lampCoords.top,
-                  left: lampCoords.left,
-                  width: `calc(${lampCoords.width} * 4.0)`,
-                  height: `calc(${lampCoords.width} * 4.0)`,
-                  transform: 'translate(-50%, -50%)',
-                  // Weiss statt Gold und weit auslaufend: ein kleiner, satter
-                  // Kreis liest sich sonst als Ring statt als Licht.
-                  background:
-                    'radial-gradient(circle, rgba(255,255,252,0.11) 0%, rgba(252,250,244,0.07) 14%, rgba(246,242,232,0.045) 28%, rgba(236,230,216,0.028) 42%, rgba(220,212,196,0.016) 56%, rgba(196,188,172,0.008) 70%, rgba(160,152,138,0.003) 84%, transparent 100%)',
-                  borderRadius: '50%',
-                  mixBlendMode: 'screen',
-                  filter: 'blur(55px)',
-                  // Nach unten ausblenden: der Mann steht vor der Laterne, das
-                  // Licht darf nicht ueber ihm liegen.
-                  maskImage:
-                    'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
-                  WebkitMaskImage:
-                    'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
-                  animation: isVideoDissolved ? 'haloBreathe 6s infinite ease-in-out' : 'none',
-                }}
-              />
-
-              {/* Nachtfalter um die Laterne */}
-              <LampMoths
-                centerX={parseFloat(lampCoords.left)}
-                centerY={parseFloat(lampCoords.top)}
-                bulbSize={parseFloat(lampCoords.width)}
-                active={isVideoDissolved}
-              />
-
-              {/* Netzbrummen und Knistern, synchron zum Flackern */}
-              <LampBuzz active={isVideoDissolved} flickerTarget={lampCoreRef} />
+              {lampLight}
             </div>
 
             {/* Ön Plandaki Yürüyen Adam Videosu (Süre dolunca sisle yok olur) - Ortalanmış konumda */}
