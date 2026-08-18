@@ -213,51 +213,47 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const [isVideoDissolved, setIsVideoDissolved] = useState(false);
   const soundPlayedRef = useRef(false);
 
-  // Görselin responsive ölçeklenmesine ve kırpılmasına duyarlı piksel koordinatı hesaplayıcısı (Ortalanmış görsel için)
-  const [lampCoords, setLampCoords] = useState({ 
-    top: '24.0%', 
-    left: '50%',
+  // Aus hero-lamp.png ausgemessen: Mitte des Laternenglases und seine Breite,
+  // jeweils als Anteil am Bild. Damit sitzt das Licht bei jedem Zuschnitt im Glas.
+  const BULB_X = 0.452;
+  const BULB_Y = 0.15;
+  const BULB_SIZE = 0.055;
+  const IMAGE_RATIO = 1672 / 941;
+
+  const [lampCoords, setLampCoords] = useState({
+    top: '15%',
+    left: '45.2%',
     right: 'auto',
-    width: '50px',
-    height: '50px'
+    width: '60px',
+    height: '60px',
   });
 
   useEffect(() => {
     const handleResize = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      const imgRatio = 16 / 9;
-
-      const containerW = w;
-      const containerH = h;
+      const containerW = window.innerWidth;
+      const containerH = window.innerHeight;
       const screenRatio = containerW / containerH;
 
-      let topPx = 0;
-      let renderedWidth = 0;
-
-      // Resim object-cover ve object-center (ortalanmış) olduğu için pikselleri simüle ediyoruz
-      if (screenRatio >= imgRatio) {
-        // Ekran 16:9'dan genişse -> Resmin genişliği ekrana sığar, alt/üst kırpılır
-        const renderedHeight = containerW / imgRatio;
-        renderedWidth = containerW;
-        const topOffset = (containerH - renderedHeight) / 2;
-        topPx = topOffset + (0.24 * renderedHeight);
+      // object-cover: die kuerzere Achse fuellt, die laengere wird beschnitten.
+      let renderedW: number;
+      let renderedH: number;
+      if (screenRatio >= IMAGE_RATIO) {
+        renderedW = containerW;
+        renderedH = containerW / IMAGE_RATIO;
       } else {
-        // Ekran 16:9'dan darsa (dikey ekranlar) -> Resmin yüksekliği ekrana sığar, sol/sağ kırpılır
-        const renderedHeight = containerH;
-        renderedWidth = containerH * imgRatio;
-        topPx = 0.24 * renderedHeight;
+        renderedH = containerH;
+        renderedW = containerH * IMAGE_RATIO;
       }
 
-      // Ampulün çapı resmin render edilen genişliğinin %7.8'idir
-      const bulbSizePx = 0.078 * renderedWidth;
+      const offsetX = (containerW - renderedW) / 2;
+      const offsetY = (containerH - renderedH) / 2;
 
       setLampCoords({
-        top: `${topPx}px`,
-        left: '50%',
+        top: `${offsetY + BULB_Y * renderedH}px`,
+        left: `${offsetX + BULB_X * renderedW}px`,
         right: 'auto',
-        width: `${bulbSizePx}px`,
-        height: `${bulbSizePx}px`,
+        width: `${BULB_SIZE * renderedW}px`,
+        height: `${BULB_SIZE * renderedW}px`,
       });
     };
 
@@ -660,9 +656,32 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   width: lampCoords.width,
                   height: lampCoords.height,
                   transform: isVideoDissolved ? 'translate(-50%, -50%)' : 'scale(0.9) translate(-50%, -50%)',
-                  background: 'radial-gradient(circle, rgba(255,253,222,1) 0%, rgba(254,240,138,1) 20%, rgba(234,179,8,0.85) 50%, rgba(202,138,4,0.35) 75%, transparent 100%)',
+                  // Natriumdampflampe: warmweisser Kern, der ueber Bernstein
+                  // ausblutet — nicht das satte Postgelb von vorher.
+                  background:
+                    'radial-gradient(circle, rgba(255,250,238,0.95) 0%, rgba(255,229,183,0.75) 22%, rgba(255,193,116,0.42) 45%, rgba(233,150,62,0.18) 68%, rgba(180,110,40,0.06) 85%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
+                  animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
+                }}
+              />
+
+              {/* Lichthof: traegt die Helligkeit in die Umgebung, ohne zu leuchten */}
+              <div
+                className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
+                  isVideoDissolved ? 'opacity-100' : 'opacity-0'
+                }`}
+                style={{
+                  top: lampCoords.top,
+                  left: lampCoords.left,
+                  width: `calc(${lampCoords.width} * 4.2)`,
+                  height: `calc(${lampCoords.width} * 4.2)`,
+                  transform: 'translate(-50%, -50%)',
+                  background:
+                    'radial-gradient(circle, rgba(255,206,140,0.16) 0%, rgba(226,150,70,0.08) 40%, rgba(150,90,35,0.03) 68%, transparent 100%)',
+                  borderRadius: '50%',
+                  mixBlendMode: 'screen',
+                  filter: 'blur(18px)',
                   animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
                 }}
               />
