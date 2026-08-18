@@ -238,6 +238,55 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
             }}
           >
             <nav className="flex flex-col gap-1">
+              {/* Home Link (Startseite) for Mobile with Gold Home Icon */}
+              <motion.a
+                key="home-mobile"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                  }
+                  setMenuOpen(false);
+                  window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth',
+                  });
+                }}
+                initial={{ opacity: 0, x: -28, filter: 'blur(6px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{
+                  delay: 0.12,
+                  duration: 0.5,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="group relative flex items-baseline gap-4 py-3"
+              >
+                <span className="font-mono text-[10px] tracking-[0.3em] text-[#8C6D4F]">
+                  00
+                </span>
+                <span
+                  className="text-4xl uppercase leading-none tracking-tight text-[#C4B5A5] group-active:text-[#FFF5EB] flex items-center gap-3"
+                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                >
+                  STARTSEITE
+                  <svg
+                    className="w-6 h-6 text-[#D4AF37] drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+                </span>
+                <span className="absolute bottom-1 left-0 h-[1px] w-0 bg-gradient-to-r from-[#D4AF37]/70 to-transparent transition-all duration-500 group-active:w-full" />
+              </motion.a>
+
               {navItems.map((item, index) => {
                 const active = activeId === item.id;
                 return (
