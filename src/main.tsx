@@ -3,19 +3,11 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
 
-declare global {
-  interface Window {
-    __dropBoot?: () => void;
-    __bootStart?: number;
-    __bootRemovedAfter?: number;
-    __appReadyAfter?: number;
-  }
+// TypeScript tip kontrolüne takılmadan güvenli çağrı
+if (typeof window !== 'undefined') {
+  (window as any).__dropBoot?.();
+  (window as any).__appReadyAfter = Date.now() - ((window as any).__bootStart ?? Date.now());
 }
-
-// Sayfa açılır açılmaz siyah perdeyi hemen kaldır
-window.__dropBoot?.();
-
-window.__appReadyAfter = Date.now() - (window.__bootStart ?? Date.now());
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -56,8 +48,8 @@ if (new URLSearchParams(window.location.search).has('debug')) {
       panel.innerHTML = `TTFB ${Math.round(navigation.responseStart)}ms · DOM ${Math.round(
         navigation.domContentLoadedEventEnd,
       )}ms · load ${Math.round(navigation.loadEventEnd)}ms<br>${paint} · JS aktiv: ${
-        window.__appReadyAfter ?? '?'
-      }ms · Startschicht weg: ${window.__bootRemovedAfter ?? '?'}ms<br>${heaviest}`;
+        (window as any).__appReadyAfter ?? '?'
+      }ms · Startschicht weg: ${(window as any).__bootRemovedAfter ?? '?'}ms<br>${heaviest}`;
       document.body.append(panel);
     }, 500);
   });
