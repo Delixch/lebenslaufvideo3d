@@ -673,8 +673,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   transform: isVideoDissolved ? 'translate(-50%, -50%)' : 'scale(0.9) translate(-50%, -50%)',
                   // Natriumdampflampe: warmweisser Kern, der ueber Bernstein
                   // ausblutet — nicht das satte Postgelb von vorher.
+                  // Strassenlaternen brennen fast weiss; das Warme kommt erst
+                  // im Abfall dazu, nicht schon im Kern.
                   background:
-                    'radial-gradient(circle, rgba(255,250,238,0.95) 0%, rgba(255,229,183,0.75) 22%, rgba(255,193,116,0.42) 45%, rgba(233,150,62,0.18) 68%, rgba(180,110,40,0.06) 85%, transparent 100%)',
+                    'radial-gradient(circle, rgba(255,253,248,0.98) 0%, rgba(255,250,236,0.82) 16%, rgba(252,240,214,0.5) 34%, rgba(240,220,180,0.26) 52%, rgba(214,180,130,0.1) 72%, rgba(160,130,90,0.03) 88%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
                   animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
@@ -693,7 +695,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   height: `calc(${lampCoords.width} * 2.8)`,
                   transform: 'translate(-50%, -50%)',
                   background:
-                    'radial-gradient(circle, rgba(255,214,155,0.20) 0%, rgba(248,186,110,0.12) 18%, rgba(226,150,70,0.06) 38%, rgba(180,110,45,0.025) 60%, rgba(120,70,30,0.01) 80%, transparent 100%)',
+                    'radial-gradient(circle, rgba(255,251,240,0.16) 0%, rgba(248,238,214,0.09) 20%, rgba(226,206,170,0.045) 42%, rgba(180,158,124,0.02) 64%, rgba(120,104,80,0.008) 82%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
                   filter: 'blur(18px)',
