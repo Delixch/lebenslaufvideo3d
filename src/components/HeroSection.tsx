@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { LampMoths } from './LampMoths';
+import { LampBuzz } from './LampBuzz';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import watermarkImg from '../assets/watermark.webp';
@@ -696,6 +698,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   animation: isVideoDissolved ? 'haloBreathe 6s infinite ease-in-out' : 'none',
                 }}
               />
+
+              {/* Nachtfalter um die Laterne */}
+              <LampMoths
+                centerX={parseFloat(lampCoords.left)}
+                centerY={parseFloat(lampCoords.top)}
+                bulbSize={parseFloat(lampCoords.width)}
+                active={isVideoDissolved}
+              />
+
+              {/* Netzbrummen und Knistern, synchron zum Flackern */}
+              <LampBuzz active={isVideoDissolved} />
             </div>
 
             {/* Ön Plandaki Yürüyen Adam Videosu (Süre dolunca sisle yok olur) - Ortalanmış konumda */}
