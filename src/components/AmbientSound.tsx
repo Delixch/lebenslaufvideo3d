@@ -16,6 +16,11 @@ export const AmbientSound: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fadeRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    (window as any).isSiteSoundEnabled = enabled;
+    window.dispatchEvent(new CustomEvent('siteSoundToggle', { detail: enabled }));
+  }, [enabled]);
+
   const fadeTo = useCallback((element: HTMLMediaElement, target: number, onDone?: () => void) => {
     if (fadeRef.current) {
       window.clearInterval(fadeRef.current);

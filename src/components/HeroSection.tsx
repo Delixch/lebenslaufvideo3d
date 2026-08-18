@@ -39,6 +39,132 @@ interface HeroSectionProps {
 
 const MOBILE_QUERY = '(max-width: 767px)';
 
+// Web Audio API Sentezleyicisi: Arızalı neon sokak lambası uğultusu ve kıvılcım patlamaları üretir
+class NeonBuzzSynth {
+  private ctx: AudioContext | null = null;
+  private humOsc: OscillatorNode | null = null;
+  private buzzOsc: OscillatorNode | null = null;
+  private humGain: GainNode | null = null;
+
+  private init() {
+    if (this.ctx) return;
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    this.ctx = new AudioContextClass();
+  }
+
+  // Kıvılcım Çatırtısı (Beyaz gürültü ve frekans kaymalı çıtırtı)
+  public playSpark(timeOffset: number = 0) {
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime + timeOffset;
+
+    // 1. Beyaz gürültü (Statik patlama)
+    const bufferSize = this.ctx.sampleRate * 0.04; // 40ms gürültü
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const noiseFilter = this.ctx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.setValueAtTime(1200, now);
+
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0, now);
+    noiseGain.gain.linearRampToValueAtTime(0.05, now + 0.003); // Hızlı atak
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035); // Hızlı sönüm
+
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(this.ctx.destination);
+
+    noise.start(now);
+    noise.stop(now + 0.05);
+
+    // 2. Kıvılcım Pop Sesi (Çıtırtı tınısı)
+    const popOsc = this.ctx.createOscillator();
+    const popGain = this.ctx.createGain();
+    popOsc.type = 'triangle';
+    popOsc.frequency.setValueAtTime(180, now);
+    popOsc.frequency.linearRampToValueAtTime(30, now + 0.025);
+
+    popGain.gain.setValueAtTime(0, now);
+    popGain.gain.linearRampToValueAtTime(0.09, now + 0.002);
+    popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+
+    popOsc.connect(popGain);
+    popGain.connect(this.ctx.destination);
+
+    popOsc.start(now);
+    popOsc.stop(now + 0.03);
+  }
+
+  // Sürekli Neon Uğultusu (50Hz şebeke gürültüsü ve harmonikler)
+  public startHum() {
+    this.init();
+    if (!this.ctx) return;
+    if (this.humOsc) return; // Zaten uğulduyor
+
+    const now = this.ctx.currentTime;
+
+    // 50Hz temel sinüs dalgası
+    this.humOsc = this.ctx.createOscillator();
+    this.humOsc.type = 'sine';
+    this.humOsc.frequency.setValueAtTime(50, now);
+
+    // 100Hz metalik cızırtı harmonisi
+    this.buzzOsc = this.ctx.createOscillator();
+    this.buzzOsc.type = 'sawtooth';
+    this.buzzOsc.frequency.setValueAtTime(100, now);
+
+    // İçi boş eski lamba hissi veren filtre
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(140, now);
+    filter.Q.setValueAtTime(1.8, now);
+
+    this.humGain = this.ctx.createGain();
+    this.humGain.gain.setValueAtTime(0, now);
+    // Kıvılcımlardan sonra yavaşça arkaya otursun (düşük ses)
+    this.humGain.gain.linearRampToValueAtTime(0.005, now + 1.8);
+
+    this.humOsc.connect(filter);
+    this.buzzOsc.connect(filter);
+    filter.connect(this.humGain);
+    this.humGain.connect(this.ctx.destination);
+
+    this.humOsc.start(now);
+    this.buzzOsc.start(now);
+  }
+
+  // Uğultuyu durdur (fade out ile yumuşak kesim)
+  public stopHum() {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    if (this.humGain) {
+      try {
+        this.humGain.gain.setValueAtTime(this.humGain.gain.value, now);
+        this.humGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+      } catch (e) {}
+    }
+    setTimeout(() => {
+      try {
+        this.humOsc?.stop();
+        this.buzzOsc?.stop();
+      } catch (e) {}
+      this.humOsc = null;
+      this.buzzOsc = null;
+      this.humGain = null;
+    }, 500);
+  }
+}
+
 export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovered }) => {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
@@ -86,6 +212,82 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const [showPhone, setShowPhone] = useState(false);
   const [isVideoDissolved, setIsVideoDissolved] = useState(false);
   const soundPlayedRef = useRef(false);
+
+  // Neon Uğultu ve Kıvılcım Sentezleyici Ref'leri
+  const neonSynthRef = useRef<NeonBuzzSynth | null>(null);
+
+  // Sentezleyiciyi oluştur
+  useEffect(() => {
+    neonSynthRef.current = new NeonBuzzSynth();
+    return () => {
+      neonSynthRef.current?.stopHum();
+    };
+  }, []);
+
+  // Lamba yandığında sürekli uğultuyu ve pır-pır kıvılcım seslerini yöneten döngü
+  useEffect(() => {
+    if (!isVideoDissolved) return;
+
+    // Eğer sitenin sesi başlangıçta açıksa uğultuyu başlat
+    const isSoundEnabled = (window as any).isSiteSoundEnabled;
+    if (isSoundEnabled) {
+      neonSynthRef.current?.startHum();
+    }
+
+    const playLoopSparks = () => {
+      const isSoundEnabledNow = (window as any).isSiteSoundEnabled;
+      if (!isSoundEnabledNow || !neonSynthRef.current) return;
+
+      // 10 saniyelik lampFlicker CSS animasyonundaki pır-pır anlarıyla milisaniyelik senkronize ses kıvılcımları
+      // Başlangıç Kıvılcımları (0s - 2.4s)
+      neonSynthRef.current.playSpark(0.0);
+      neonSynthRef.current.playSpark(0.5);
+      neonSynthRef.current.playSpark(0.8);
+      neonSynthRef.current.playSpark(1.2);
+      neonSynthRef.current.playSpark(1.4);
+      neonSynthRef.current.playSpark(1.8);
+      neonSynthRef.current.playSpark(2.1);
+
+      // Ortadaki Güç Düşüşü Pır-pırları (5.0s - 5.4s)
+      neonSynthRef.current.playSpark(5.0);
+      neonSynthRef.current.playSpark(5.15);
+      neonSynthRef.current.playSpark(5.3);
+
+      // Sondaki Çift Kıvılcımlar (8.6s - 8.8s)
+      neonSynthRef.current.playSpark(8.6);
+      neonSynthRef.current.playSpark(8.8);
+    };
+
+    // İlk yandığı an kıvılcımları fırlat
+    if (isSoundEnabled) {
+      playLoopSparks();
+    }
+
+    // 10 saniyede bir döngü şeklinde kıvılcımları tekrarla (CSS keyframe süresiyle eşzamanlı)
+    const interval = setInterval(playLoopSparks, 10000);
+
+    // Global ses açma/kapama durumunu dinle (AmbientSound tıklandığında hum sesini sustur veya başlat)
+    const handleGlobalToggle = (e: Event) => {
+      const isEnabled = (e as CustomEvent).detail;
+      if (neonSynthRef.current) {
+        if (isEnabled) {
+          neonSynthRef.current.startHum();
+          // Ses yeni açıldıysa kıvılcımları anında bir kere tetikle
+          playLoopSparks();
+        } else {
+          neonSynthRef.current.stopHum();
+        }
+      }
+    };
+
+    window.addEventListener('siteSoundToggle', handleGlobalToggle);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('siteSoundToggle', handleGlobalToggle);
+      neonSynthRef.current?.stopHum();
+    };
+  }, [isVideoDissolved]);
 
   // Web Audio API ile tamamen kodla üretilen fütüristik hologram beliriş sesi (woosh & chime)
   const playHologramSound = () => {
@@ -161,47 +363,160 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     <section className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
       <style>{`
         @keyframes lampFlicker {
-          0%, 100% {
-            opacity: 0.96;
-            transform: scale(1);
-            filter: blur(8px) brightness(1);
+          /* 0s - 2.4s: Initial Broken Neon Sparks (hizli yanip sonme) */
+          0% {
+            opacity: 0;
+            transform: scale(0.92);
+            filter: blur(14px) brightness(0);
+            box-shadow: none;
+          }
+          5% {
+            opacity: 0.95;
+            transform: scale(1.02);
+            filter: blur(6px) brightness(1.2);
             box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
-          30% {
-            opacity: 0.90;
-            transform: scale(0.98);
-            filter: blur(9px) brightness(0.92);
-            box-shadow: 0 0 40px rgba(234,179,8,0.7), 0 0 85px rgba(234,179,8,0.3);
+          8% {
+            opacity: 0.05;
+            transform: scale(0.95);
+            filter: blur(12px) brightness(0.1);
+            box-shadow: 0 0 10px rgba(234,179,8,0.1);
           }
+          12% {
+            opacity: 0.9;
+            transform: scale(1.0);
+            filter: blur(7.5px) brightness(1.0);
+            box-shadow: 0 0 45px rgba(234,179,8,0.7), 0 0 90px rgba(234,179,8,0.3);
+          }
+          14% {
+            opacity: 0;
+            transform: scale(0.93);
+            filter: blur(13px) brightness(0);
+            box-shadow: none;
+          }
+          18% {
+            opacity: 0.98;
+            transform: scale(1.03);
+            filter: blur(5px) brightness(1.3);
+            box-shadow: 0 0 60px rgba(234,179,8,0.95), 0 0 115px rgba(234,179,8,0.5);
+          }
+          21% {
+            opacity: 0.15;
+            transform: scale(0.96);
+            filter: blur(10px) brightness(0.2);
+            box-shadow: 0 0 20px rgba(234,179,8,0.2);
+          }
+          24% {
+            opacity: 1;
+            transform: scale(1.0);
+            filter: blur(7px) brightness(1.0);
+            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
+          }
+          
+          /* 24% - 50%: Stable Glow */
           35% {
+            opacity: 0.96;
+            transform: scale(1);
+            filter: blur(7.5px) brightness(1.0);
+            box-shadow: 0 0 48px rgba(234,179,8,0.78), 0 0 98px rgba(234,179,8,0.38);
+          }
+          42% {
+            opacity: 0.98;
+            transform: scale(1.01);
+            filter: blur(7px) brightness(1.03);
+            box-shadow: 0 0 52px rgba(234,179,8,0.82), 0 0 102px rgba(234,179,8,0.42);
+          }
+          
+          /* 50% - 55%: Sudden Power Dip / Flicker (gider gelir) */
+          50% {
+            opacity: 0.95;
+            transform: scale(1);
+            filter: blur(7.5px) brightness(1.0);
+            box-shadow: 0 0 48px rgba(234,179,8,0.78), 0 0 98px rgba(234,179,8,0.38);
+          }
+          51% {
+            opacity: 0.1;
+            transform: scale(0.96);
+            filter: blur(11px) brightness(0.2);
+            box-shadow: 0 0 15px rgba(234,179,8,0.15);
+          }
+          52% {
+            opacity: 0.85;
+            transform: scale(1.01);
+            filter: blur(8px) brightness(0.9);
+            box-shadow: 0 0 42px rgba(234,179,8,0.68), 0 0 88px rgba(234,179,8,0.28);
+          }
+          53% {
+            opacity: 0.03;
+            transform: scale(0.94);
+            filter: blur(12px) brightness(0.05);
+            box-shadow: none;
+          }
+          54% {
+            opacity: 0.93;
+            transform: scale(1.02);
+            filter: blur(6px) brightness(1.15);
+            box-shadow: 0 0 55px rgba(234,179,8,0.88), 0 0 108px rgba(234,179,8,0.45);
+          }
+          55% {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(7px) brightness(1.0);
+            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
+          }
+          
+          /* 55% - 85%: Stable Glow */
+          70% {
+            opacity: 0.97;
+            transform: scale(1);
+            filter: blur(7px) brightness(1.0);
+            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
+          }
+          78% {
+            opacity: 0.95;
+            transform: scale(0.99);
+            filter: blur(7.5px) brightness(0.98);
+            box-shadow: 0 0 47px rgba(234,179,8,0.76), 0 0 96px rgba(234,179,8,0.36);
+          }
+          
+          /* 85% - 90%: Quick Double Flicker */
+          85% {
+            opacity: 0.96;
+            transform: scale(1);
+            filter: blur(7px) brightness(1.0);
+            box-shadow: 0 0 48px rgba(234,179,8,0.78), 0 0 98px rgba(234,179,8,0.38);
+          }
+          86% {
+            opacity: 0.15;
+            transform: scale(0.95);
+            filter: blur(10px) brightness(0.22);
+            box-shadow: 0 0 18px rgba(234,179,8,0.18);
+          }
+          87% {
             opacity: 0.98;
             transform: scale(1.02);
-            filter: blur(7px) brightness(1.05);
-            box-shadow: 0 0 55px rgba(234,179,8,0.85), 0 0 110px rgba(234,179,8,0.45);
+            filter: blur(6.5px) brightness(1.1);
+            box-shadow: 0 0 54px rgba(234,179,8,0.86), 0 0 104px rgba(234,179,8,0.44);
           }
-          40% {
-            opacity: 0.93;
-            transform: scale(0.99);
-            filter: blur(8.5px) brightness(0.96);
-            box-shadow: 0 0 45px rgba(234,179,8,0.75), 0 0 95px rgba(234,179,8,0.35);
+          88% {
+            opacity: 0.12;
+            transform: scale(0.95);
+            filter: blur(11px) brightness(0.18);
+            box-shadow: 0 0 15px rgba(234,179,8,0.15);
           }
-          70% {
-            opacity: 0.96;
+          89% {
+            opacity: 1;
             transform: scale(1);
-            filter: blur(8px) brightness(1);
+            filter: blur(7px) brightness(1.0);
             box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
-          85% {
-            opacity: 0.91;
-            transform: scale(0.97);
-            filter: blur(9px) brightness(0.90);
-            box-shadow: 0 0 35px rgba(234,179,8,0.65), 0 0 80px rgba(234,179,8,0.25);
-          }
-          90% {
-            opacity: 0.99;
-            transform: scale(1.03);
-            filter: blur(6.5px) brightness(1.08);
-            box-shadow: 0 0 60px rgba(234,179,8,0.9), 0 0 120px rgba(234,179,8,0.5);
+          
+          /* 90% - 100%: Stable End State */
+          100% {
+            opacity: 0.96;
+            transform: scale(1);
+            filter: blur(7px) brightness(1.0);
+            box-shadow: 0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4);
           }
         }
       `}</style>
