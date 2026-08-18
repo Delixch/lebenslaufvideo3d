@@ -219,11 +219,12 @@ const MobileProjectsAccordion: React.FC<{ projects: Project[] }> = ({ projects }
 };
 
 export const ProjectsSection: React.FC = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+  );
 
   useEffect(() => {
     const query = window.matchMedia('(max-width: 767px)');
-    setIsMobile(query.matches);
     const update = () => setIsMobile(query.matches);
     query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
@@ -234,8 +235,8 @@ export const ProjectsSection: React.FC = () => {
       id="work"
       className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-20 pb-32 px-6 sm:px-12 lg:px-20 scroll-mt-20 md:scroll-mt-0"
     >
-      <div className="absolute top-1/4 left-1/3 w-[36rem] h-[36rem] bg-[#D4AF37]/5 rounded-full blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#8C6D4F]/5 rounded-full blur-[170px] pointer-events-none" />
+      <div className="hidden md:block absolute top-1/4 left-1/3 w-[36rem] h-[36rem] bg-[#D4AF37]/5 rounded-full blur-[180px] pointer-events-none" />
+      <div className="hidden md:block absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#8C6D4F]/5 rounded-full blur-[170px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto w-full relative z-10">
         
