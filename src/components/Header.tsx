@@ -116,10 +116,10 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
   return (
     <>
       <header
-        className={`fixed md:absolute top-0 md:top-auto left-0 md:left-auto w-full flex items-center justify-between px-6 md:px-16 py-5 md:py-6 pointer-events-auto z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 w-full flex items-center justify-between px-6 md:px-16 py-5 md:py-6 pointer-events-auto z-50 transition-all duration-300 ${
           isScrolled
-            ? 'max-md:bg-[#0A0806]/95 max-md:backdrop-blur-md max-md:border-b max-md:border-[#8C6D4F]/15'
-            : 'max-md:bg-transparent max-md:border-b max-md:border-transparent'
+            ? 'bg-[#0A0806]/95 backdrop-blur-md border-b border-[#8C6D4F]/15'
+            : 'bg-transparent border-b border-transparent'
         }`}
       >
         <a
