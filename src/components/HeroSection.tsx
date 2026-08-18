@@ -322,7 +322,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 {/* Inner Screen */}
                 <div className="w-full h-full rounded-[1.65rem] overflow-hidden bg-black relative z-10">
                   <video
-                    src="/videos/mobile.mp4"
+                    src="/videos/mobilvideoana.mp4"
                     autoPlay
                     muted
                     loop
