@@ -3,6 +3,8 @@ import React, { useEffect, useRef } from 'react';
 interface LampBuzzProps {
   /** Erst wenn die Laterne brennt, gibt es auch etwas zu hören. */
   active: boolean;
+  /** Das Element, auf dem lampFlicker läuft — es gibt die Uhr vor. */
+  flickerTarget: React.RefObject<HTMLElement | null>;
 }
 
 type Graph = {
@@ -86,12 +88,29 @@ const buildGraph = (): Graph => {
  * Knistern fährt, wenn das Licht oben zuckt. Alles synthetisiert, keine Datei.
  * Läuft nur, wenn der Besucher den Klang eingeschaltet hat.
  */
-export const LampBuzz: React.FC<LampBuzzProps> = ({ active }) => {
+export const LampBuzz: React.FC<LampBuzzProps> = ({ active, flickerTarget }) => {
   const graphRef = useRef<Graph | null>(null);
 
   useEffect(() => {
     let timers: number[] = [];
-    let cycle = 0;
+    let loop = 0;
+
+    // Die CSS-Animation ist die Uhr: ihre currentTime sagt, an welcher Stelle
+    // des Sechs-Sekunden-Zyklus das Licht gerade steht. Danach richtet sich das
+    // Knistern — und zwar in jedem Durchlauf neu, damit nichts wegdriftet.
+    const flickerClock = (): number | null => {
+      const element = flickerTarget.current;
+      if (!element || !element.getAnimations) {
+        return null;
+      }
+
+      const animation = element
+        .getAnimations()
+        .find((entry) => (entry as CSSAnimation).animationName === 'lampFlicker');
+      const time = animation?.currentTime;
+
+      return typeof time === 'number' ? time % CYCLE_MS : null;
+    };
 
     const start = () => {
       const graph = graphRef.current ?? buildGraph();
@@ -100,22 +119,26 @@ export const LampBuzz: React.FC<LampBuzzProps> = ({ active }) => {
       graph.master.gain.cancelScheduledValues(graph.context.currentTime);
       graph.master.gain.linearRampToValueAtTime(0.5, graph.context.currentTime + 1.2);
 
-      const schedule = () => {
+      const scheduleCycle = () => {
+        const position = flickerClock() ?? 0;
+
         FLICKER_POINTS.forEach((point) => {
-          timers.push(
-            window.setTimeout(() => graph.crackle(Math.random()), point * CYCLE_MS),
-          );
+          const at = point * CYCLE_MS - position;
+          const delay = at >= 0 ? at : at + CYCLE_MS;
+          timers.push(window.setTimeout(() => graph.crackle(Math.random()), delay));
         });
+
+        // Kurz vor dem naechsten Durchlauf erneut an der Animation ausrichten.
+        loop = window.setTimeout(scheduleCycle, CYCLE_MS - position + 30);
       };
 
-      schedule();
-      cycle = window.setInterval(schedule, CYCLE_MS);
+      scheduleCycle();
     };
 
     const stop = () => {
       timers.forEach((timer) => window.clearTimeout(timer));
       timers = [];
-      window.clearInterval(cycle);
+      window.clearTimeout(loop);
       const graph = graphRef.current;
       if (graph) {
         graph.master.gain.cancelScheduledValues(graph.context.currentTime);
@@ -141,7 +164,7 @@ export const LampBuzz: React.FC<LampBuzzProps> = ({ active }) => {
       window.removeEventListener('siteSoundToggle', onToggle);
       stop();
     };
-  }, [active]);
+  }, [active, flickerTarget]);
 
   useEffect(() => () => graphRef.current?.stop(), []);
 

@@ -225,6 +225,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const IMAGE_FOCUS_X = 0.92;
 
   const lampImageRef = useRef<HTMLImageElement | null>(null);
+  const lampCoreRef = useRef<HTMLDivElement | null>(null);
   const [lampCoords, setLampCoords] = useState({
     top: '16%',
     left: '45.6%',
@@ -646,6 +647,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
               {/* Altın Sarısı Yanan Sokak Lambası Glow Efekti (Kodla Yanma) */}
               <div 
+                ref={lampCoreRef}
                 className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
                   isVideoDissolved 
                     ? 'opacity-100 scale-100' 
@@ -708,7 +710,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               />
 
               {/* Netzbrummen und Knistern, synchron zum Flackern */}
-              <LampBuzz active={isVideoDissolved} />
+              <LampBuzz active={isVideoDissolved} flickerTarget={lampCoreRef} />
             </div>
 
             {/* Ön Plandaki Yürüyen Adam Videosu (Süre dolunca sisle yok olur) - Ortalanmış konumda */}
