@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import watermarkImg from '../assets/watermark.webp';
 
@@ -82,6 +82,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     phoneMouseY.set(0);
   };
 
+  // Video saniyesine duyarlı telefon gösterim tetikleyicisi
+  const [showPhone, setShowPhone] = useState(false);
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    // Parmak şıklatma videosunun 7.0. saniyesinde telefonu göster, döngü başa sardığında gizle
+    if (video.currentTime >= 7.0) {
+      setShowPhone(true);
+    } else {
+      setShowPhone(false);
+    }
+  };
+
   return (
     <section className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
       {/* ================= 1. MINIMAL CUSTOM CURSOR ================= */}
@@ -144,6 +157,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               loop
               playsInline
               preload="auto"
+              onTimeUpdate={handleTimeUpdate}
               className="h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
             />
           </div>
@@ -284,57 +298,62 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
           {/* RIGHT COLUMN: 3D Phone Mockup + Quote & Signature */}
           <div className="hidden lg:flex flex-row items-center gap-10 xl:gap-14 pr-16 xl:pr-24 mr-2 z-20">
-            {/* Phone Mockup with 3D Tilt */}
-            <motion.div
-              ref={phoneRef}
-              style={{ 
-                rotateX: phoneRotateX, 
-                rotateY: phoneRotateY, 
-                transformStyle: 'preserve-3d',
-                perspective: 1000 
-              }}
-              onMouseMove={handlePhoneMouseMove}
-              onMouseEnter={() => {
-                setIsPhoneHovered(true);
-                setIsHovered(true); // Enlarge the custom cursor
-              }}
-              onMouseLeave={handlePhoneMouseLeave}
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.7, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              className="relative flex flex-col items-center pointer-events-auto cursor-pointer"
-            >
-              {/* Text above the phone */}
-              <div className="flex flex-col items-center mb-2.5 text-center select-none">
-                <span className="text-[8px] font-semibold tracking-[0.3em] uppercase text-[#D4AF37] animate-pulse">
-                  • MOBIL UYUMLU / MOBILE READY
-                </span>
-                <span className="text-[8.5px] font-medium tracking-[0.2em] uppercase text-[#A8988B] mt-0.5">
-                  FÜR ALLE GERÄTE OPTIMIERT
-                </span>
-              </div>
+            {/* Phone Mockup with 3D Tilt, synchronized to show on finger snap */}
+            <AnimatePresence>
+              {showPhone && (
+                <motion.div
+                  ref={phoneRef}
+                  style={{ 
+                    rotateX: phoneRotateX, 
+                    rotateY: phoneRotateY, 
+                    transformStyle: 'preserve-3d',
+                    perspective: 1000 
+                  }}
+                  onMouseMove={handlePhoneMouseMove}
+                  onMouseEnter={() => {
+                    setIsPhoneHovered(true);
+                    setIsHovered(true); // Enlarge the custom cursor
+                  }}
+                  onMouseLeave={handlePhoneMouseLeave}
+                  initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: 30, scale: 0.9, filter: 'blur(4px)' }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative flex flex-col items-center pointer-events-auto cursor-pointer"
+                >
+                  {/* Text above the phone */}
+                  <div className="flex flex-col items-center mb-2.5 text-center select-none">
+                    <span className="text-[8px] font-semibold tracking-[0.3em] uppercase text-[#D4AF37] animate-pulse">
+                      • MOBIL UYUMLU / MOBILE READY
+                    </span>
+                    <span className="text-[8.5px] font-medium tracking-[0.2em] uppercase text-[#A8988B] mt-0.5">
+                      FÜR ALLE GERÄTE OPTIMIERT
+                    </span>
+                  </div>
 
-              {/* Phone Outer Frame */}
-              <div className="relative w-[170px] h-[340px] rounded-[2rem] p-[3px] border-[3px] border-[#C99E5D] bg-[#0A0806] shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_15px_rgba(201,158,93,0.15)] overflow-hidden transition-all duration-300 hover:border-[#D4AF37] hover:shadow-[0_25px_60px_rgba(0,0,0,1),0_0_25px_rgba(212,175,55,0.22)]">
-                {/* Dynamic Notch */}
-                <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-3 bg-black rounded-full z-30 pointer-events-none" />
+                  {/* Phone Outer Frame */}
+                  <div className="relative w-[170px] h-[340px] rounded-[2rem] p-[3px] border-[3px] border-[#C99E5D] bg-[#0A0806] shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_15px_rgba(201,158,93,0.15)] overflow-hidden transition-all duration-300 hover:border-[#D4AF37] hover:shadow-[0_25px_60px_rgba(0,0,0,1),0_0_25px_rgba(212,175,55,0.22)]">
+                    {/* Dynamic Notch */}
+                    <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-3 bg-black rounded-full z-30 pointer-events-none" />
 
-                {/* Inner Screen */}
-                <div className="w-full h-full rounded-[1.65rem] overflow-hidden bg-black relative z-10">
-                  <video
-                    src="/videos/mobilvideoana.mp4"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Glass glare effect */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 pointer-events-none z-20" />
-                </div>
-              </div>
-            </motion.div>
+                    {/* Inner Screen */}
+                    <div className="w-full h-full rounded-[1.65rem] overflow-hidden bg-black relative z-10">
+                      <video
+                        src="/videos/mobilvideoana.mp4"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="auto"
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Glass glare effect */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 pointer-events-none z-20" />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Quote & Signature Card */}
             <motion.div
