@@ -102,141 +102,14 @@ const projects: Project[] = [
   },
 ];
 
-const MobileProjectsAccordion: React.FC<{ projects: Project[] }> = ({ projects }) => {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
-
-  return (
-    <div className="flex flex-col space-y-4 md:hidden">
-      {projects.map((project, idx) => {
-        const isOpen = expandedIndex === idx;
-        return (
-          <div
-            id={`mobile-project-${idx}`}
-            key={project.title}
-            className="border rounded-xl bg-[#0E0C0A] overflow-hidden transition-all duration-500 scroll-mt-20"
-            style={{
-              borderColor: isOpen ? '#D4AF37' : 'rgba(140, 109, 79, 0.3)',
-              boxShadow: isOpen ? '0 10px 30px rgba(212, 175, 55, 0.04)' : 'none',
-            }}
-          >
-            <button
-              onClick={() => {
-                const nextIndex = isOpen ? null : idx;
-                setExpandedIndex(nextIndex);
-                if (nextIndex !== null) {
-                  setTimeout(() => {
-                    const element = document.getElementById(`mobile-project-${idx}`);
-                    if (element) {
-                      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                  }, 320);
-                }
-              }}
-              className="w-full text-left p-6 flex justify-between items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-inset cursor-pointer"
-            >
-              <div className="flex flex-col space-y-1.5 pr-4">
-                <div className="flex items-center space-x-2 text-[10px] font-mono tracking-[0.2em]">
-                  <span className="text-[#D4AF37] font-bold">0{project.number} //</span>
-                  <span className="text-[#A8988B] uppercase">{project.category}</span>
-                </div>
-                <h3
-                  className="text-2xl sm:text-3xl tracking-tight text-white uppercase font-normal leading-[1.1]"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                >
-                  {project.title}
-                </h3>
-              </div>
-              <div className="w-8 h-8 rounded-full border border-[#8C6D4F]/40 flex items-center justify-center text-xs text-[#EAD8C7] flex-shrink-0 transition-colors"
-                   style={{ borderColor: isOpen ? '#D4AF37' : 'rgba(140, 109, 79, 0.3)' }}
-              >
-                <motion.span
-                  animate={{ rotate: isOpen ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {isOpen ? '−' : '＋'}
-                </motion.span>
-              </div>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
-                >
-                  <div className="px-6 pb-6 pt-2 border-t border-[#8C6D4F]/15 flex flex-col space-y-6">
-                    <p
-                      className="text-xs sm:text-sm font-light text-[#BDB0A4] leading-relaxed"
-                      style={{ fontFamily: "'Montserrat', sans-serif" }}
-                    >
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tech.map((t) => (
-                        <span
-                          key={t}
-                          className="px-2.5 py-1 text-[9px] font-medium tracking-[0.16em] uppercase rounded-sm border border-[#8C6D4F]/40 bg-[#16120E] text-[#E8D7C5]"
-                          style={{ fontFamily: "'Montserrat', sans-serif" }}
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="space-y-2">
-                      <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#8C6D4F] block">
-                        // ARCHITECTURE METRICS
-                      </span>
-                      {project.metrics.map((m) => (
-                        <div
-                          key={m.label}
-                          className="p-3 rounded-sm border border-[#8C6D4F]/25 bg-[#050403] flex items-center justify-between text-[10px]"
-                        >
-                          <span className="font-mono text-[#A8988B]">{m.label}</span>
-                          <span className="font-mono font-medium text-[#F7E7C4]">{m.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center space-x-2 w-full py-3 border border-[#8C6D4F] bg-[#16120E] hover:border-[#D4AF37] hover:bg-[#D4AF37] text-[#EAD8C7] hover:text-black text-[10px] font-medium tracking-[0.24em] uppercase transition-all duration-300 cursor-pointer"
-                      style={{ fontFamily: "'Montserrat', sans-serif" }}
-                    >
-                      <span>SEITE ANSEHEN</span>
-                      <span className="text-xs">↗</span>
-                    </a>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
 export const ProjectsSection: React.FC = () => {
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
-  );
-
-  useEffect(() => {
-    const query = window.matchMedia('(max-width: 767px)');
-    const update = () => setIsMobile(query.matches);
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
-
   return (
     <section
       id="work"
-      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-20 pb-32 px-6 sm:px-12 lg:px-20 scroll-mt-20 md:scroll-mt-0"
+      className="hidden md:block relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-20 pb-32 px-6 sm:px-12 lg:px-20 scroll-mt-20 md:scroll-mt-0"
     >
-      <div className="hidden md:block absolute top-1/4 left-1/3 w-[36rem] h-[36rem] bg-[#D4AF37]/5 rounded-full blur-[180px] pointer-events-none" />
-      <div className="hidden md:block absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#8C6D4F]/5 rounded-full blur-[170px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/3 w-[36rem] h-[36rem] bg-[#D4AF37]/5 rounded-full blur-[180px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#8C6D4F]/5 rounded-full blur-[170px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto w-full relative z-10">
         
@@ -283,18 +156,15 @@ export const ProjectsSection: React.FC = () => {
           </p>
         </motion.div>
 
-        {isMobile ? (
-          <MobileProjectsAccordion projects={projects} />
-        ) : (
-          <ScrollStack
-            itemDistance={20}
-            itemScale={0.035}
-            itemStackDistance={28}
-            stackPosition="15%"
-            scaleEndPosition="6%"
-            baseScale={0.88}
-            useWindowScroll={true}
-          >
+        <ScrollStack
+          itemDistance={20}
+          itemScale={0.035}
+          itemStackDistance={28}
+          stackPosition="15%"
+          scaleEndPosition="6%"
+          baseScale={0.88}
+          useWindowScroll={true}
+        >
             {projects.map((project) => (
               <ScrollStackItem key={project.title}>
                 <div className="relative w-full rounded-2xl border border-[#8C6D4F]/50 bg-[#0E0C0A] p-8 sm:p-12 shadow-[0_25px_70px_rgba(0,0,0,0.98)] group overflow-hidden transition-colors duration-500 hover:border-[#D4AF37]">
@@ -390,7 +260,6 @@ export const ProjectsSection: React.FC = () => {
               </ScrollStackItem>
             ))}
           </ScrollStack>
-        )}
       </div>
     </section>
   );

@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { AboutSection } from './components/AboutSection';
 import { ProjectsSection } from './components/ProjectsSection';
+import { MobileProjectsSection } from './components/MobileProjectsSection';
 
 import { SkillsSection } from './components/SkillsSection';
 import { ExperienceSection } from './components/ExperienceSection';
@@ -18,6 +19,7 @@ function App() {
       <HeroSection isHovered={isHovered} setIsHovered={setIsHovered} />
       <AboutSection />
       <ProjectsSection />
+      <MobileProjectsSection />
       <SkillsSection />
       <ExperienceSection />
       <ContactSection />
