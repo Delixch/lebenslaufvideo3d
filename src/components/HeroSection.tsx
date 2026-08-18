@@ -220,7 +220,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const BULB_SIZE = 0.055;
   // Bildausschnitt: 0.5 = mittig, groesser = weiter rechts im Bild. Damit
   // ruecken Laterne und Mann nach links und die leere Flaeche schrumpft.
-  const IMAGE_FOCUS_X = 0.74;
+  const IMAGE_FOCUS_X = 0.82;
 
   const lampImageRef = useRef<HTMLImageElement | null>(null);
   const [lampCoords, setLampCoords] = useState({
