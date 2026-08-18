@@ -30,18 +30,18 @@ export const ScrollRail: React.FC = () => {
   return (
     <div
       aria-hidden={!visible}
-      className={`fixed bottom-0 top-0 z-40 w-[38px] transition-opacity duration-700 md:w-[52px] ${
+      className={`fixed bottom-[12vh] z-40 h-[38vh] md:bottom-[20vh] md:h-[42vh] w-[54px] transition-opacity duration-700 md:w-[76px] ${
         visible ? 'opacity-100' : 'pointer-events-none opacity-0'
-      } right-[6px] md:left-[6px] md:right-auto`}
+      } right-[8px] md:left-[14px] md:right-auto`}
     >
       {/* Schaft: eine Kachel, vertikal gewiederholt */}
       <div
-        className="absolute inset-x-0 bottom-0 top-[56px] md:top-[76px]"
+        className="absolute inset-x-0 bottom-0 top-[64px] md:top-[86px]"
         style={{
           backgroundImage: 'url(/rail-tile.webp)',
           backgroundRepeat: 'repeat-y',
           backgroundSize: '100% auto',
-          filter: 'drop-shadow(0 0 12px rgba(234,179,8,0.15))',
+          filter: 'drop-shadow(0 0 14px rgba(234,179,8,0.3))',
         }}
       />
 
@@ -49,13 +49,13 @@ export const ScrollRail: React.FC = () => {
         type="button"
         onClick={toTop}
         aria-label="Zum Seitenanfang"
-        className="group absolute inset-x-0 top-0 h-[56px] cursor-pointer md:h-[76px]"
+        className="group absolute inset-x-0 top-0 h-[64px] cursor-pointer md:h-[86px]"
       >
         <img
           src="/rail-head.webp"
           alt=""
           className="h-full w-full object-fill transition-transform duration-300 group-hover:-translate-y-1 group-active:translate-y-0"
-          style={{ filter: 'drop-shadow(0 0 14px rgba(234,179,8,0.35))' }}
+          style={{ filter: 'drop-shadow(0 0 22px rgba(234,179,8,0.55))' }}
         />
       </button>
     </div>
