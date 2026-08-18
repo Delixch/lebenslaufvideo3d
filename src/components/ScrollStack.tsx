@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useCallback, useState } from 'react';
+import React, { useLayoutEffect, useRef, useCallback } from 'react';
 import Lenis from 'lenis';
 import './ScrollStack.css';
 
@@ -44,7 +44,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   useWindowScroll = true,
   onStackComplete,
 }) => {
-  const [isMobile, setIsMobile] = useState(false);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const stackCompletedRef = useRef(false);
   const animationFrameRef = useRef<number | null>(null);
@@ -53,16 +52,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const initialTopsRef = useRef<number[]>([]);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
-
-  // Mobil ekran tespiti
-  useLayoutEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
     if (scrollTop < start) return 0;
@@ -93,7 +82,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   }, [useWindowScroll]);
 
   const updateCardTransforms = useCallback(() => {
-    if (isMobile || !cardsRef.current.length || isUpdatingRef.current) return;
+    if (!cardsRef.current.length || isUpdatingRef.current) return;
 
     isUpdatingRef.current = true;
 
@@ -187,7 +176,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
     isUpdatingRef.current = false;
   }, [
-    isMobile,
     itemScale,
     itemStackDistance,
     stackPosition,
@@ -207,8 +195,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   }, [updateCardTransforms]);
 
   const setupLenis = useCallback(() => {
-    if (isMobile) return null; // Mobilde Lenis'i hiç başlatma
-
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -228,17 +214,16 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
     lenisRef.current = lenis;
     return lenis;
-  }, [isMobile, handleScroll]);
+  }, [handleScroll]);
 
   useLayoutEffect(() => {
-    if (isMobile) return; // Mobilde stack hesaplamalarını tamamen atla
-
     const cards = Array.from(
       document.querySelectorAll('.scroll-stack-card')
     ) as HTMLElement[];
 
     cardsRef.current = cards;
 
+    // Record static natural top positions before any transforms are applied
     initialTopsRef.current = cards.map((card) => {
       const rect = card.getBoundingClientRect();
       return rect.top + window.scrollY;
@@ -273,7 +258,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       isUpdatingRef.current = false;
     };
   }, [
-    isMobile,
     itemDistance,
     itemScale,
     itemStackDistance,
@@ -287,17 +271,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     setupLenis,
     updateCardTransforms,
   ]);
-
-  // Mobilde doğrudan aradaki ağır hesaplamaları ve Lenis'i pas geçerek normal dikey liste döndür
-  if (isMobile) {
-    return (
-      <div className={`scroll-stack-scroller ${className}`.trim()} ref={scrollerRef}>
-        <div className="scroll-stack-inner flex flex-col space-y-6">
-          {children}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={`scroll-stack-scroller ${className}`.trim()} ref={scrollerRef}>
