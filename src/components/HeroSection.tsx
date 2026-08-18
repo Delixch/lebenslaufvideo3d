@@ -87,8 +87,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
-    // Parmak şıklatma videosunun 7.0. saniyesinde telefonu göster, döngü başa sardığında gizle
-    if (video.currentTime >= 7.0) {
+    // Parmak şıklatma videosunun 7.4. saniyesinde (biraz daha gecikmeli) telefonu göster, döngü başa sardığında gizle
+    if (video.currentTime >= 7.4) {
       setShowPhone(true);
     } else {
       setShowPhone(false);
