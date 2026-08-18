@@ -18,7 +18,7 @@ function App() {
       <Header setIsHovered={setIsHovered} />
       <HeroSection isHovered={isHovered} setIsHovered={setIsHovered} />
       <AboutSection />
-      <div id="work" className="scroll-mt-20 md:scroll-mt-0">
+      <div id="work">
         <ProjectsSection />
         <MobileProjectsSection />
       </div>
