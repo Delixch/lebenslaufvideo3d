@@ -213,6 +213,66 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const [isVideoDissolved, setIsVideoDissolved] = useState(false);
   const soundPlayedRef = useRef(false);
 
+  // Görselin responsive ölçeklenmesine ve kırpılmasına duyarlı piksel koordinatı hesaplayıcısı (Ortalanmış görsel için)
+  const [lampCoords, setLampCoords] = useState({ 
+    top: '24.0%', 
+    left: '50%',
+    right: 'auto',
+    width: '50px',
+    height: '50px'
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const imgRatio = 16 / 9;
+
+      const containerW = w;
+      const containerH = h;
+      const screenRatio = containerW / containerH;
+
+      let topPx = 0;
+      let renderedWidth = 0;
+
+      // Resim object-cover ve object-center (ortalanmış) olduğu için pikselleri simüle ediyoruz
+      if (screenRatio >= imgRatio) {
+        // Ekran 16:9'dan genişse -> Resmin genişliği ekrana sığar, alt/üst kırpılır
+        const renderedHeight = containerW / imgRatio;
+        renderedWidth = containerW;
+        const topOffset = (containerH - renderedHeight) / 2;
+        topPx = topOffset + (0.24 * renderedHeight);
+      } else {
+        // Ekran 16:9'dan darsa (dikey ekranlar) -> Resmin yüksekliği ekrana sığar, sol/sağ kırpılır
+        const renderedHeight = containerH;
+        renderedWidth = containerH * imgRatio;
+        topPx = 0.24 * renderedHeight;
+      }
+
+      // Ampulün çapı resmin render edilen genişliğinin %7.8'idir
+      const bulbSizePx = 0.078 * renderedWidth;
+
+      setLampCoords({
+        top: `${topPx}px`,
+        left: '50%',
+        right: 'auto',
+        width: `${bulbSizePx}px`,
+        height: `${bulbSizePx}px`,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    // İlk yüklemede çalıştır
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
+
   // Neon Uğultu ve Kıvılcım Sentezleyici Ref'leri
   const neonSynthRef = useRef<NeonBuzzSynth | null>(null);
 
@@ -578,11 +638,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
               }}
             >
-              {/* Sabit Görsel */}
+              {/* Sabit Görsel - Ortalanmış konumda */}
               <img 
                 src="/hero-lamp.png" 
                 alt="Adnan Aydin - Final"
-                className="h-full w-full object-cover object-[100%_top]"
+                className="h-full w-full object-cover object-center"
               />
 
               {/* Altın Sarısı Yanan Sokak Lambası Glow Efekti (Kodla Yanma) */}
@@ -593,13 +653,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                     : 'opacity-0 scale-90 blur-sm'
                 }`}
                 style={{
-                  // Sokak lambasının ampul koordinatı (görselin sağ kenardan mesafesiyle sabitlenmiş responsive hizalama)
-                  top: '24.0%',
-                  right: '53.9%',
-                  left: 'auto',
-                  transform: isVideoDissolved ? 'translate(50%, -50%)' : 'scale(0.9) translate(50%, -50%)',
-                  width: '7.8%',
-                  height: '13.5%',
+                  // Sokak lambasının ampul koordinatı (görselin merkezinden yatay olarak hizalanmış responsive konum)
+                  top: lampCoords.top,
+                  right: lampCoords.right,
+                  left: lampCoords.left,
+                  width: lampCoords.width,
+                  height: lampCoords.height,
+                  transform: isVideoDissolved ? 'translate(-50%, -50%)' : 'scale(0.9) translate(-50%, -50%)',
                   background: 'radial-gradient(circle, rgba(255,253,222,1) 0%, rgba(254,240,138,1) 20%, rgba(234,179,8,0.85) 50%, rgba(202,138,4,0.35) 75%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
@@ -608,7 +668,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               />
             </div>
 
-            {/* Ön Plandaki Yürüyen Adam Videosu (Süre dolunca sisle yok olur) */}
+            {/* Ön Plandaki Yürüyen Adam Videosu (Süre dolunca sisle yok olur) - Ortalanmış konumda */}
             <div
               className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2200ms] ease-out origin-center ${
                 isVideoDissolved 
@@ -629,7 +689,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 playsInline
                 preload="auto"
                 onTimeUpdate={handleTimeUpdate}
-                className="h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
+                className="h-full w-full object-cover object-center scale-[0.94] origin-top-right translate-y-[6vh]"
               />
             </div>
           </>
