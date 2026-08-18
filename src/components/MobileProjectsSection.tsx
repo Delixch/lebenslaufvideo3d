@@ -106,7 +106,7 @@ export const MobileProjectsSection: React.FC = () => {
 
   return (
     <section
-      id="work-mobile"
+      id="work"
       className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-16 pb-24 px-6 sm:px-12 scroll-mt-20 block md:hidden"
     >
       <div className="max-w-7xl mx-auto w-full relative z-10">
