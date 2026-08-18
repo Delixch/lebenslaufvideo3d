@@ -93,11 +93,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
             }}
           >
-            {/* TEST: Video voruebergehend entfernt, um Hauptthread-Stau zu isolieren. */}
-            <img
-              src={HERO_POSTER}
-              alt=""
-              aria-hidden="true"
+            <video
+              src="/videos/mobile.mp4"
+              poster={HERO_POSTER}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
               className="h-full w-full object-cover object-[50%_top]"
             />
           </div>
@@ -109,11 +112,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
             }}
           >
-            {/* TEST: Video voruebergehend entfernt, um Hauptthread-Stau zu isolieren. */}
-            <img
-              src={HERO_POSTER}
-              alt=""
-              aria-hidden="true"
+            <video
+              src="/videos/333.mp4"
+              poster={HERO_POSTER}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
               className="h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
             />
           </div>
