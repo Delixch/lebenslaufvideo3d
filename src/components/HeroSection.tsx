@@ -94,12 +94,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       setShowPhone(true);
       setIsVideoDissolved(true); // Adam duman/sis efektiyle yok olmaya başlar
     }
-    
-    // Döngü başa sardığında (videonun ilk 1 saniyesi) durumu sıfırla ki döngü başlasın
-    if (video.currentTime < 1.0) {
-      setShowPhone(false);
-      setIsVideoDissolved(false);
-    }
   };
 
   return (
