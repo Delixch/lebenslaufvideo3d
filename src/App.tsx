@@ -9,6 +9,7 @@ import { SkillsSection } from './components/SkillsSection';
 import { ExperienceSection } from './components/ExperienceSection';
 import { ContactSection } from './components/ContactSection';
 import { AmbientSound } from './components/AmbientSound';
+import { GoldFrame } from './components/GoldFrame';
 
 function App() {
   const [isHovered, setIsHovered] = useState(false);
@@ -26,6 +27,7 @@ function App() {
       <ExperienceSection />
       <ContactSection />
       <AmbientSound />
+      <GoldFrame />
     </div>
   );
 }
