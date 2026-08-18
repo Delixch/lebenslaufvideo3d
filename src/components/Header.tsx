@@ -205,11 +205,16 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
                     onClick={(e) => {
                       if (window.innerWidth < 768) {
                         e.preventDefault();
-                        setMenuOpen(false);
-                        const element = document.getElementById(item.id);
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth' });
+                        if (document.activeElement instanceof HTMLElement) {
+                          document.activeElement.blur();
                         }
+                        setMenuOpen(false);
+                        setTimeout(() => {
+                          const element = document.getElementById(item.id);
+                          if (element) {
+                            element.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }, 300);
                       } else {
                         setMenuOpen(false);
                       }
