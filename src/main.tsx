@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
 
-// TypeScript tip kontrolüne takılmadan güvenli çağrı
+// TypeScript tür denetimine takılmadan güvenli çağrı
 if (typeof window !== 'undefined') {
   (window as any).__dropBoot?.();
   (window as any).__appReadyAfter = Date.now() - ((window as any).__bootStart ?? Date.now());
