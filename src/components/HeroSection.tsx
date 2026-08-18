@@ -231,10 +231,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 }`}
                 style={{
                   // Sokak lambasının ampul koordinatı (görselin 16:9 oranındaki ampul yerine hizalanmış)
-                  top: '19.5%',
-                  left: '76.8%',
-                  width: '6.5%',
-                  height: '11.5%',
+                  top: '13.5%',
+                  left: '46.1%',
+                  width: '7.8%',
+                  height: '13.5%',
                   background: 'radial-gradient(circle, rgba(254,240,138,1) 0%, rgba(234,179,8,0.7) 45%, rgba(202,138,4,0.3) 70%, transparent 100%)',
                   borderRadius: '50%',
                   mixBlendMode: 'screen',
