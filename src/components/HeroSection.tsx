@@ -89,10 +89,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
   // Web Audio API ile tamamen kodla üretilen fütüristik hologram beliriş sesi (woosh & chime)
   const playHologramSound = () => {
-    // Sadece sitenin sesi açıksa çal (arka plan videosu sessiz değilse)
-    const videoElement = document.querySelector('video');
-    if (!videoElement || videoElement.muted) return;
-
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContext) return;
@@ -145,13 +141,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       setShowPhone(true);
       setIsVideoDissolved(true); // Adam duman/sis efektiyle yok olmaya başlar
       
+      // Ses seviyesini kontrol et: Eğer video sesi açık idiyse, hologram sesini çal
+      const wasSoundActive = !video.muted;
+      
       // Yürüyüş adım seslerini (videonun sesini) anında kapat
       video.muted = true;
 
       // Hologram ses efektini bir kez çal
       if (!soundPlayedRef.current) {
         soundPlayedRef.current = true;
-        playHologramSound();
+        if (wasSoundActive) {
+          playHologramSound();
+        }
       }
     }
   };
@@ -229,8 +230,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 }`}
                 style={{
                   // Sokak lambasının ampul koordinatı (görselin 16:9 oranındaki ampul yerine hizalanmış)
-                  top: '13.5%',
-                  left: '73.2%',
+                  top: '19.5%',
+                  left: '76.8%',
                   width: '6.5%',
                   height: '11.5%',
                   background: 'radial-gradient(circle, rgba(254,240,138,1) 0%, rgba(234,179,8,0.7) 45%, rgba(202,138,4,0.3) 70%, transparent 100%)',
@@ -420,10 +421,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                     setIsHovered(true); // Enlarge the custom cursor
                   }}
                   onMouseLeave={handlePhoneMouseLeave}
-                  initial={{ opacity: 0, y: 50, scale: 0.45, filter: 'blur(18px)' }}
+                  initial={{ opacity: 0, y: 25, scale: 0.82, filter: 'blur(6px)' }}
                   animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: 30, scale: 0.7, filter: 'blur(8px)' }}
-                  transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                  exit={{ opacity: 0, y: 20, scale: 0.88, filter: 'blur(3px)' }}
+                  transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
                   className="relative flex flex-col items-center pointer-events-auto cursor-pointer"
                 >
                   {/* Text above the phone */}
