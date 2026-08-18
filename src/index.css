@@ -8,6 +8,32 @@ html, body {
   background-color: #000;
 }
 
+/* Masaüstü tarayıcılar (Edge, Chrome, Safari) için altın sarısı kaydırma çubuğu */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #060504;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #8C6D4F, #D4AF37);
+  border: 2px solid #060504;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #F7E7C4;
+}
+
+/* Firefox için kaydırma çubuğu */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #D4AF37 #060504;
+}
+
 /* Ankersprünge sollen nicht unter der fixierten Kopfzeile landen. */
 html {
   scroll-padding-top: 5rem;
