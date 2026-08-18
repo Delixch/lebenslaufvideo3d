@@ -202,8 +202,17 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
                   <motion.a
                     key={item.name}
                     href={item.href}
-                    onClick={() => {
-                      setMenuOpen(false);
+                    onClick={(e) => {
+                      if (window.innerWidth < 768) {
+                        e.preventDefault();
+                        setMenuOpen(false);
+                        const element = document.getElementById(item.id);
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      } else {
+                        setMenuOpen(false);
+                      }
                     }}
                     initial={{ opacity: 0, x: -28, filter: 'blur(6px)' }}
                     animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
