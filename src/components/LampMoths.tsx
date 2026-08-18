@@ -21,7 +21,7 @@ type Moth = {
   wingPhase: number;
 };
 
-const MOTH_COUNT = 6;
+const MOTH_COUNT = 12;
 
 const createMoths = (): Moth[] =>
   Array.from({ length: MOTH_COUNT }, (_, index) => ({
