@@ -207,9 +207,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
           <>
             {/* Arka Planda Sabit Duran Sokak Lambalı ve Pozlu Görsel */}
             <div 
-              className="absolute inset-0 h-full w-full overflow-hidden transition-opacity duration-1000"
+              className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2000ms] ease-out ${
+                isVideoDissolved ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-[0.97] blur-[15px] pointer-events-none'
+              }`}
               style={{
-                opacity: 1, // Her zaman arkada hazır bekler
                 maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
                 WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
               }}
