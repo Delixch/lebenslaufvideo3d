@@ -143,29 +143,69 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             />
           </div>
         ) : (
-          <div
-            className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2200ms] ease-out origin-center ${
-              isVideoDissolved 
-                ? 'opacity-0 scale-[0.98] blur-[30px] pointer-events-none' 
-                : 'opacity-100 scale-100 blur-0'
-            }`}
-            style={{
-              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
-            }}
-          >
-            <video
-              src="/videos/333.mp4"
-              poster={HERO_POSTER}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              onTimeUpdate={handleTimeUpdate}
-              className="h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
-            />
-          </div>
+          <>
+            {/* Arka Planda Sabit Duran Sokak Lambalı ve Pozlu Görsel */}
+            <div 
+              className="absolute inset-0 h-full w-full overflow-hidden transition-opacity duration-1000"
+              style={{
+                opacity: 1, // Her zaman arkada hazır bekler
+                maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+              }}
+            >
+              {/* Sabit Görsel */}
+              <img 
+                src="/hero-lamp.png" 
+                alt="Adnan Aydin - Final"
+                className="h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
+              />
+
+              {/* Altın Sarısı Yanan Sokak Lambası Glow Efekti (Kodla Yanma) */}
+              <div 
+                className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
+                  isVideoDissolved 
+                    ? 'opacity-100 scale-100 blur-[8px]' 
+                    : 'opacity-0 scale-90 blur-sm'
+                }`}
+                style={{
+                  // Sokak lambasının ampul koordinatı (görselin 16:9 oranındaki ampul yerine hizalanmış)
+                  top: '13.5%',
+                  left: '73.2%',
+                  width: '6.5%',
+                  height: '11.5%',
+                  background: 'radial-gradient(circle, rgba(254,240,138,1) 0%, rgba(234,179,8,0.7) 45%, rgba(202,138,4,0.3) 70%, transparent 100%)',
+                  borderRadius: '50%',
+                  mixBlendMode: 'screen',
+                  boxShadow: '0 0 50px rgba(234,179,8,0.8), 0 0 100px rgba(234,179,8,0.4)',
+                }}
+              />
+            </div>
+
+            {/* Ön Plandaki Yürüyen Adam Videosu (Süre dolunca sisle yok olur) */}
+            <div
+              className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2200ms] ease-out origin-center ${
+                isVideoDissolved 
+                  ? 'opacity-0 scale-[0.98] blur-[30px] pointer-events-none' 
+                  : 'opacity-100 scale-100 blur-0'
+              }`}
+              style={{
+                maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
+              }}
+            >
+              <video
+                src="/videos/333.mp4"
+                poster={HERO_POSTER}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                onTimeUpdate={handleTimeUpdate}
+                className="h-full w-full object-cover object-[100%_top] scale-[0.94] origin-top-right translate-y-[6vh]"
+              />
+            </div>
+          </>
         )}
 
         {/* Seamless Soft Left Edge Blend */}
