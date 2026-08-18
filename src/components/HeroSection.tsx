@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import watermarkImg from '../assets/watermark.webp';
 
@@ -57,6 +57,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // 3D Phone Mockup Physics and States
+  const phoneRef = useRef<HTMLDivElement>(null);
+  const [isPhoneHovered, setIsPhoneHovered] = useState(false);
+  const phoneMouseX = useMotionValue(0);
+  const phoneMouseY = useMotionValue(0);
+
+  const phoneRotateX = useSpring(useTransform(phoneMouseY, [-0.5, 0.5], [14, -14]), { damping: 22, stiffness: 180 });
+  const phoneRotateY = useSpring(useTransform(phoneMouseX, [-0.5, 0.5], [-14, 14]), { damping: 22, stiffness: 180 });
+
+  const handlePhoneMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!phoneRef.current) return;
+    const rect = phoneRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    phoneMouseX.set(x);
+    phoneMouseY.set(y);
+  };
+
+  const handlePhoneMouseLeave = () => {
+    setIsPhoneHovered(false);
+    phoneMouseX.set(0);
+    phoneMouseY.set(0);
+  };
 
   return (
     <section className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
@@ -258,41 +282,96 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             </motion.div>
           </motion.div>
 
-          {/* RIGHT: Floating Quote & Signature Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="hidden lg:flex flex-col items-start pointer-events-auto pr-24 xl:pr-36 mr-4 z-20 select-none"
-          >
-            {/* 1. Quote Mark */}
-            <span className="text-xl text-[#C99E5D] leading-none font-serif mb-2">
-              “
-            </span>
-
-            {/* 2. Compact Two-Line Statement */}
-            <div 
-              className="text-[9.5px] font-medium tracking-[0.24em] uppercase text-[#E0D3C5] space-y-1 mb-3"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
-            >
-              <p>SIEBENMAL FALLEN,</p>
-              <p>ACHTMAL AUFSTEHEN.</p>
-            </div>
-
-            {/* 3. Gold Accent Line */}
-            <div className="w-28 h-[1px] bg-gradient-to-r from-[#D4AF37] via-[#E8D7C5]/70 to-transparent shadow-[0_0_8px_rgba(212,175,55,0.4)] mb-2" />
-
-            {/* 4. Fine Monoline Calligraphy Signature */}
-            <div 
-              className="text-[2.2rem] text-[#D8AB64] font-normal leading-none -ml-0.5"
+          {/* RIGHT COLUMN: 3D Phone Mockup + Quote & Signature */}
+          <div className="hidden lg:flex flex-row items-center gap-10 xl:gap-14 pr-16 xl:pr-24 mr-2 z-20">
+            {/* Phone Mockup with 3D Tilt */}
+            <motion.div
+              ref={phoneRef}
               style={{ 
-                fontFamily: "'Herr Von Muellerhoff', 'Allura', cursive",
-                letterSpacing: '0.04em',
+                rotateX: phoneRotateX, 
+                rotateY: phoneRotateY, 
+                transformStyle: 'preserve-3d',
+                perspective: 1000 
               }}
+              onMouseMove={handlePhoneMouseMove}
+              onMouseEnter={() => {
+                setIsPhoneHovered(true);
+                setIsHovered(true); // Enlarge the custom cursor
+              }}
+              onMouseLeave={handlePhoneMouseLeave}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.7, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              className="relative flex flex-col items-center pointer-events-auto cursor-pointer"
             >
-              Adnan
-            </div>
-          </motion.div>
+              {/* Text above the phone */}
+              <div className="flex flex-col items-center mb-2.5 text-center select-none">
+                <span className="text-[8px] font-semibold tracking-[0.3em] uppercase text-[#D4AF37] animate-pulse">
+                  • MOBIL UYUMLU / MOBILE READY
+                </span>
+                <span className="text-[8.5px] font-medium tracking-[0.2em] uppercase text-[#A8988B] mt-0.5">
+                  FÜR ALLE GERÄTE OPTIMIERT
+                </span>
+              </div>
+
+              {/* Phone Outer Frame */}
+              <div className="relative w-[170px] h-[340px] rounded-[2rem] p-[3px] border-[3px] border-[#C99E5D] bg-[#0A0806] shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_15px_rgba(201,158,93,0.15)] overflow-hidden transition-all duration-300 hover:border-[#D4AF37] hover:shadow-[0_25px_60px_rgba(0,0,0,1),0_0_25px_rgba(212,175,55,0.22)]">
+                {/* Dynamic Notch */}
+                <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-3 bg-black rounded-full z-30 pointer-events-none" />
+
+                {/* Inner Screen */}
+                <div className="w-full h-full rounded-[1.65rem] overflow-hidden bg-black relative z-10">
+                  <video
+                    src="/videos/mobile.mp4"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Glass glare effect */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 pointer-events-none z-20" />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Quote & Signature Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col items-start select-none"
+            >
+              {/* Quote Mark */}
+              <span className="text-xl text-[#C99E5D] leading-none font-serif mb-2">
+                “
+              </span>
+
+              {/* Compact Two-Line Statement */}
+              <div 
+                className="text-[9.5px] font-medium tracking-[0.24em] uppercase text-[#E0D3C5] space-y-1 mb-3"
+                style={{ fontFamily: "'Montserrat', sans-serif" }}
+              >
+                <p>SIEBENMAL FALLEN,</p>
+                <p>ACHTMAL AUFSTEHEN.</p>
+              </div>
+
+              {/* Gold Accent Line */}
+              <div className="w-28 h-[1px] bg-gradient-to-r from-[#D4AF37] via-[#E8D7C5]/70 to-transparent shadow-[0_0_8px_rgba(212,175,55,0.4)] mb-2" />
+
+              {/* Fine Monoline Calligraphy Signature */}
+              <div 
+                className="text-[2.2rem] text-[#D8AB64] font-normal leading-none -ml-0.5"
+                style={{ 
+                  fontFamily: "'Herr Von Muellerhoff', 'Allura', cursive",
+                  letterSpacing: '0.04em',
+                }}
+              >
+                Adnan
+              </div>
+            </motion.div>
+          </div>
         </div>
 
         {/* Bottom Spacer */}
