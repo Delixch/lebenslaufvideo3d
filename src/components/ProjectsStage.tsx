@@ -447,10 +447,6 @@ export const ProjectsStage: React.FC = () => {
               return (
                 <React.Fragment key={which}>
                   <span
-                    className="pointer-events-none absolute z-50 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#39FF6A]"
-                    style={{ left: `${corner[0] * 100}%`, top: `${corner[1] * 100}%` }}
-                  />
-                  <span
                     onPointerDown={dragCorner(which)}
                     className="absolute z-50 flex h-8 w-8 cursor-grab items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_0_4px_rgba(0,0,0,0.6)]"
                     style={{
