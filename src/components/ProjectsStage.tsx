@@ -106,6 +106,24 @@ export const ProjectsStage: React.FC = () => {
     typeof window !== 'undefined' && window.location.search.includes('align');
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(1);
+  const [fill, setFill] = useState(0);
+
+  // Der Ladestand als Glas auf dem Pflaster: es fuellt sich, solange die Seite
+  // im Deckel laedt, und leert sich aus dem Bild, sobald sie steht. Die Fuellung
+  // kriecht nur bis knapp unter den Rand — den Rest gibt erst das Laden frei.
+  useEffect(() => {
+    if (loaded) {
+      setFill(100);
+      return;
+    }
+
+    setFill(6);
+    const timer = window.setInterval(() => {
+      setFill((current) => (current < 88 ? current + (88 - current) * 0.08 + 0.6 : current));
+    }, 180);
+
+    return () => window.clearInterval(timer);
+  }, [loaded, index]);
   const project = projects[index];
   const plateRef = useRef<HTMLImageElement | null>(null);
   const [transform, setTransform] = useState<string>('');
@@ -494,6 +512,52 @@ export const ProjectsStage: React.FC = () => {
           />
         </div>
       </div>
+
+        {/* Wasserglas auf dem Pflaster als Ladeanzeige */}
+        <div
+          className="pointer-events-none absolute z-30 transition-opacity duration-700"
+          style={{
+            left: '60.5%',
+            top: '76%',
+            width: '3.4cqw',
+            height: '9cqh',
+            opacity: loaded ? 0 : 1,
+          }}
+        >
+          <div
+            className="relative h-full w-full overflow-hidden"
+            style={{
+              // Ein Glas verjuengt sich nach unten.
+              clipPath: 'polygon(6% 0%, 94% 0%, 82% 100%, 18% 100%)',
+              background:
+                'linear-gradient(100deg, rgba(255,246,230,0.16) 0%, rgba(255,246,230,0.05) 40%, rgba(255,246,230,0.14) 100%)',
+              border: '1px solid rgba(255,236,200,0.35)',
+              backdropFilter: 'blur(1px)',
+            }}
+          >
+            <div
+              className="absolute inset-x-0 bottom-0 transition-[height] duration-500 ease-out"
+              style={{
+                height: `${fill}%`,
+                background:
+                  'linear-gradient(to bottom, rgba(255,206,130,0.95), rgba(212,148,58,0.9) 45%, rgba(150,92,28,0.92))',
+                boxShadow: '0 0 12px rgba(234,179,8,0.5)',
+              }}
+            >
+              <span className="absolute inset-x-0 top-0 h-[6%] bg-[rgba(255,244,214,0.9)]" />
+            </div>
+          </div>
+
+          {/* Widerschein auf dem nassen Stein */}
+          <span
+            className="absolute inset-x-[-30%] bottom-[-12%] h-[22%] rounded-[50%]"
+            style={{
+              background:
+                'radial-gradient(closest-side, rgba(234,179,8,0.35), transparent 70%)',
+              filter: 'blur(3px)',
+            }}
+          />
+        </div>
 
         {aligning && (
           <>
