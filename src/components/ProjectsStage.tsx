@@ -294,19 +294,7 @@ export const ProjectsStage: React.FC = () => {
                         'repeating-conic-gradient(#F7E7C4 0% 25%, #8C3B1E 0% 50%) 0 0 / 12% 12%',
                       boxShadow: 'inset 0 0 0 10px #1B6FE0',
                     }}
-                  >
-                    {[
-                      'left-0 top-0',
-                      'right-0 top-0',
-                      'right-0 bottom-0',
-                      'left-0 bottom-0',
-                    ].map((place) => (
-                      <span
-                        key={place}
-                        className={`absolute h-[8%] w-[6%] bg-[#0A0908] ${place}`}
-                      />
-                    ))}
-                  </div>
+                  />
                 ) : (
                   <>
                     <iframe
