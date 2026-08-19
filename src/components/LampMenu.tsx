@@ -2,6 +2,53 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { navItems, scrollToSection } from '../lib/nav';
 
+
+const ARROWS_IN = [
+  'M18 4 L18 11 M15 8.4 L18 11.4 L21 8.4',
+  'M32 18 L25 18 M27.6 15 L24.6 18 L27.6 21',
+  'M18 32 L18 25 M15 27.6 L18 24.6 L21 27.6',
+  'M4 18 L11 18 M8.4 15 L11.4 18 L8.4 21',
+];
+
+const ARROWS_OUT = [
+  'M18 11 L18 4 M15 6.6 L18 3.6 L21 6.6',
+  'M25 18 L32 18 M29.4 15 L32.4 18 L29.4 21',
+  'M18 25 L18 32 M15 29.4 L18 32.4 L21 29.4',
+  'M11 18 L4 18 M6.6 15 L3.6 18 L6.6 21',
+];
+
+/**
+ * Kern mit vier Pfeilen, die der Reihe nach aufleuchten — nach aussen heisst
+ * oeffnen, nach innen einholen. Ersetzt jede Beschriftung.
+ */
+const ArrowMark: React.FC<{ direction: 'in' | 'out'; tone: string; core: string }> = ({
+  direction,
+  tone,
+  core,
+}) => (
+  <svg viewBox="0 0 36 36" className="h-full w-full overflow-visible">
+    <circle cx="18" cy="18" r="3.4" fill={core} />
+    {(direction === 'in' ? ARROWS_IN : ARROWS_OUT).map((d, index) => (
+      <motion.path
+        key={d}
+        d={d}
+        fill="none"
+        stroke={tone}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        animate={{ opacity: [0.2, 1, 0.2] }}
+        transition={{
+          duration: 1.8,
+          times: [0, 0.35, 1],
+          repeat: Infinity,
+          delay: index * 0.18,
+        }}
+      />
+    ))}
+  </svg>
+);
+
 interface LampMenuProps {
   /** Position und Groesse des Laternenglases, vom Hero ausgemessen. */
   coords: { top: string; left: string; width: string };
@@ -104,37 +151,11 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
           height: `max(44px, calc(${coords.width} * 1.15))`,
         }}
       >
-        {/* Ruhiges Pulsieren am Glas */}
-        <motion.span
-          // Der Ring sitzt innerhalb der Trefferflaeche: der Daumen darf
-          // grosszuegig danebenlanden, das Sichtbare bleibt klein.
-          className="absolute inset-[38%] rounded-full"
-          animate={
-            open
-              ? { boxShadow: '0 0 0 1px rgba(234,179,8,0.45)' }
-              : {
-                  boxShadow: [
-                    '0 0 0 0 rgba(234,179,8,0.0)',
-                    '0 0 0 3px rgba(234,179,8,0.2)',
-                    '0 0 0 0 rgba(234,179,8,0.0)',
-                  ],
-                }
-          }
-          transition={open ? { duration: 0.3 } : { duration: 2.4, repeat: Infinity }}
-        />
-
-        {/* Beschriftung: ohne sie erkennt niemand die Laterne als Schalter */}
-        <motion.span
-          className="absolute left-1/2 top-full -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.4em]"
-          animate={
-            open
-              ? { color: 'rgba(247,231,196,0.95)', opacity: 1 }
-              : { color: 'rgba(234,216,199,0.75)', opacity: [0.45, 1, 0.45] }
-          }
-          transition={open ? { duration: 0.3 } : { duration: 2.4, repeat: Infinity }}
-        >
-          {open ? '' : 'On'}
-        </motion.span>
+        {!open && (
+          <span className="absolute left-1/2 top-full mt-1 h-8 w-8 -translate-x-1/2">
+            <ArrowMark direction="out" tone="rgba(255,226,172,0.85)" core="rgba(255,214,140,0.9)" />
+          </span>
+        )}
       </button>
 
       <AnimatePresence>
@@ -167,7 +188,7 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
             animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
             exit={{ opacity: 0, scale: 0.35, x: 34, y: -22 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="pointer-events-auto absolute w-[56vw] max-w-[232px] px-5 py-4"
+            className="pointer-events-auto absolute w-[56vw] max-w-[232px] px-5 pb-14 pt-4"
             style={{
               // Rechts unter der Laterne aufgehaengt, Wachstumspunkt oben rechts.
               // Links neben der Laterne, in der leeren Nebelflaeche unter dem
@@ -250,42 +271,13 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Menü schliessen"
-              className="group absolute left-4 top-3 h-9 w-9"
+              className="group absolute bottom-3 right-4 h-11 w-11"
             >
-              <svg viewBox="0 0 36 36" className="h-full w-full overflow-visible">
-                <circle cx="18" cy="18" r="3.4" fill="rgba(90,56,24,0.9)" />
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="3.4"
-                  fill="none"
-                  stroke="rgba(58,36,18,0.55)"
-                  strokeWidth="1"
-                />
-                {[
-                  { d: 'M18 4 L18 11 M15 8.4 L18 11.4 L21 8.4', delay: 0 },
-                  { d: 'M32 18 L25 18 M27.6 15 L24.6 18 L27.6 21', delay: 0.18 },
-                  { d: 'M18 32 L18 25 M15 27.6 L18 24.6 L21 27.6', delay: 0.36 },
-                  { d: 'M4 18 L11 18 M8.4 15 L11.4 18 L8.4 21', delay: 0.54 },
-                ].map((arrow) => (
-                  <motion.path
-                    key={arrow.d}
-                    d={arrow.d}
-                    fill="none"
-                    stroke="rgba(58,36,18,0.9)"
-                    strokeWidth="1.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    animate={{ opacity: [0.22, 1, 0.22] }}
-                    transition={{
-                      duration: 1.8,
-                      times: [0, 0.35, 1],
-                      repeat: Infinity,
-                      delay: arrow.delay,
-                    }}
-                  />
-                ))}
-              </svg>
+              <ArrowMark
+                direction="in"
+                tone="rgba(255,226,172,0.92)"
+                core="rgba(255,220,150,0.95)"
+              />
             </button>
           </motion.nav>
         )}
