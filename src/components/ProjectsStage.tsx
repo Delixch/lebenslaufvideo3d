@@ -460,7 +460,7 @@ export const ProjectsStage: React.FC = () => {
                 </React.Fragment>
               );
             })}
-            <pre className="absolute bottom-2 left-2 z-50 bg-black/80 p-3 text-[11px] leading-tight text-[#D4AF37]">
+            <pre className="absolute bottom-2 right-2 z-50 select-all bg-black/90 p-3 text-[12px] leading-tight text-[#39FF6A]">
               {`topLeft: [${corners[0]}],
 topRight: [${corners[1]}],
 bottomRight: [${corners[2]}],
