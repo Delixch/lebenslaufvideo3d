@@ -10,7 +10,7 @@ import { projects } from '../lib/projects';
 const SCREEN_QUAD = {
   topLeft: [0.2062, 0.3971],
   topRight: [0.4771, 0.4157],
-  bottomRight: [0.519, 0.7063],
+  bottomRight: [0.5236, 0.7101],
   bottomLeft: [0.2422, 0.7598],
 } as const;
 
