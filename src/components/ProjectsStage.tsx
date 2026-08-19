@@ -532,10 +532,10 @@ export const ProjectsStage: React.FC = () => {
                 className="absolute pointer-events-none z-45"
                 style={{
                   left: '-36px',
-                  top: '-31px',
+                  top: '-29px',
                   width: `${PANEL.width + 72}px`,
-                  height: `${PANEL.height + 62}px`,
-                  transformOrigin: '36px 31px',
+                  height: `${PANEL.height + 58}px`,
+                  transformOrigin: '36px 29px',
                   transform,
                   opacity: transform ? 1 : 0,
                   border: '28px solid #D4AF37',
