@@ -226,6 +226,31 @@ export const ProjectsStage: React.FC = () => {
     window.addEventListener('pointerup', stop);
   };
 
+  // Solange die Seite im Deckel bedient wird, steht unsere eigene still: sonst
+  // scrollt der Browser sie mit, sobald die eingebettete Seite etwas fokussiert
+  // oder aufklappt, und der Besucher landet ploetzlich oben.
+  useEffect(() => {
+    if (!live) {
+      return;
+    }
+
+    const anchor = window.scrollY;
+    const hold = () => {
+      if (Math.abs(window.scrollY - anchor) > 1) {
+        window.scrollTo(0, anchor);
+      }
+    };
+
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('scroll', hold, { passive: true });
+
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener('scroll', hold);
+    };
+  }, [live]);
+
   const step = useCallback((delta: number) => {
     setLive(false);
     setLoaded(false);
