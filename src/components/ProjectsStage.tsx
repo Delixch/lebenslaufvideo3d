@@ -296,6 +296,21 @@ export const ProjectsStage: React.FC = () => {
       className="hidden md:block relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-32 px-6 sm:px-12 lg:px-20"
       style={{ animation: onScreen ? 'lampIntensity 6s infinite ease-in-out' : 'none' }}
     >
+      <style>{`
+        @keyframes mouseGlow {
+          0%, 100% { opacity: 0.94; }
+          42% { opacity: 0.98; }
+          43% { opacity: 0.85; }
+          44% { opacity: 0.98; }
+          45% { opacity: 0.90; }
+          46% { opacity: 1; }
+          78% { opacity: 0.96; }
+          79% { opacity: 0.82; }
+          80% { opacity: 0.98; }
+          81% { opacity: 0.88; }
+          82% { opacity: 1; }
+        }
+      `}</style>
       <div className="absolute top-1/4 left-1/3 w-[36rem] h-[36rem] bg-[#D4AF37]/5 rounded-full blur-[180px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#8C6D4F]/5 rounded-full blur-[170px] pointer-events-none" />
 
@@ -366,6 +381,18 @@ export const ProjectsStage: React.FC = () => {
               alt=""
               onLoad={() => window.dispatchEvent(new Event('resize'))}
               className="block w-full h-auto"
+            />
+
+            {/* Glowing Mouse Overlay */}
+            <img
+              src="/ipad-buehne-on.png"
+              alt=""
+              className={`absolute inset-0 block w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
+                live ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={{
+                animation: live ? 'mouseGlow 8s infinite ease-in-out' : 'none',
+              }}
             />
 
             <div className="absolute inset-0" style={{ containerType: 'size' }}>
