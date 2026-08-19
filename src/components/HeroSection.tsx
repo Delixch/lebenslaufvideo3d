@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LampMoths } from './LampMoths';
 import { LampBuzz } from './LampBuzz';
+import { LampMenu } from './LampMenu';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import watermarkImg from '../assets/watermark.webp';
@@ -1017,6 +1018,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         {/* Bottom Spacer */}
         <div className="h-2" />
       </div>
+
+      {/* Die Laterne schaltet auf dem Handy das Menue. Sie sitzt bewusst ausser-
+          halb der Bildebene, sonst deckt die Schlagzeile die Blase zu. */}
+      {isMobile && <LampMenu coords={lampCoords} active={isVideoDissolved} />}
     </section>
   );
 };
