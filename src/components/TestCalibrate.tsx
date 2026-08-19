@@ -199,20 +199,13 @@ export const TestCalibrate: React.FC = () => {
 
         {/* 1024x766 boyutundaki orijinal alanın CSS scale ile küçültülmesi (Yüzde 55) */}
         <div 
-          onClick={() => setLightsOn((prev) => !prev)}
-          className="relative flex items-center justify-center overflow-visible border border-[#8C6D4F]/30 bg-black shadow-2xl rounded cursor-pointer group"
+          className="relative flex items-center justify-center overflow-visible border border-[#8C6D4F]/30 bg-black shadow-2xl rounded"
           style={{ width: '563px', height: '421px' }}
         >
           <div 
             ref={containerRef}
             className="absolute origin-center w-[1024px] h-[766px]"
             style={{ transform: 'scale(0.55)' }}
-            onClick={(e) => {
-              // Prevent click inside container from triggering double click toggle
-              if (e.target !== e.currentTarget && !(e.target as HTMLElement).classList.contains('absolute')) {
-                e.stopPropagation();
-              }
-            }}
           >
             {/* Alt Katman: Işıksız Arka Plan */}
             <img
@@ -282,11 +275,6 @@ export const TestCalibrate: React.FC = () => {
                 </div>
               </>
             )}
-          </div>
-          
-          {/* Görselin üstünde gezinirken çıkan küçük ipucu */}
-          <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[9px] text-[#A8988B] opacity-0 group-hover:opacity-100 transition-opacity">
-            Tıkla: Işıkları Yak / Söndür
           </div>
         </div>
       </div>
