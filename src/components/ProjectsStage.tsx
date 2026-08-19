@@ -77,7 +77,11 @@ export const ProjectsStage: React.FC = () => {
     [...SCREEN_QUAD.bottomRight],
     [...SCREEN_QUAD.bottomLeft],
   ]);
-  const aligning = false;
+  const aligning = typeof window !== 'undefined' && (
+    window.location.search.includes('align') || 
+    window.location.search.includes('calibrate')
+  );
+  const [nudgeStep, setNudgeStep] = useState<number>(1);
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [fill, setFill] = useState(0);
@@ -717,6 +721,24 @@ export const ProjectsStage: React.FC = () => {
                     );
                   })}
                   
+                  {/* Step Size Selector */}
+                  <div className="fixed bottom-[13rem] right-4 z-[60] flex gap-1 bg-black/90 p-1 border border-[#39FF6A]/40 rounded">
+                    {([10, 1, 0.1] as const).map((stepVal) => (
+                      <button
+                        key={stepVal}
+                        type="button"
+                        onClick={() => setNudgeStep(stepVal)}
+                        className={`h-7 px-2 text-[10px] font-bold rounded border transition-all ${
+                          nudgeStep === stepVal
+                            ? 'border-[#39FF6A] bg-[#39FF6A]/20 text-[#39FF6A]'
+                            : 'border-transparent text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        {stepVal}px
+                      </button>
+                    ))}
+                  </div>
+
                   <div className="fixed bottom-[9.5rem] right-4 z-[60] grid grid-cols-3 gap-1">
                     {[
                       ['', '↑', ''],
@@ -726,10 +748,10 @@ export const ProjectsStage: React.FC = () => {
                       .flat()
                       .map((label, cell) => {
                         const moves: Record<number, [number, number]> = {
-                          1: [0, -1],
-                          3: [-1, 0],
-                          5: [1, 0],
-                          7: [0, 1],
+                          1: [0, -nudgeStep],
+                          3: [-nudgeStep, 0],
+                          5: [nudgeStep, 0],
+                          7: [0, nudgeStep],
                         };
 
                         if (!moves[cell]) {
