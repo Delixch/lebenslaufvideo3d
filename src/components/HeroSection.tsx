@@ -685,12 +685,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             filter: blur(7px) brightness(1.0);
           }
           
-          /* 90% - 100%: Stable End State */
-          100% {
-            opacity: 0.96;
-            transform: scale(1);
-            filter: blur(7px) brightness(1.0);
-          }
+        @keyframes lampFlickerMobile {
+          0% { opacity: 0; }
+          5% { opacity: 0.95; }
+          8% { opacity: 0.05; }
+          12% { opacity: 0.9; }
+          14% { opacity: 0; }
+          18% { opacity: 0.98; }
+          21% { opacity: 0.15; }
+          24% { opacity: 1; }
+          35% { opacity: 0.96; }
+          42% { opacity: 0.98; }
+          50% { opacity: 0.95; }
+          51% { opacity: 0.1; }
+          52% { opacity: 0.85; }
+          53% { opacity: 0.03; }
+          54% { opacity: 0.93; }
+          55% { opacity: 1; }
+          70% { opacity: 0.97; }
+          78% { opacity: 0.95; }
+          85% { opacity: 0.96; }
+          86% { opacity: 0.15; }
+          87% { opacity: 0.98; }
+          88% { opacity: 0.12; }
+          89% { opacity: 1; }
+          100% { opacity: 0.96; }
         }
       `}</style>
       {/* ================= 1. MINIMAL CUSTOM CURSOR ================= */}
@@ -732,12 +751,26 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 WebkitMaskImage: 'linear-gradient(to bottom, #000 42%, rgba(0,0,0,0.55) 68%, transparent 92%)',
               }}
             >
+              {/* SÖNÜK RESİM (Lamp OFF image) - her zaman tabanda durur */}
               <img
                 ref={lampImageRef}
                 onLoad={() => window.dispatchEvent(new Event('resize'))}
                 src="/mobilstopimages.jpg"
                 alt="Adnan Aydin"
                 className="h-full w-full object-cover object-[50%_top]"
+              />
+
+              {/* YANIK RESİM (Lamp ON image) - lamba açıkken üstüne biner ve gerçekçi ışıkları titretir */}
+              <img
+                src="/mobilstopimages_on.jpg"
+                alt="Adnan Aydin Lamba Açık"
+                className={`absolute inset-0 h-full w-full object-cover object-[50%_top] transition-opacity pointer-events-none ${
+                  lampLit ? 'opacity-100' : 'opacity-0'
+                }`}
+                style={{
+                  transitionDuration: '320ms',
+                  animation: lampLit ? 'lampFlickerMobile 6s infinite ease-in-out' : 'none',
+                }}
               />
 
               {lampLight}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import ScrollStack, { ScrollStackItem } from './ScrollStack';
 
@@ -18,7 +18,7 @@ const projects: Project[] = [
     title: 'Adnan Aydin \u2014 3D Portfolio',
     category: 'ECHTZEIT-3D / WEB-ERLEBNIS',
     description:
-      'Mein eigener Auftritt: eine einzige Three.js-Szene trägt Partikeltypografie, eine Sternbild-Navigation durch die Projekte, GLSL-Shader und scroll-getriebene Kamerafahrten. Geometrie entsteht im Web Worker, damit die Seite auch auf dem Handy flüssig bleibt.',
+      'Mein eigener Auftritt: eine einzige Three.js-Szene tr\u00e4gt Partikeltypografie, eine Sternbild-Navigation durch die Projekte, GLSL-Shader und scroll-getriebene Kamerafahrten. Geometrie entsteht im Web Worker, damit die Seite auch auf dem Handy fl\u00fcssig bleibt.',
     githubUrl: 'https://adnanlebenslauf.vercel.app/',
     tech: [
       'TypeScript',
@@ -40,9 +40,9 @@ const projects: Project[] = [
   {
     number: '02',
     title: 'ADNAN 3D',
-    category: 'KÜNSTLICHE INTELLIGENZ / WISSENSPLATTFORM',
+    category: 'K\u00dcNSTLICHE INTELLIGENZ / WISSENSPLATTFORM',
     description:
-      'Lern- und Lehrplattform rund um künstliche Intelligenz: Prompts, Serverbefehle und experimentelle Arbeiten sind gesammelt und nachvollziehbar aufbereitet. Bewusst als Werkstatt gebaut — ausprobieren, festhalten, weitergeben.',
+      'Lern- und Lehrplattform rund um k\u00fcnstliche Intelligenz: Prompts, Serverbefehle und experimentelle Arbeiten sind gesammelt und nachvollziehbar aufbereitet. Bewusst als Werkstatt gebaut \u2014 ausprobieren, festhalten, weitergeben.',
     githubUrl: 'https://adnanwalk.vercel.app/',
     tech: [
       'TypeScript',
@@ -63,11 +63,11 @@ const projects: Project[] = [
     title: 'Happy Beck',
     category: 'GASTRONOMIE / FIRMENAUFTRITT',
     description:
-      'Webauftritt einer Schweizer Bäckerei: Sortiment, Filialen und Öffnungszeiten in einem schnellen, mobil zuerst gedachten Auftritt. Live im Einsatz und täglich von Kundschaft benutzt.',
+      'Webauftritt einer Schweizer B\u00e4ckerei: Sortiment, Filialen und \u00d6ffnungszeiten in einem schnellen, mobil zuerst gedachten Auftritt. Live im Einsatz und t\u00e4glich von Kundschaft benutzt.',
     githubUrl: 'https://superonline.ch',
     tech: ['React', 'TypeScript', 'Material UI', 'Responsive Web Design'],
     metrics: [
-      { label: 'KUNDE', value: 'Bäckerei Happy AG' },
+      { label: 'KUNDE', value: 'B\u00e4ckerei Happy AG' },
       { label: 'FOKUS', value: 'Mobil zuerst' },
       { label: 'STATUS', value: 'Live' },
     ],
@@ -77,11 +77,11 @@ const projects: Project[] = [
     title: 'SAZCAR GmbH',
     category: 'AUTOWERKSTATT / FIRMENAUFTRITT',
     description:
-      'Homepage einer Zürcher Autowerkstatt: Dienstleistungen, Standort und Kontakt auf einen Blick. Schlank gebaut, damit die Seite auch auf dem Handy in Sekunden steht.',
+      'Homepage einer Z\u00fcrcher Autowerkstatt: Dienstleistungen, Standort und Kontakt auf einen Blick. Schlank gebaut, damit die Seite auch auf dem Handy in Sekunden steht.',
     githubUrl: 'https://sazcar.ch',
     tech: ['HTML', 'CSS', 'JavaScript', 'Responsive Design'],
     metrics: [
-      { label: 'KUNDE', value: 'SAZCAR GmbH, Zürich' },
+      { label: 'KUNDE', value: 'SAZCAR GmbH, Z\u00fcrich' },
       { label: 'UMFANG', value: 'Auftritt & Kontakt' },
       { label: 'STATUS', value: 'Live' },
     ],
@@ -89,14 +89,14 @@ const projects: Project[] = [
   {
     number: '05',
     title: 'Eren Aydin \u2014 Bewerbungsportfolio',
-    category: 'PERSÖNLICHES PORTFOLIO / LEHRSTELLE',
+    category: 'PERS\u00d6NLICHES PORTFOLIO / LEHRSTELLE',
     description:
-      'Interaktives Bewerbungsportfolio für meinen Sohn zum Lehrbeginn 2026. Scroll-getriebene Animationen führen durch Person, Schulweg und Projekte — mobil zuerst gedacht, damit es auch auf älteren Geräten schnell lädt.',
+      'Interaktives Bewerbungsportfolio f\u00fcr meinen Sohn zum Lehrbeginn 2026. Scroll-getriebene Animationen f\u00fchren durch Person, Schulweg und Projekte \u2014 mobil zuerst gedacht, damit es auch auf \u00e4lteren Ger\u00e4ten schnell l\u00e4dt.',
     githubUrl: 'https://erenaydin.ch',
     tech: ['TypeScript', 'GSAP', 'ScrollTrigger', 'SCSS', 'Vite', 'Motion Design'],
     metrics: [
       { label: 'ANLASS', value: 'Lehrbeginn 2026' },
-      { label: 'AUFBAU', value: 'Scroll-Erzählung' },
+      { label: 'AUFBAU', value: 'Scroll-Erz\u00e4hlung' },
       { label: 'STATUS', value: 'Live' },
     ],
   },
@@ -133,7 +133,7 @@ const projects: Project[] = [
     title: 'Vokabeltrainer',
     category: 'BILDUNG / KI-GESTÜTZTES LERNEN',
     description:
-      'Webseite für Sekundar- und Primarschüler zum Vokabeltraining: Schüler fotografieren eine Seite aus ihrem Lehrbuch, und mithilfe von KI entstehen daraus Lernkarten. Das Projekt wurde nie ganz fertiggestellt.',
+      'Webseite für Sekundar- und Primarschüler zum Vokabeltraining: Schüler fotografieren eine side aus ihrem Lehrbuch, und mithilfe von KI entstehen daraus Lernkarten. Das Projekt wurde nie ganz fertiggestellt.',
     githubUrl: 'https://vokabel-hazel.vercel.app/',
     tech: ['React', 'Tailwind CSS', 'JavaScript', 'AI Integration', 'Responsive Design'],
     metrics: [
@@ -158,98 +158,29 @@ const projects: Project[] = [
   },
 ];
 
-const MobileProjectsStaticList: React.FC<{ projects: Project[] }> = ({ projects }) => {
-  return (
-    <div className="flex flex-col space-y-6 md:hidden">
-      {projects.map((project) => (
-        <div
-          key={project.title}
-          className="border rounded-xl bg-[#0E0C0A] p-6 overflow-hidden border-[#8C6D4F]/30 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-        >
-          <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-2 text-[10px] font-mono tracking-[0.2em]">
-              <span className="text-[#D4AF37] font-bold">{project.number} //</span>
-              <span className="text-[#A8988B] uppercase">{project.category}</span>
-            </div>
-            
-            <h3
-              className="text-2xl sm:text-3xl tracking-tight text-white uppercase font-normal leading-[1.1]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
-              {project.title}
-            </h3>
-
-            <p
-              className="text-xs sm:text-sm font-light text-[#BDB0A4] leading-relaxed"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {project.description}
-            </p>
-
-            <div className="flex flex-wrap gap-2 pt-1">
-              {project.tech.map((t) => (
-                <span
-                  key={t}
-                  className="px-2.5 py-1 text-[9px] font-medium tracking-[0.16em] uppercase rounded-sm border border-[#8C6D4F]/40 bg-[#16120E] text-[#E8D7C5]"
-                  style={{ fontFamily: "'Montserrat', sans-serif" }}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#8C6D4F] block">
-                // ARCHITECTURE METRICS
-              </span>
-              {project.metrics.map((m) => (
-                <div
-                  key={m.label}
-                  className="p-3 rounded-sm border border-[#8C6D4F]/25 bg-[#050403] flex items-center justify-between text-[10px]"
-                >
-                  <span className="font-mono text-[#A8988B]">{m.label}</span>
-                  <span className="font-mono font-medium text-[#F7E7C4]">{m.value}</span>
-                </div>
-              ))}
-            </div>
-
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center space-x-2 w-full py-3 border border-[#8C6D4F] bg-[#16120E] hover:border-[#D4AF37] hover:bg-[#D4AF37] text-[#EAD8C7] hover:text-black text-[10px] font-medium tracking-[0.24em] uppercase transition-all duration-300 mt-2 cursor-pointer"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
-            >
-              <span>SEITE ANSEHEN</span>
-              <span className="text-xs">↗</span>
-            </a>
-          </div>
-        </div>
-      ))}
-    </div>
+export const KararizKaldiyimProje: React.FC = () => {
+  const [isMobile, setIsMobile] = React.useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
   );
-};
 
-export const ProjectsSection: React.FC = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
+  React.useEffect(() => {
     const query = window.matchMedia('(max-width: 767px)');
-    setIsMobile(query.matches);
     const update = () => setIsMobile(query.matches);
     query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
   }, []);
 
+  if (isMobile) return null;
+
   return (
     <section
-      id="work"
-      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-20 pb-32 px-6 sm:px-12 lg:px-20 scroll-mt-20 md:scroll-mt-0"
+      className="hidden md:block relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-20 pb-32 px-6 sm:px-12 lg:px-20"
     >
       <div className="absolute top-1/4 left-1/3 w-[36rem] h-[36rem] bg-[#D4AF37]/5 rounded-full blur-[180px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#8C6D4F]/5 rounded-full blur-[170px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto w-full relative z-10">
+        
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -289,25 +220,23 @@ export const ProjectsSection: React.FC = () => {
             className="text-xs sm:text-sm font-light text-[#A8988B] max-w-sm mt-4 md:mt-0 leading-relaxed"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
-            Jedes Projekt ist echte Arbeit für echte Menschen — keine Übungsaufgabe.
+            Weiterscrollen fächert die Karten auf. Jedes Projekt ist echte Arbeit für echte Menschen — keine Übungsaufgabe.
           </p>
         </motion.div>
 
-        {isMobile ? (
-          <MobileProjectsStaticList projects={projects} />
-        ) : (
-          <ScrollStack
-            itemDistance={20}
-            itemScale={0.035}
-            itemStackDistance={28}
-            stackPosition="15%"
-            scaleEndPosition="6%"
-            baseScale={0.88}
-            useWindowScroll={true}
-          >
+        <ScrollStack
+          itemDistance={20}
+          itemScale={0.035}
+          itemStackDistance={28}
+          stackPosition="15%"
+          scaleEndPosition="6%"
+          baseScale={0.88}
+          useWindowScroll={true}
+        >
             {projects.map((project) => (
               <ScrollStackItem key={project.title}>
                 <div className="relative w-full rounded-2xl border border-[#8C6D4F]/50 bg-[#0E0C0A] p-8 sm:p-12 shadow-[0_25px_70px_rgba(0,0,0,0.98)] group overflow-hidden transition-colors duration-500 hover:border-[#D4AF37]">
+                  
                   <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/80 to-transparent" />
 
                   <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#D4AF37]/60 group-hover:border-[#D4AF37] transition-colors" />
@@ -323,6 +252,7 @@ export const ProjectsSection: React.FC = () => {
                   </span>
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
+                    
                     <div className="lg:col-span-7 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center space-x-3 mb-4">
@@ -398,10 +328,9 @@ export const ProjectsSection: React.FC = () => {
               </ScrollStackItem>
             ))}
           </ScrollStack>
-        )}
       </div>
     </section>
   );
 };
 
-export default ProjectsSection;
+export default KararizKaldiyimProje;
