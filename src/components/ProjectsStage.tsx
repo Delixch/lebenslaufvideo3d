@@ -459,7 +459,9 @@ export const ProjectsStage: React.FC = () => {
                     sandbox="allow-scripts allow-same-origin allow-popups"
                     referrerPolicy="no-referrer"
                     onLoad={() => window.setTimeout(() => setLoaded(true), 900)}
-                    className="pointer-events-none absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500"
+                    className={`absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500 ${
+                      live ? '' : 'pointer-events-none'
+                    }`}
                     style={{
                       width: '250%',
                       height: '250%',
@@ -491,9 +493,9 @@ export const ProjectsStage: React.FC = () => {
               type="button"
               onClick={() => setLive(true)}
               aria-label="Projekt im Bildschirm bedienen"
-              className="group absolute inset-0 z-20 flex items-end justify-end p-[2cqw]"
+              className="group absolute inset-0 z-20 flex items-end justify-end p-[2cqw] outline-none focus:outline-none"
             >
-              <span className="rounded-full border border-[#C99E5D]/60 bg-black/70 px-[1.2cqw] py-[0.5cqh] text-[0.7cqw] font-semibold uppercase tracking-[0.28em] text-[#EAD8C7] opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="rounded-full border border-[#C99E5D]/60 bg-black/70 px-[1.2cqw] py-[0.5cqh] text-[0.7cqw] font-semibold uppercase tracking-[0.28em] text-[#EAD8C7] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
                 Zum Bedienen klicken
               </span>
             </button>
