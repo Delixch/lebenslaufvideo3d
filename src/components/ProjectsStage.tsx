@@ -432,26 +432,41 @@ export const ProjectsStage: React.FC = () => {
       {/* Nachtfalter um die Laterne */}
       <LampMoths centerX={bulb.x} centerY={bulb.y} bulbSize={bulb.size} active={onScreen && bulb.size > 1} />
 
-      <div className="absolute left-[3.5cqw] top-[7cqh] max-w-[22cqw]">
-        <p className="text-[0.85cqw] font-semibold uppercase tracking-[0.42em] text-[#C99E5D]">
-          Ausgewählte
+      <div className="absolute left-[3.5cqw] top-[7cqh] max-w-[34cqw]">
+        <p className="text-[0.8cqw] font-semibold uppercase tracking-[0.42em] text-[#C99E5D]">
+          Ausgewählte Arbeiten
         </p>
         <h2
-          className="mt-2 text-[5.2cqw] uppercase leading-[0.82] text-transparent"
-          style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            backgroundImage: 'linear-gradient(to bottom, #FFFFFF, #D5CBC0 55%, #6A5C50)',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-          }}
+          className="mt-[1.4cqh] text-[3.4cqw] uppercase leading-[0.86]"
+          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
         >
-          Projekte
+          <span
+            className="block text-transparent"
+            style={{
+              backgroundImage: 'linear-gradient(to bottom, #FFFFFF, #D5CBC0 55%, #605448)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+            }}
+          >
+            Ausgewählte Arbeiten.
+          </span>
+          <span
+            className="block text-transparent"
+            style={{
+              backgroundImage: 'linear-gradient(to bottom, #F7E7C4, #C99E5D 55%, #543B1A)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+            }}
+          >
+            Mit Hand gebaut.
+          </span>
         </h2>
-        <p className="mt-[1.4cqh] text-[0.95cqw] font-light leading-relaxed text-[#A8988B]">
-          Interaktive Projektauswahl. Verwenden Sie die Pfeiltasten oder die
-          Schaltflächen, um zwischen den Projekten zu wechseln.
+        <p className="mt-[1.8cqh] max-w-[24cqw] text-[0.9cqw] font-light leading-relaxed text-[#A8988B]">
+          Jedes Projekt ist echte Arbeit für echte Menschen — keine Übungsaufgabe.
+          Mit den Pfeiltasten wechseln, in den Bildschirm klicken und selbst
+          ausprobieren.
         </p>
-        <span className="mt-6 block h-px w-16 bg-[#C99E5D]/70" />
+        <span className="mt-[2cqh] block h-px w-[6cqw] bg-[#C99E5D]/70" />
       </div>
 
       <div
