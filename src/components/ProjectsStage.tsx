@@ -132,6 +132,25 @@ export const ProjectsStage: React.FC = () => {
   const [transform, setTransform] = useState<string>('');
   const [lamp, setLamp] = useState({ left: '81%', top: '25%' });
   const [bulb, setBulb] = useState({ x: 0, y: 0, size: 40 });
+  const stageRef = useRef<HTMLElement | null>(null);
+  const [onScreen, setOnScreen] = useState(false);
+
+  // Im Deckel laeuft eine ganze 3D-Seite. Ausserhalb des Blickfelds hat sie
+  // nichts zu rechnen — sonst frisst sie die Bildrate der ganzen Seite.
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) {
+      return;
+    }
+
+    const watcher = new IntersectionObserver(
+      ([entry]) => setOnScreen(entry.isIntersecting),
+      { threshold: 0.15 },
+    );
+
+    watcher.observe(stage);
+    return () => watcher.disconnect();
+  }, []);
 
   // Das Bild wird beschnitten dargestellt; ohne diese Rechnung sitzen die
   // Eckpunkte irgendwo, sobald sich das Fensterformat aendert.
@@ -268,9 +287,10 @@ export const ProjectsStage: React.FC = () => {
 
   return (
     <section
+      ref={stageRef}
       id="work-stage"
       className="relative hidden h-screen w-full items-center justify-center overflow-hidden bg-black md:flex"
-      style={{ animation: 'lampIntensity 6s infinite ease-in-out' }}
+      style={{ animation: onScreen ? 'lampIntensity 6s infinite ease-in-out' : 'none' }}
     >
       {/* Eine Buehne im Format des Bildes: sie passt immer ganz ins Fenster,
           und alles darin rechnet in Prozent dieser Flaeche. Damit kann nichts
@@ -335,7 +355,8 @@ export const ProjectsStage: React.FC = () => {
           background:
             'radial-gradient(circle, rgba(255,255,252,0.11) 0%, rgba(252,250,244,0.07) 14%, rgba(246,242,232,0.045) 28%, rgba(236,230,216,0.028) 42%, rgba(220,212,196,0.016) 56%, rgba(196,188,172,0.008) 70%, rgba(160,152,138,0.003) 84%, transparent 100%)',
           mixBlendMode: 'screen',
-          filter: 'blur(55px)',
+          filter: 'blur(38px)',
+          willChange: 'opacity',
           opacity: 'calc(0.6 + var(--lamp-intensity, 1) * 0.4)',
         }}
       />
@@ -351,13 +372,13 @@ export const ProjectsStage: React.FC = () => {
           background:
             'radial-gradient(closest-side, rgba(255,232,190,0.18), rgba(214,168,100,0.07) 55%, transparent 84%)',
           mixBlendMode: 'screen',
-          filter: 'blur(22px)',
+          filter: 'blur(16px)',
           opacity: 'calc(0.45 + var(--lamp-intensity, 1) * 0.55)',
         }}
       />
 
       {/* Nachtfalter um die Laterne */}
-      <LampMoths centerX={bulb.x} centerY={bulb.y} bulbSize={bulb.size} active={bulb.size > 1} />
+      <LampMoths centerX={bulb.x} centerY={bulb.y} bulbSize={bulb.size} active={onScreen && bulb.size > 1} />
 
       <div className="absolute left-[3.5cqw] top-[7cqh] max-w-[22cqw]">
         <p className="text-[0.85cqw] font-semibold uppercase tracking-[0.42em] text-[#C99E5D]">
