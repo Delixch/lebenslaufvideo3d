@@ -451,6 +451,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         : 'opacity-0 scale-90 blur-sm'
     }`}
     style={{
+      transitionDuration: isMobile ? '320ms' : '2000ms',
       // Sokak lambasının ampul koordinatı (görselin merkezinden yatay olarak hizalanmış responsive konum)
       top: lampCoords.top,
       right: lampCoords.right,
@@ -476,6 +477,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       lampLit ? 'opacity-100' : 'opacity-0'
     }`}
     style={{
+      transitionDuration: isMobile ? '320ms' : '2000ms',
       top: lampCoords.top,
       left: lampCoords.left,
       width: `calc(${lampCoords.width} * 4.0)`,
@@ -512,7 +514,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   );
 
   return (
-    <section className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none">
+    <section
+      className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none"
+      style={{
+        // Gleicher Startzeitpunkt wie das Flackern der Laterne, damit beide
+        // Animationen im selben Frame anlaufen.
+        animation: lampLit ? 'lampIntensity 6s infinite ease-in-out' : 'none',
+      }}
+    >
       <style>{`
         @keyframes haloBreathe {
           0%, 100% { opacity: 0.85; }
@@ -522,6 +531,32 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
           58% { opacity: 0.9; }
           86% { opacity: 0.45; }
           92% { opacity: 0.88; }
+        }
+
+        /* Laterne und Menueblase haengen an derselben Zahl, damit sie als ein
+           Licht flackern und nicht als zwei Objekte. */
+        @property --lamp-intensity {
+          syntax: '<number>';
+          inherits: true;
+          initial-value: 1;
+        }
+
+        @keyframes lampIntensity {
+          0% { --lamp-intensity: 0; }
+          5% { --lamp-intensity: 0.95; }
+          9% { --lamp-intensity: 0.05; }
+          14% { --lamp-intensity: 0.9; }
+          20% { --lamp-intensity: 0; }
+          26% { --lamp-intensity: 0.98; }
+          40% { --lamp-intensity: 1; }
+          50% { --lamp-intensity: 0.86; }
+          53% { --lamp-intensity: 1; }
+          56% { --lamp-intensity: 0.9; }
+          70% { --lamp-intensity: 1; }
+          86% { --lamp-intensity: 0.88; }
+          90% { --lamp-intensity: 1; }
+          94% { --lamp-intensity: 0.92; }
+          100% { --lamp-intensity: 1; }
         }
 
         @keyframes lampFlicker {

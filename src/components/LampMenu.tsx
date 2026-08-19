@@ -163,10 +163,10 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
       <AnimatePresence>
         {open && (
           <motion.nav
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, scale: 0.4, x: 30, y: -20 }}
+            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, scale: 0.35, x: 34, y: -22 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="pointer-events-auto absolute w-[56vw] max-w-[232px] px-5 py-4"
             style={{
               // Rechts unter der Laterne aufgehaengt, Wachstumspunkt oben rechts.
@@ -177,29 +177,54 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
               top: '68px',
               left: '-32px',
               transformOrigin: 'top right',
-              background: 'rgba(6,5,4,0.9)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              border: '1px solid rgba(212,175,55,0.35)',
-              // Bewusst ungleiche Radien: die Blase soll gewachsen wirken,
-              // nicht gezeichnet.
-              borderRadius: '46% 54% 40% 60% / 52% 44% 56% 48%',
-              boxShadow: '0 0 30px rgba(234,179,8,0.12), inset 0 0 24px rgba(0,0,0,0.6)',
+              // Kein flaches Gelb: warm und hell im Kern, zu den Raendern hin
+              // dunkler Bronzeton und durchscheinend — als haette sich das
+              // Laternenlicht im Nebel zur Menueform verdichtet.
+              background:
+                'radial-gradient(130% 120% at 76% 20%, rgba(255,224,164,0.96) 0%, rgba(248,199,122,0.94) 26%, rgba(226,166,92,0.9) 50%, rgba(196,134,68,0.86) 72%, rgba(158,102,50,0.82) 88%, rgba(120,76,36,0.78) 100%)',
+              backdropFilter: 'blur(14px) saturate(120%)',
+              WebkitBackdropFilter: 'blur(14px) saturate(120%)',
+              border: '1px solid rgba(255,214,150,0.5)',
+              // Stark ungleiche Radien: die Blase soll gewachsen wirken, nicht
+              // gezeichnet.
+              borderRadius: '58% 42% 34% 66% / 46% 62% 38% 54%',
+              // Helligkeit haengt am selben Flackern wie die Laterne.
+              opacity: 'calc(0.9 + var(--lamp-intensity, 1) * 0.1)',
+              filter: 'brightness(calc(0.95 + var(--lamp-intensity, 1) * 0.05))',
+              boxShadow:
+                '0 0 30px rgba(234,179,8,0.28), 0 0 70px rgba(234,179,8,0.14), inset 0 0 30px rgba(255,206,130,0.25)',
             }}
           >
-            {/* Zipfel zur Laterne hin */}
+            {/* Zipfel zur Laterne hin: ein Tropfen an der rechten Flanke, dahinter
+                ein kleiner Punkt — so ist die Richtung ohne Nachdenken lesbar. */}
             <span
               aria-hidden="true"
-              className="absolute -top-[7px] right-5 h-4 w-4 rotate-45"
+              className="absolute -right-[11px] top-[24%] h-5 w-6"
               style={{
-                background: 'rgba(6,5,4,0.9)',
-                borderTop: '1px solid rgba(212,175,55,0.35)',
-                borderRight: '1px solid rgba(212,175,55,0.35)',
-                borderRadius: '4px 0 0 0',
+                background:
+                  'radial-gradient(120% 120% at 20% 40%, rgba(252,206,132,0.92) 0%, rgba(206,146,70,0.85) 55%, rgba(120,78,38,0.75) 100%)',
+                border: '1px solid rgba(255,214,150,0.5)',
+                borderLeft: 'none',
+                opacity: 'calc(0.9 + var(--lamp-intensity, 1) * 0.1)',
+                borderRadius: '20% 80% 60% 40% / 30% 90% 10% 70%',
+                transform: 'rotate(-12deg)',
+              }}
+            />
+            <span
+              aria-hidden="true"
+              className="absolute -right-[26px] top-[14%] h-[7px] w-[7px] rounded-full"
+              style={{
+                background: 'rgba(244,190,110,0.8)',
+                border: '1px solid rgba(255,214,150,0.45)',
+                opacity: 'calc(0.85 + var(--lamp-intensity, 1) * 0.15)',
               }}
             />
 
-            <ul className="flex flex-col gap-3">
+            <motion.ul
+              className="flex flex-col gap-3"
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.12 }}
+            >
               {navItems.map((item, index) => (
                 <motion.li
                   key={item.id}
@@ -210,13 +235,13 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
                   <button
                     type="button"
                     onClick={() => choose(item.id)}
-                    className="w-full text-right text-[13px] font-semibold uppercase tracking-[0.28em] text-[#EAD8C7] transition-colors active:text-[#F7E7C4]"
+                    className="w-full text-right text-[11.5px] font-semibold uppercase tracking-[0.26em] text-[#3A2412] transition-all active:font-bold active:text-[#120A04]"
                   >
                     {item.name}
                   </button>
                 </motion.li>
               ))}
-            </ul>
+            </motion.ul>
           </motion.nav>
         )}
       </AnimatePresence>
