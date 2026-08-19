@@ -77,10 +77,18 @@ export const ProjectsStage: React.FC = () => {
     [...SCREEN_QUAD.bottomRight],
     [...SCREEN_QUAD.bottomLeft],
   ]);
-  const aligning = false;
+  const aligning =
+    typeof window !== 'undefined' && window.location.search.includes('align');
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [fill, setFill] = useState(0);
+
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(4);
+  const [overlayScale, setOverlayScale] = useState(1.0);
+  const [halfOpacity, setHalfOpacity] = useState(false);
+  const calibrateMode =
+    typeof window !== 'undefined' && window.location.search.includes('calibrate');
 
   useEffect(() => {
     if (loaded) {
@@ -387,11 +395,13 @@ export const ProjectsStage: React.FC = () => {
             <img
               src="/ipad-buehne-on.png"
               alt=""
-              className={`absolute left-0 top-[4px] w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
-                live ? 'opacity-100' : 'opacity-0'
+              className={`absolute left-0 top-0 w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
+                halfOpacity ? 'opacity-50 z-40' : (live ? 'opacity-100 z-10' : 'opacity-0 z-0')
               }`}
               style={{
-                animation: live ? 'mouseGlow 8s infinite ease-in-out' : 'none',
+                transform: `translate(${offsetX}px, ${offsetY}px) scale(${overlayScale})`,
+                transformOrigin: '50% 50%',
+                animation: live && !halfOpacity ? 'mouseGlow 8s infinite ease-in-out' : 'none',
               }}
             />
 
@@ -790,6 +800,90 @@ bottomLeft: [${corners[3]}],`}
           </div>
         </div>
       </div>
+
+      {calibrateMode && (
+        <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-4 border border-[#8C6D4F] bg-black/95 p-6 font-mono text-xs text-[#EAD8C7] shadow-2xl backdrop-blur-md w-72">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#D4AF37] border-b border-[#8C6D4F]/30 pb-2">
+            Overlay Calibrator
+          </h4>
+          
+          <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+            <input
+              type="checkbox"
+              checked={halfOpacity}
+              onChange={(e) => setHalfOpacity(e.target.checked)}
+              className="accent-[#D4AF37]"
+            />
+            <span>Show Opacity (50%)</span>
+          </label>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span>Shift X: {offsetX}px</span>
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => setOffsetX((x) => parseFloat((x - 0.5).toFixed(1)))}
+                  className="bg-[#16120E] border border-[#8C6D4F]/50 px-2 py-1 hover:border-[#D4AF37] w-8 text-center"
+                >
+                  -
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOffsetX((x) => parseFloat((x + 0.5).toFixed(1)))}
+                  className="bg-[#16120E] border border-[#8C6D4F]/50 px-2 py-1 hover:border-[#D4AF37] w-8 text-center"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span>Shift Y: {offsetY}px</span>
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => setOffsetY((y) => parseFloat((y - 0.5).toFixed(1)))}
+                  className="bg-[#16120E] border border-[#8C6D4F]/50 px-2 py-1 hover:border-[#D4AF37] w-8 text-center"
+                >
+                  -
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOffsetY((y) => parseFloat((y + 0.5).toFixed(1)))}
+                  className="bg-[#16120E] border border-[#8C6D4F]/50 px-2 py-1 hover:border-[#D4AF37] w-8 text-center"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span>Scale: {overlayScale.toFixed(3)}</span>
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => setOverlayScale((s) => parseFloat((s - 0.001).toFixed(3)))}
+                  className="bg-[#16120E] border border-[#8C6D4F]/50 px-2 py-1 hover:border-[#D4AF37] w-8 text-center"
+                >
+                  -
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOverlayScale((s) => parseFloat((s + 0.001).toFixed(3)))}
+                  className="bg-[#16120E] border border-[#8C6D4F]/50 px-2 py-1 hover:border-[#D4AF37] w-8 text-center"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-[#8C6D4F]/30 pt-3 mt-1 text-[10px] text-[#A8988B] select-all bg-black/40 p-2 border rounded-sm font-mono">
+            offsetX: {offsetX}, offsetY: {offsetY}, scale: {overlayScale}
+          </div>
+        </div>
+      )}
     </section>
   );
 };
