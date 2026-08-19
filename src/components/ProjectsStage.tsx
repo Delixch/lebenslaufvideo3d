@@ -289,11 +289,7 @@ export const ProjectsStage: React.FC = () => {
                   // nicht einpassen.
                   <div
                     className="absolute inset-0"
-                    style={{
-                      background:
-                        'repeating-conic-gradient(#F7E7C4 0% 25%, #8C3B1E 0% 50%) 0 0 / 12% 12%',
-                      boxShadow: 'inset 0 0 0 10px #1B6FE0',
-                    }}
+                    style={{ background: '#FFFFFF', boxShadow: 'inset 0 0 0 6px #1B6FE0' }}
                   />
                 ) : (
                   <>
