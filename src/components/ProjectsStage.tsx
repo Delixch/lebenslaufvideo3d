@@ -109,8 +109,10 @@ export const ProjectsStage: React.FC = () => {
       const ratio = plate.naturalWidth / plate.naturalHeight;
       const boxRatio = box.width / box.height;
 
-      const drawnW = boxRatio >= ratio ? box.width : box.height * ratio;
-      const drawnH = boxRatio >= ratio ? box.width / ratio : box.height;
+      // object-contain: die ganze Szene bleibt sichtbar, das Notebook wird
+      // dadurch kleiner. Die dunklen Bildraender gehen im schwarzen Grund auf.
+      const drawnW = boxRatio >= ratio ? box.height * ratio : box.width;
+      const drawnH = boxRatio >= ratio ? box.height : box.width / ratio;
       const originX = (box.width - drawnW) / 2;
       const originY = (box.height - drawnH) / 2;
 
@@ -162,7 +164,7 @@ export const ProjectsStage: React.FC = () => {
         src="/projekt-buehne.jpg"
         alt=""
         onLoad={() => window.dispatchEvent(new Event('resize'))}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-contain"
       />
       <span
         aria-hidden="true"
@@ -223,7 +225,7 @@ export const ProjectsStage: React.FC = () => {
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               className="flex h-full w-full"
             >
-              <div className="relative h-full w-[56%] overflow-hidden bg-[#0B0A09]">
+              <div className="relative h-full w-full overflow-hidden bg-[#0B0A09]">
                 <iframe
                   key={project.githubUrl}
                   src={project.githubUrl}
@@ -245,34 +247,47 @@ export const ProjectsStage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex h-full w-[44%] flex-col justify-center gap-3 bg-[#0A0908] px-[2.2vw]">
-                <p className="text-[0.62vw] font-semibold uppercase tracking-[0.34em] text-[#C99E5D]">
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+              <motion.div
+          key={project.number}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -14 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="absolute right-[3vw] top-1/2 flex w-[24vw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-8 py-7 backdrop-blur-md"
+        >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#C99E5D]">
                   {project.number} / Projekt
                 </p>
                 <h3
-                  className="text-[2vw] uppercase leading-[0.9] text-[#F3E7D8]"
+                  className="text-[26px] uppercase leading-[0.9] text-[#F3E7D8]"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                 >
                   {project.title}
                 </h3>
-                <p className="text-[0.6vw] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
                   {project.category}
                 </p>
 
-                <p className="mt-1 text-[0.68vw] font-light leading-relaxed text-[#A8988B]">
+                <p className="mt-1 text-[12px] font-light leading-relaxed text-[#A8988B]">
                   {project.description}
                 </p>
 
                 <span className="my-1 block h-px w-full bg-[#8C6D4F]/40" />
 
-                <p className="text-[0.55vw] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
                   Verwendete Technologien
                 </p>
                 <div className="flex flex-wrap gap-x-3 gap-y-1">
                   {project.tech.slice(0, 6).map((tech) => (
                     <span
                       key={tech}
-                      className="text-[0.58vw] font-semibold uppercase tracking-[0.18em] text-[#D5CBC0]"
+                      className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#D5CBC0]"
                     >
                       {tech}
                     </span>
@@ -283,15 +298,12 @@ export const ProjectsStage: React.FC = () => {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 flex items-center justify-between border border-[#C99E5D]/60 px-[1.2vw] py-[0.7vw] text-[0.6vw] font-semibold uppercase tracking-[0.3em] text-[#F3E7D8] transition-colors hover:border-[#D4AF37] hover:text-[#F7E7C4]"
+                  className="mt-2 flex items-center justify-between border border-[#C99E5D]/60 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F3E7D8] transition-colors hover:border-[#D4AF37] hover:text-[#F7E7C4]"
                 >
                   Projekt öffnen <span aria-hidden="true">↗</span>
                 </a>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
+              </motion.div>
+      </AnimatePresence>
 
       <div className="absolute right-[2.5vw] top-[7vh] flex flex-col items-end gap-4">
         <p className="text-[13px] tracking-[0.3em] text-[#C99E5D]">
