@@ -17,6 +17,9 @@ const SCREEN_QUAD = {
 /** Aufloesung der Flaeche, die auf den Deckel gelegt wird. */
 const PANEL = { width: 1440, height: 900 };
 
+/** Groesse des Hintergrundbildes; sie gibt das Format der Buehne vor. */
+const PLATE = { width: 1672, height: 941 };
+
 /**
  * Loest ein lineares Gleichungssystem per Gauss-Elimination.
  */
@@ -106,20 +109,8 @@ export const ProjectsStage: React.FC = () => {
       }
 
       const box = plate.getBoundingClientRect();
-      const ratio = plate.naturalWidth / plate.naturalHeight;
-      const boxRatio = box.width / box.height;
 
-      // object-contain: die ganze Szene bleibt sichtbar, das Notebook wird
-      // dadurch kleiner. Die dunklen Bildraender gehen im schwarzen Grund auf.
-      const drawnW = boxRatio >= ratio ? box.height * ratio : box.width;
-      const drawnH = boxRatio >= ratio ? box.height : box.width / ratio;
-      const originX = (box.width - drawnW) / 2;
-      const originY = (box.height - drawnH) / 2;
-
-      const toStage = ([fx, fy]: readonly number[]) => [
-        originX + fx * drawnW,
-        originY + fy * drawnH,
-      ];
+      const toStage = ([fx, fy]: readonly number[]) => [fx * box.width, fy * box.height];
 
       setTransform(
         quadTransform(PANEL.width, PANEL.height, [
@@ -156,15 +147,27 @@ export const ProjectsStage: React.FC = () => {
   return (
     <section
       id="work-stage"
-      className="relative hidden h-screen w-full overflow-hidden bg-black md:block"
+      className="relative hidden h-screen w-full items-center justify-center overflow-hidden bg-black md:flex"
       style={{ animation: 'lampIntensity 6s infinite ease-in-out' }}
     >
+      {/* Eine Buehne im Format des Bildes: sie passt immer ganz ins Fenster,
+          und alles darin rechnet in Prozent dieser Flaeche. Damit kann nichts
+          ueberstehen, egal wie das Fenster steht. */}
+      <div
+        className="relative"
+        style={{
+          aspectRatio: `${PLATE.width} / ${PLATE.height}`,
+          width: 'min(100%, calc(100vh * ' + PLATE.width / PLATE.height + '))',
+          height: 'min(100%, calc(100vw / ' + PLATE.width / PLATE.height + '))',
+          containerType: 'size',
+        }}
+      >
       <img
         ref={plateRef}
         src="/projekt-buehne.jpg"
         alt=""
         onLoad={() => window.dispatchEvent(new Event('resize'))}
-        className="absolute inset-0 h-full w-full object-contain"
+        className="absolute inset-0 h-full w-full"
       />
       <span
         aria-hidden="true"
@@ -182,12 +185,12 @@ export const ProjectsStage: React.FC = () => {
         }}
       />
 
-      <div className="absolute left-[3.5vw] top-[8vh] max-w-[22vw]">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.42em] text-[#C99E5D]">
+      <div className="absolute left-[3.5cqw] top-[7cqh] max-w-[22cqw]">
+        <p className="text-[0.85cqw] font-semibold uppercase tracking-[0.42em] text-[#C99E5D]">
           Ausgewählte
         </p>
         <h2
-          className="mt-2 text-[5.2vw] uppercase leading-[0.82] text-transparent"
+          className="mt-2 text-[5.2cqw] uppercase leading-[0.82] text-transparent"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
             backgroundImage: 'linear-gradient(to bottom, #FFFFFF, #D5CBC0 55%, #6A5C50)',
@@ -197,7 +200,7 @@ export const ProjectsStage: React.FC = () => {
         >
           Projekte
         </h2>
-        <p className="mt-5 text-[13px] font-light leading-relaxed text-[#A8988B]">
+        <p className="mt-[1.4cqh] text-[0.95cqw] font-light leading-relaxed text-[#A8988B]">
           Interaktive Projektauswahl. Verwenden Sie die Pfeiltasten oder die
           Schaltflächen, um zwischen den Projekten zu wechseln.
         </p>
@@ -239,7 +242,7 @@ export const ProjectsStage: React.FC = () => {
                     verbietet: sie liegt darunter und bleibt dann sichtbar. */}
                 <div className="pointer-events-none absolute inset-0 -z-10 flex items-end bg-gradient-to-br from-[#1A1512] to-[#0A0908] p-6">
                   <span
-                    className="text-[1.6vw] uppercase leading-none text-[#C99E5D]"
+                    className="text-[1.4cqw] uppercase leading-none text-[#C99E5D]"
                     style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                   >
                     {project.title}
@@ -259,35 +262,35 @@ export const ProjectsStage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -14 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute right-[3vw] top-1/2 flex w-[24vw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-8 py-7 backdrop-blur-md"
+          className="absolute right-[3cqw] top-1/2 flex w-[23cqw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-[1.8cqw] py-[2.4cqh] backdrop-blur-md"
         >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#C99E5D]">
+                <p className="text-[0.72cqw] font-semibold uppercase tracking-[0.34em] text-[#C99E5D]">
                   {project.number} / Projekt
                 </p>
                 <h3
-                  className="text-[26px] uppercase leading-[0.9] text-[#F3E7D8]"
+                  className="text-[2cqw] uppercase leading-[0.9] text-[#F3E7D8]"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                 >
                   {project.title}
                 </h3>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
+                <p className="text-[0.7cqw] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
                   {project.category}
                 </p>
 
-                <p className="mt-1 text-[12px] font-light leading-relaxed text-[#A8988B]">
+                <p className="mt-1 text-[0.82cqw] font-light leading-relaxed text-[#A8988B]">
                   {project.description}
                 </p>
 
                 <span className="my-1 block h-px w-full bg-[#8C6D4F]/40" />
 
-                <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
+                <p className="text-[0.65cqw] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
                   Verwendete Technologien
                 </p>
                 <div className="flex flex-wrap gap-x-3 gap-y-1">
                   {project.tech.slice(0, 6).map((tech) => (
                     <span
                       key={tech}
-                      className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#D5CBC0]"
+                      className="text-[0.7cqw] font-semibold uppercase tracking-[0.18em] text-[#D5CBC0]"
                     >
                       {tech}
                     </span>
@@ -298,15 +301,15 @@ export const ProjectsStage: React.FC = () => {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 flex items-center justify-between border border-[#C99E5D]/60 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F3E7D8] transition-colors hover:border-[#D4AF37] hover:text-[#F7E7C4]"
+                  className="mt-2 flex items-center justify-between border border-[#C99E5D]/60 px-[1.1cqw] py-[1.1cqh] text-[0.7cqw] font-semibold uppercase tracking-[0.3em] text-[#F3E7D8] transition-colors hover:border-[#D4AF37] hover:text-[#F7E7C4]"
                 >
                   Projekt öffnen <span aria-hidden="true">↗</span>
                 </a>
               </motion.div>
       </AnimatePresence>
 
-      <div className="absolute right-[2.5vw] top-[7vh] flex flex-col items-end gap-4">
-        <p className="text-[13px] tracking-[0.3em] text-[#C99E5D]">
+      <div className="absolute right-[2.5cqw] top-[6cqh] flex flex-col items-end gap-4">
+        <p className="text-[0.9cqw] tracking-[0.3em] text-[#C99E5D]">
           {project.number} / {String(projects.length).padStart(2, '0')}
         </p>
         <div className="flex flex-col gap-2">
@@ -324,7 +327,7 @@ export const ProjectsStage: React.FC = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-[7vh] left-[3.5vw] flex flex-col gap-3">
+      <div className="absolute bottom-[6cqh] left-[3.5cqw] flex flex-col gap-3">
         <div className="flex gap-3">
           {[-1, 1].map((delta) => (
             <button
@@ -332,20 +335,20 @@ export const ProjectsStage: React.FC = () => {
               type="button"
               onClick={() => step(delta)}
               aria-label={delta < 0 ? 'Vorheriges Projekt' : 'Nächstes Projekt'}
-              className="flex h-11 w-11 items-center justify-center border border-[#8C6D4F]/60 text-[#D5CBC0] transition-colors hover:border-[#D4AF37] hover:text-[#F7E7C4]"
+              className="flex h-[3.4cqh] w-[2.2cqw] items-center justify-center border border-[#8C6D4F]/60 text-[#D5CBC0] transition-colors hover:border-[#D4AF37] hover:text-[#F7E7C4]"
             >
               {delta < 0 ? '‹' : '›'}
             </button>
           ))}
         </div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
+        <p className="text-[0.7cqw] font-semibold uppercase tracking-[0.3em] text-[#8C6D4F]">
           Oder verwenden Sie
           <br />
           die Pfeiltasten
         </p>
       </div>
 
-      <div className="absolute bottom-[6vh] left-1/2 w-[36vw] -translate-x-1/2">
+      <div className="absolute bottom-[5cqh] left-1/2 w-[34cqw] -translate-x-1/2">
         <p className="mb-3 text-center text-[10px] font-semibold uppercase tracking-[0.3em] text-[#C99E5D]">
           Verwenden Sie die Pfeiltasten
         </p>
@@ -355,6 +358,7 @@ export const ProjectsStage: React.FC = () => {
             style={{ left: `${((index + 0.5) / projects.length) * 100}%` }}
           />
         </div>
+      </div>
       </div>
     </section>
   );
