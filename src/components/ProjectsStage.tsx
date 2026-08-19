@@ -4,10 +4,10 @@ import { projects } from '../lib/projects';
 import { LampMoths } from './LampMoths';
 
 const SCREEN_QUAD = {
-  topLeft: [0.1033, 0.1275],
-  topRight: [0.7731, 0.1197],
-  bottomRight: [0.7731, 0.7899],
-  bottomLeft: [0.1006, 0.788],
+  topLeft: [0.0873, 0.1423],
+  topRight: [0.7724, 0.1359],
+  bottomRight: [0.7711, 0.7821],
+  bottomLeft: [0.0876, 0.7831],
 } as const;
 
 const PANEL = { width: 1440, height: 900 };
