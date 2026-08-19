@@ -104,6 +104,7 @@ export const ProjectsStage: React.FC = () => {
   ]);
   const aligning =
     typeof window !== 'undefined' && window.location.search.includes('align');
+  const [active, setActive] = useState(0);
   const project = projects[index];
   const plateRef = useRef<HTMLImageElement | null>(null);
   const [transform, setTransform] = useState<string>('');
@@ -186,15 +187,60 @@ export const ProjectsStage: React.FC = () => {
     setIndex((current) => (current + delta + projects.length) % projects.length);
   }, []);
 
+  // Eine Ecke um Pixel verschieben — von Hand ziehen trifft keine Millimeter.
+  const nudge = useCallback(
+    (dx: number, dy: number) => {
+      const plate = plateRef.current;
+      if (!plate) {
+        return;
+      }
+
+      const box = plate.getBoundingClientRect();
+      setCorners((current) =>
+        current.map((corner, index) =>
+          index === active
+            ? [
+                Math.round((corner[0] + dx / box.width) * 10000) / 10000,
+                Math.round((corner[1] + dy / box.height) * 10000) / 10000,
+              ]
+            : corner,
+        ),
+      );
+    },
+    [active],
+  );
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (aligning) {
+        const stride = event.shiftKey ? 10 : 1;
+        const moves: Record<string, [number, number]> = {
+          ArrowLeft: [-stride, 0],
+          ArrowRight: [stride, 0],
+          ArrowUp: [0, -stride],
+          ArrowDown: [0, stride],
+        };
+
+        if (moves[event.key]) {
+          event.preventDefault();
+          nudge(...moves[event.key]);
+          return;
+        }
+
+        if (event.key >= '1' && event.key <= '4') {
+          setActive(Number(event.key) - 1);
+        }
+
+        return;
+      }
+
       if (event.key === 'ArrowRight') step(1);
       if (event.key === 'ArrowLeft') step(-1);
     };
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [step]);
+  }, [aligning, nudge, step]);
 
   return (
     <section
@@ -447,8 +493,15 @@ export const ProjectsStage: React.FC = () => {
               return (
                 <React.Fragment key={which}>
                   <span
-                    onPointerDown={dragCorner(which)}
-                    className="absolute z-50 flex h-8 w-8 cursor-grab items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_0_4px_rgba(0,0,0,0.6)]"
+                    onPointerDown={(event) => {
+                      setActive(which);
+                      dragCorner(which)(event);
+                    }}
+                    className={`absolute z-50 flex h-8 w-8 cursor-grab items-center justify-center rounded-full border-2 text-[10px] font-bold text-black shadow-[0_0_0_4px_rgba(0,0,0,0.6)] ${
+                      which === active
+                        ? 'border-white bg-[#39FF6A]'
+                        : 'border-white/60 bg-[#39FF6A]/45'
+                    }`}
                     style={{
                       left: `${corner[0] * 100}%`,
                       top: `${corner[1] * 100}%`,
@@ -460,6 +513,54 @@ export const ProjectsStage: React.FC = () => {
                 </React.Fragment>
               );
             })}
+            <span
+              className="pointer-events-none absolute inset-x-0 z-40 h-px bg-[#39FF6A]/45"
+              style={{ top: `${corners[active][1] * 100}%` }}
+            />
+            <span
+              className="pointer-events-none absolute inset-y-0 z-40 w-px bg-[#39FF6A]/45"
+              style={{ left: `${corners[active][0] * 100}%` }}
+            />
+
+            <div className="absolute bottom-[7.5rem] right-2 z-50 grid grid-cols-3 gap-1">
+              {[
+                ['', '↑', ''],
+                ['←', String(active + 1), '→'],
+                ['', '↓', ''],
+              ]
+                .flat()
+                .map((label, cell) => {
+                  const moves: Record<number, [number, number]> = {
+                    1: [0, -1],
+                    3: [-1, 0],
+                    5: [1, 0],
+                    7: [0, 1],
+                  };
+
+                  if (!moves[cell]) {
+                    return (
+                      <span
+                        key={cell}
+                        className="flex h-9 w-9 items-center justify-center text-[12px] font-bold text-[#39FF6A]"
+                      >
+                        {label}
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <button
+                      key={cell}
+                      type="button"
+                      onClick={() => nudge(...moves[cell])}
+                      className="h-9 w-9 rounded border border-[#39FF6A]/70 bg-black/80 text-[14px] text-[#39FF6A] active:bg-[#39FF6A]/25"
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+            </div>
+
             <pre className="absolute bottom-2 right-2 z-50 select-all bg-black/90 p-3 text-[12px] leading-tight text-[#39FF6A]">
               {`topLeft: [${corners[0]}],
 topRight: [${corners[1]}],
