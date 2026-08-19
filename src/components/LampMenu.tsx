@@ -100,8 +100,8 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
           top: coords.top,
           // Etwas nach rechts: der Griffpunkt sitzt sonst neben dem Glas.
           left: `calc(${coords.left} + 10px)`,
-          width: `max(56px, calc(${coords.width} * 1.6))`,
-          height: `max(56px, calc(${coords.width} * 1.6))`,
+          width: `max(44px, calc(${coords.width} * 1.15))`,
+          height: `max(44px, calc(${coords.width} * 1.15))`,
         }}
       >
         {/* Ruhiges Pulsieren am Glas */}
