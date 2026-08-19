@@ -303,19 +303,71 @@ export const ProjectsStage: React.FC = () => {
             Wrapper haengen, sonst faellt der durch die Groessen-Containment auf
             null zusammen. */}
         <div className="absolute inset-0" style={{ containerType: 'size' }}>
+      {/* Die Laterne brennt: heisser Kern, weiter Hof, ein Kegel nach unten und
+          eine Pfuetze Licht auf dem nassen Pflaster — alle vier haengen an
+          derselben Flackerzahl. */}
       <span
         aria-hidden="true"
         className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           left: lamp.left,
           top: lamp.top,
-          width: '26vw',
-          height: '26vw',
+          width: '9cqw',
+          height: '9cqw',
           background:
-            'radial-gradient(circle, rgba(255,214,140,0.34) 0%, rgba(240,182,96,0.16) 26%, rgba(196,134,68,0.07) 48%, transparent 76%)',
+            'radial-gradient(circle, rgba(255,252,240,0.95) 0%, rgba(255,226,158,0.75) 22%, rgba(244,186,96,0.4) 44%, rgba(210,140,58,0.14) 68%, transparent 100%)',
           mixBlendMode: 'screen',
-          filter: 'blur(28px)',
-          opacity: 'calc(0.75 + var(--lamp-intensity, 1) * 0.25)',
+          filter: 'blur(6px)',
+          opacity: 'calc(0.55 + var(--lamp-intensity, 1) * 0.45)',
+        }}
+      />
+
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          left: lamp.left,
+          top: lamp.top,
+          width: '38cqw',
+          height: '38cqw',
+          background:
+            'radial-gradient(circle, rgba(255,214,140,0.42) 0%, rgba(240,182,96,0.22) 24%, rgba(196,134,68,0.1) 46%, rgba(150,96,40,0.04) 68%, transparent 84%)',
+          mixBlendMode: 'screen',
+          filter: 'blur(34px)',
+          opacity: 'calc(0.6 + var(--lamp-intensity, 1) * 0.4)',
+        }}
+      />
+
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -translate-x-1/2"
+        style={{
+          left: lamp.left,
+          top: lamp.top,
+          width: '26cqw',
+          height: '46cqh',
+          background:
+            'linear-gradient(to bottom, rgba(255,214,140,0.3) 0%, rgba(240,182,96,0.14) 40%, transparent 88%)',
+          clipPath: 'polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%)',
+          mixBlendMode: 'screen',
+          filter: 'blur(16px)',
+          opacity: 'calc(0.45 + var(--lamp-intensity, 1) * 0.55)',
+        }}
+      />
+
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-[50%]"
+        style={{
+          left: lamp.left,
+          top: '86%',
+          width: '34cqw',
+          height: '13cqh',
+          background:
+            'radial-gradient(closest-side, rgba(255,206,130,0.4), rgba(214,148,58,0.16) 55%, transparent 82%)',
+          mixBlendMode: 'screen',
+          filter: 'blur(18px)',
+          opacity: 'calc(0.4 + var(--lamp-intensity, 1) * 0.6)',
         }}
       />
 
