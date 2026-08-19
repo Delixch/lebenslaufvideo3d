@@ -4,10 +4,10 @@ import { projects } from '../lib/projects';
 import { LampMoths } from './LampMoths';
 
 const SCREEN_QUAD = {
-  topLeft: [0.2032, 0.3871],
-  topRight: [0.4791, 0.4087],
-  bottomRight: [0.5248, 0.7063],
-  bottomLeft: [0.2413, 0.7661],
+  topLeft: [0.08, 0.0971],
+  topRight: [0.6183, 0.0966],
+  bottomRight: [0.6231, 0.637],
+  bottomLeft: [0.0786, 0.6372],
 } as const;
 
 const PANEL = { width: 1440, height: 900 };
@@ -66,7 +66,7 @@ const quadTransform = (
   return `matrix3d(${a}, ${d}, 0, ${g}, ${b}, ${e}, 0, ${h}, 0, 0, 1, 0, ${c}, ${f}, 0, 1)`;
 };
 
-const LAMP = [0.8022, 0.1395] as const;
+const LAMP = [0.855, 0.178] as const;
 
 export const ProjectsStage: React.FC = () => {
   const [index, setIndex] = useState(0);
@@ -363,7 +363,7 @@ export const ProjectsStage: React.FC = () => {
           >
             <img
               ref={plateRef}
-              src="/projekt-buehne.jpg"
+              src="/ipad-buehne.png"
               alt=""
               onLoad={() => window.dispatchEvent(new Event('resize'))}
               className="block h-auto w-auto max-h-[74svh] max-w-[92vw]"
@@ -432,7 +432,7 @@ export const ProjectsStage: React.FC = () => {
                   transformOrigin: '0 0',
                   transform,
                   background: '#080706',
-                  borderRadius: '26px',
+                  borderRadius: '44px',
                   opacity: transform ? 1 : 0,
                 }}
               >
@@ -508,7 +508,7 @@ export const ProjectsStage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -14 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute right-[3cqw] top-1/2 flex w-[23cqw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-[1.8cqw] py-[2.4cqh] backdrop-blur-md"
+                  className="absolute left-[64.5cqw] top-1/2 flex w-[18.5cqw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-[1.6cqw] py-[2.2cqh] backdrop-blur-md"
                 >
                   <p className="text-[0.72cqw] font-semibold uppercase tracking-[0.34em] text-[#C99E5D]">
                     {project.number} / Projekt
@@ -664,9 +664,9 @@ export const ProjectsStage: React.FC = () => {
               {aligning && (
                 <>
                   {corners.map((corner, which) => {
-                    const away = 76;
-                    const shiftX = which === 0 || which === 3 ? -away : away;
-                    const shiftY = which === 0 || which === 1 ? -away : away;
+                    const away = 0;
+                    const shiftX = 0;
+                    const shiftY = 0;
 
                     return (
                       <React.Fragment key={which}>
