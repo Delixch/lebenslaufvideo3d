@@ -694,8 +694,9 @@ export const ProjectsStage: React.FC = () => {
               {aligning && (
                 <>
                   {corners.map((corner, which) => {
-                    const shiftX = 0;
-                    const shiftY = 0;
+                    const away = 76;
+                    const shiftX = which === 0 || which === 3 ? -away : away;
+                    const shiftY = which === 0 || which === 1 ? -away : away;
 
                     return (
                       <React.Fragment key={which}>
