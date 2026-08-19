@@ -195,7 +195,7 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
               // Schriftzug — dort deckt die Blase nichts Wichtiges zu.
               // Oben links ist die groesste freie Nebelflaeche; dort deckt die
               // Blase weder Schlagzeile noch Laterne zu.
-              top: '68px',
+              top: '52px',
               left: '-32px',
               transformOrigin: 'top right',
               // Kein flaches Gelb: warm und hell im Kern, zu den Raendern hin
