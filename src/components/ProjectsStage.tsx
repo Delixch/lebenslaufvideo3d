@@ -387,10 +387,12 @@ export const ProjectsStage: React.FC = () => {
             <img
               src="/ipad-buehne-on.png"
               alt=""
-              className={`absolute left-0 top-[4px] w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
+              className={`absolute left-0 top-0 w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
                 live ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
+                transform: 'translate(-1px, 7px) scale(1.0045)',
+                transformOrigin: '50% 50%',
                 animation: live ? 'mouseGlow 8s infinite ease-in-out' : 'none',
               }}
             />
