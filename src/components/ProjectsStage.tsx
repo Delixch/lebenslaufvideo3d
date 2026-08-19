@@ -8,10 +8,10 @@ import { projects } from '../lib/projects';
  * Feinjustage passiert hier — sonst nirgends.
  */
 const SCREEN_QUAD = {
-  topLeft: [0.1721, 0.2422],
-  topRight: [0.599, 0.295],
-  bottomRight: [0.6068, 0.6174],
-  bottomLeft: [0.2181, 0.7163],
+  topLeft: [0.214, 0.377],
+  topRight: [0.502, 0.424],
+  bottomRight: [0.525, 0.689],
+  bottomLeft: [0.251, 0.749],
 } as const;
 
 /** Aufloesung der Flaeche, die auf den Deckel gelegt wird. */
@@ -83,7 +83,7 @@ const quadTransform = (
 };
 
 /** Mitte des Laternenglases im Hintergrundbild. */
-const LAMP = [0.795, 0.075] as const;
+const LAMP = [0.797, 0.055] as const;
 
 /**
  * Die Projekte auf der Strassenbuehne: ein aufgeklapptes Notebook, in dem das
