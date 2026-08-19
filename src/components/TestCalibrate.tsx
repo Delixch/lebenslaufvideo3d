@@ -129,45 +129,155 @@ export const TestCalibrate: React.FC = () => {
       </div>
 
       {/* 3. KONTROL PANELİ */}
-      <div className="mt-8 flex flex-col md:flex-row gap-6 items-center justify-between border border-[#8C6D4F]/40 bg-[#0A0908]/95 p-6 rounded shadow-xl w-full max-w-[800px]">
-        <div className="flex flex-col gap-2">
-          <span className="text-[11px] uppercase tracking-widest text-[#D4AF37] font-semibold">
-            Canlı Değerler
-          </span>
-          <pre className="bg-black/60 border border-[#8C6D4F]/20 p-3 rounded text-sm text-[#39FF6A] select-all font-mono">
-            {`offsetX: ${offsetX},
-offsetY: ${offsetY},
-scale: ${scale}`}
-          </pre>
+      <div className="mt-8 flex flex-col gap-6 border border-[#8C6D4F]/40 bg-[#0A0908]/95 p-6 rounded shadow-xl w-full max-w-[900px]">
+        
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          {/* Sol Kolon */}
+          <div className="flex flex-col gap-4">
+            {/* Shift X (Sola/Sağa) */}
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#A8988B]">Yatay Kaydırma (Shift X)</span>
+                <span className="text-[#39FF6A] font-mono">{offsetX}px</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOffsetX((x) => parseFloat((x - 0.5).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  -0.5
+                </button>
+                <input
+                  type="range"
+                  min="-100"
+                  max="100"
+                  step="0.5"
+                  value={offsetX}
+                  onChange={(e) => setOffsetX(parseFloat(e.target.value))}
+                  className="flex-1 accent-[#D4AF37]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setOffsetX((x) => parseFloat((x + 0.5).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  +0.5
+                </button>
+              </div>
+            </div>
+
+            {/* Shift Y (Yukarı/Aşağı) */}
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#A8988B]">Dikey Kaydırma (Shift Y)</span>
+                <span className="text-[#39FF6A] font-mono">{offsetY}px</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOffsetY((y) => parseFloat((y - 0.5).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  -0.5
+                </button>
+                <input
+                  type="range"
+                  min="-100"
+                  max="100"
+                  step="0.5"
+                  value={offsetY}
+                  onChange={(e) => setOffsetY(parseFloat(e.target.value))}
+                  className="flex-1 accent-[#D4AF37]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setOffsetY((y) => parseFloat((y + 0.5).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  +0.5
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Sağ Kolon */}
+          <div className="flex flex-col gap-4">
+            {/* Scale (Boyutlandırma) */}
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#A8988B]">Resim Boyutu (Scale)</span>
+                <span className="text-[#39FF6A] font-mono">{scale.toFixed(4)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setScale((s) => parseFloat((s - 0.001).toFixed(4)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  -0.001
+                </button>
+                <input
+                  type="range"
+                  min="0.80"
+                  max="1.20"
+                  step="0.0005"
+                  value={scale}
+                  onChange={(e) => setScale(parseFloat(e.target.value))}
+                  className="flex-1 accent-[#D4AF37]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setScale((s) => parseFloat((s + 0.001).toFixed(4)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  +0.001
+                </button>
+              </div>
+            </div>
+
+            {/* Şeffaflık (Opacity) */}
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#A8988B]">Üst Katman Şeffaflığı (Opacity)</span>
+                <span className="text-[#39FF6A] font-mono">{(opacity * 100).toFixed(0)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="1.0"
+                step="0.05"
+                value={opacity}
+                onChange={(e) => setOpacity(parseFloat(e.target.value))}
+                className="w-full accent-[#D4AF37]"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-4 items-center justify-center">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[#A8988B]">Şeffaflık:</span>
-            <input
-              type="range"
-              min="0.1"
-              max="1.0"
-              step="0.05"
-              value={opacity}
-              onChange={(e) => setOpacity(parseFloat(e.target.value))}
-              className="w-24 accent-[#D4AF37]"
-            />
-            <span className="text-xs text-white">{(opacity * 100).toFixed(0)}%</span>
+        {/* Alt Satır: Değer Çıktısı ve Reset */}
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between border-t border-[#8C6D4F]/20 pt-4 mt-2">
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
+              Kopyalanacak Kod Değerleri
+            </span>
+            <pre className="bg-black/60 border border-[#8C6D4F]/20 px-4 py-2 rounded text-sm text-[#39FF6A] select-all font-mono">
+              {`offsetX: ${offsetX}, offsetY: ${offsetY}, scale: ${scale}`}
+            </pre>
           </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                setOffsetX(0);
-                setOffsetY(0);
-                setScale(1.0);
-              }}
-              className="border border-[#8C6D4F]/50 px-3 py-1.5 text-xs rounded hover:border-[#D4AF37] active:bg-white/5 transition-all"
-            >
-              Sıfırla
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setOffsetX(0);
+              setOffsetY(0);
+              setScale(1.0);
+            }}
+            className="border border-[#8C6D4F]/50 px-4 py-2 text-xs rounded hover:border-[#D4AF37] active:bg-white/5 transition-all text-[#EAD8C7]"
+          >
+            Tüm Değerleri Sıfırla
+          </button>
         </div>
       </div>
     </div>
