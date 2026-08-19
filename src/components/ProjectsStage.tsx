@@ -105,6 +105,7 @@ export const ProjectsStage: React.FC = () => {
   const aligning =
     typeof window !== 'undefined' && window.location.search.includes('align');
   const [active, setActive] = useState(0);
+  const [zoom, setZoom] = useState(1);
   const project = projects[index];
   const plateRef = useRef<HTMLImageElement | null>(null);
   const [transform, setTransform] = useState<string>('');
@@ -251,7 +252,21 @@ export const ProjectsStage: React.FC = () => {
       {/* Eine Buehne im Format des Bildes: sie passt immer ganz ins Fenster,
           und alles darin rechnet in Prozent dieser Flaeche. Damit kann nichts
           ueberstehen, egal wie das Fenster steht. */}
-      <div className="relative inline-block">
+      <div
+        className="relative inline-block"
+        style={
+          aligning
+            ? {
+                // Eigene Lupe statt Browser-Zoom: der Deckel bleibt in der
+                // Mitte, und die Bruchteile gelten unveraendert weiter.
+                transform: `scale(${zoom})`,
+                transformOrigin: `${(corners[0][0] + corners[2][0]) * 50}% ${
+                  (corners[0][1] + corners[2][1]) * 50
+                }%`,
+              }
+            : undefined
+        }
+      >
         {/* Das Bild selbst spannt die Buehne auf: begrenzt durch Breite und
             Hoehe des Fensters, also immer vollstaendig sichtbar. Alles andere
             liegt absolut darin und rechnet in Prozent davon. */}
@@ -513,16 +528,7 @@ export const ProjectsStage: React.FC = () => {
                 </React.Fragment>
               );
             })}
-            <span
-              className="pointer-events-none absolute inset-x-0 z-40 h-px bg-[#39FF6A]/45"
-              style={{ top: `${corners[active][1] * 100}%` }}
-            />
-            <span
-              className="pointer-events-none absolute inset-y-0 z-40 w-px bg-[#39FF6A]/45"
-              style={{ left: `${corners[active][0] * 100}%` }}
-            />
-
-            <div className="absolute bottom-[7.5rem] right-2 z-50 grid grid-cols-3 gap-1">
+            <div className="fixed bottom-[9.5rem] right-4 z-[60] grid grid-cols-3 gap-1">
               {[
                 ['', '↑', ''],
                 ['←', String(active + 1), '→'],
@@ -561,7 +567,28 @@ export const ProjectsStage: React.FC = () => {
                 })}
             </div>
 
-            <pre className="absolute bottom-2 right-2 z-50 select-all bg-black/90 p-3 text-[12px] leading-tight text-[#39FF6A]">
+            <div className="fixed bottom-[16rem] right-4 z-[60] flex flex-col gap-1">
+              {[
+                ['+', 0.25],
+                ['−', -0.25],
+              ].map(([label, delta]) => (
+                <button
+                  key={label as string}
+                  type="button"
+                  onClick={() =>
+                    setZoom((current) =>
+                      Math.min(6, Math.max(1, current + (delta as number))),
+                    )
+                  }
+                  className="h-9 w-9 rounded border border-[#39FF6A]/70 bg-black/80 text-[16px] text-[#39FF6A] active:bg-[#39FF6A]/25"
+                >
+                  {label as string}
+                </button>
+              ))}
+              <span className="text-center text-[11px] text-[#39FF6A]">{zoom}x</span>
+            </div>
+
+            <pre className="fixed bottom-4 right-4 z-[60] select-all bg-black/90 p-3 text-[12px] leading-tight text-[#39FF6A]">
               {`topLeft: [${corners[0]}],
 topRight: [${corners[1]}],
 bottomRight: [${corners[2]}],
