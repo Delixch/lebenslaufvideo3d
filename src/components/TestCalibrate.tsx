@@ -1,24 +1,38 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 export const TestCalibrate: React.FC = () => {
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
-  const [scale, setScale] = useState(1.0);
+  // Start with user's last calibrated values
+  const [offsetX, setOffsetX] = useState(-1.0);
+  const [offsetY, setOffsetY] = useState(7.0);
+  const [scaleX, setScaleX] = useState(1.0045);
+  const [scaleY, setScaleY] = useState(1.0045);
+  const [linkScales, setLinkScales] = useState(false);
   const [opacity, setOpacity] = useState(0.5);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Dragging states
   const [isDraggingMove, setIsDraggingMove] = useState(false);
-  const [isDraggingScale, setIsDraggingScale] = useState(false);
+  const [isDraggingScaleX, setIsDraggingScaleX] = useState(false);
+  const [isDraggingScaleY, setIsDraggingScaleY] = useState(false);
+
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [offsetStart, setOffsetStart] = useState({ x: 0, y: 0 });
-  const [scaleStart, setScaleStart] = useState(1);
-  const [scaleStartDistance, setScaleStartDistance] = useState(1);
+  
+  const [scaleXStart, setScaleXStart] = useState(1);
+  const [scaleXStartDistance, setScaleXStartDistance] = useState(1);
+  
+  const [scaleYStart, setScaleYStart] = useState(1);
+  const [scaleYStartDistance, setScaleYStartDistance] = useState(1);
 
   // Global mouse listeners for smooth dragging
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
       if (isDraggingMove) {
         const dx = e.clientX - dragStart.x;
         const dy = e.clientY - dragStart.y;
@@ -26,23 +40,36 @@ export const TestCalibrate: React.FC = () => {
         setOffsetY(parseFloat((offsetStart.y + dy).toFixed(1)));
       }
 
-      if (isDraggingScale && containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const startDist = scaleStartDistance || 1;
-        const currentDist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
-        const newScale = scaleStart * (currentDist / startDist);
-        setScale(parseFloat(Math.max(0.5, Math.min(2.0, newScale)).toFixed(4)));
+      if (isDraggingScaleX) {
+        const startDist = scaleXStartDistance || 1;
+        const currentDist = Math.abs(e.clientX - centerX);
+        const newScaleX = scaleXStart * (currentDist / startDist);
+        const finalScaleX = parseFloat(Math.max(0.5, Math.min(2.0, newScaleX)).toFixed(5));
+        setScaleX(finalScaleX);
+        if (linkScales) {
+          setScaleY(finalScaleX);
+        }
+      }
+
+      if (isDraggingScaleY) {
+        const startDist = scaleYStartDistance || 1;
+        const currentDist = Math.abs(e.clientY - centerY);
+        const newScaleY = scaleYStart * (currentDist / startDist);
+        const finalScaleY = parseFloat(Math.max(0.5, Math.min(2.0, newScaleY)).toFixed(5));
+        setScaleY(finalScaleY);
+        if (linkScales) {
+          setScaleX(finalScaleY);
+        }
       }
     };
 
     const handlePointerUp = () => {
       setIsDraggingMove(false);
-      setIsDraggingScale(false);
+      setIsDraggingScaleX(false);
+      setIsDraggingScaleY(false);
     };
 
-    if (isDraggingMove || isDraggingScale) {
+    if (isDraggingMove || isDraggingScaleX || isDraggingScaleY) {
       window.addEventListener('pointermove', handlePointerMove);
       window.addEventListener('pointerup', handlePointerUp);
     }
@@ -51,7 +78,18 @@ export const TestCalibrate: React.FC = () => {
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     };
-  }, [isDraggingMove, isDraggingScale, dragStart, offsetStart, scaleStart, scaleStartDistance]);
+  }, [
+    isDraggingMove,
+    isDraggingScaleX,
+    isDraggingScaleY,
+    dragStart,
+    offsetStart,
+    scaleXStart,
+    scaleXStartDistance,
+    scaleYStart,
+    scaleYStartDistance,
+    linkScales
+  ]);
 
   const startMoveDrag = (e: React.PointerEvent) => {
     e.preventDefault();
@@ -60,27 +98,54 @@ export const TestCalibrate: React.FC = () => {
     setOffsetStart({ x: offsetX, y: offsetY });
   };
 
-  const startScaleDrag = (e: React.PointerEvent) => {
+  const startScaleXDrag = (e: React.PointerEvent) => {
     e.preventDefault();
     if (!containerRef.current) return;
-    setIsDraggingScale(true);
+    setIsDraggingScaleX(true);
     const rect = containerRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
+    const dist = Math.abs(e.clientX - centerX);
+    setScaleXStartDistance(dist);
+    setScaleXStart(scaleX);
+  };
+
+  const startScaleYDrag = (e: React.PointerEvent) => {
+    e.preventDefault();
+    if (!containerRef.current) return;
+    setIsDraggingScaleY(true);
+    const rect = containerRef.current.getBoundingClientRect();
     const centerY = rect.top + rect.height / 2;
-    const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
-    setScaleStartDistance(dist);
-    setScaleStart(scale);
+    const dist = Math.abs(e.clientY - centerY);
+    setScaleYStartDistance(dist);
+    setScaleYStart(scaleY);
+  };
+
+  // Helper helper to update scaleX/scaleY with optional link
+  const changeScaleX = (delta: number) => {
+    setScaleX((s) => {
+      const val = parseFloat(Math.max(0.5, Math.min(2.0, s + delta)).toFixed(5));
+      if (linkScales) setScaleY(val);
+      return val;
+    });
+  };
+
+  const changeScaleY = (delta: number) => {
+    setScaleY((s) => {
+      const val = parseFloat(Math.max(0.5, Math.min(2.0, s + delta)).toFixed(5));
+      if (linkScales) setScaleX(val);
+      return val;
+    });
   };
 
   return (
     <div className="min-h-screen w-full bg-[#050505] text-[#EAD8C7] font-sans flex flex-col items-center justify-center p-8 select-none overflow-auto">
       <div className="mb-6 text-center max-w-xl">
         <h2 className="text-xl font-bold uppercase tracking-wider text-[#D4AF37] mb-2">
-          Görsel Hizalama Kalibratörü
+          Gelişmiş Görsel Esnetme & Hizalama
         </h2>
         <p className="text-xs text-[#A8988B] leading-relaxed">
-          Işıklı fare görselini (üstteki şeffaf katman), ışıksız fare görselinin üzerine tam oturtun. 
-          Görseli taşımak için <strong>ortadaki yeşil daireyi</strong>, boyutlandırmak (ölçeklemek) için ise <strong>sağ alt köşedeki yeşil daireyi</strong> sürükleyin.
+          Işıklı resmi tam oturtmak için yeşil daireleri sürükleyin veya aşağıdaki hassas yön butonlarını tıklayın.
+          Genişlik (Scale X) ve Yükseklik (Scale Y) oranlarını bağımsız esnetebilirsiniz.
         </p>
       </div>
 
@@ -91,19 +156,19 @@ export const TestCalibrate: React.FC = () => {
       >
         {/* Alt Katman: Işıksız Arka Plan */}
         <img
-          src="/ipad-buehne.png"
+          src="/ipad-buehne.png?v=3"
           alt="Base"
           className="block w-full h-auto pointer-events-none select-none opacity-80"
         />
 
-        {/* Üst Katman: Işıklı Arka Plan (Kaydırılabilir & Boyutlandırılabilir) */}
+        {/* Üst Katman: Işıklı Arka Plan (Esnetilebilir) */}
         <img
-          src="/ipad-buehne-on.png"
+          src="/ipad-buehne-on.png?v=3"
           alt="Overlay"
           className="absolute left-0 top-0 w-full h-auto pointer-events-none select-none"
           style={{
             opacity: opacity,
-            transform: `translate(${offsetX}px, ${offsetY}px) scale(${scale})`,
+            transform: `translate(${offsetX}px, ${offsetY}px) scale(${scaleX}, ${scaleY})`,
             transformOrigin: '50% 50%',
             mixBlendMode: 'normal'
           }}
@@ -112,171 +177,282 @@ export const TestCalibrate: React.FC = () => {
         {/* YEŞİL DAİRE 1: Taşıma Kolu (Merkezde) */}
         <div
           onPointerDown={startMoveDrag}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex h-14 w-14 cursor-move items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_20px_rgba(57,255,106,0.8)] transition-transform hover:scale-110 active:scale-95"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex h-14 w-14 cursor-move items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[9px] font-bold text-black shadow-[0_0_20px_rgba(57,255,106,0.8)] transition-transform hover:scale-110 active:scale-95"
           title="Sürükleyerek Taşı"
         >
-          TAŞI
+          TAŞI (X/Y)
         </div>
 
-        {/* YEŞİL DAİRE 2: Boyutlandırma Kolu (Sağ Altta) */}
+        {/* YEŞİL DAİRE 2: Genişlik Esnetme Kolu (Sağ Kenar Ortada) */}
         <div
-          onPointerDown={startScaleDrag}
-          className="absolute right-4 bottom-4 z-50 flex h-14 w-14 cursor-se-resize items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_20px_rgba(57,255,106,0.8)] transition-transform hover:scale-110 active:scale-95"
-          title="Sürükleyerek Boyutlandır"
+          onPointerDown={startScaleXDrag}
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-50 flex h-14 w-14 cursor-ew-resize items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[9px] font-bold text-black shadow-[0_0_20px_rgba(57,255,106,0.8)] transition-transform hover:scale-110 active:scale-95"
+          title="Yatay Esnet (Scale X)"
         >
-          BOYUT
+          EN (X)
+        </div>
+
+        {/* YEŞİL DAİRE 3: Yükseklik Esnetme Kolu (Alt Kenar Ortada) */}
+        <div
+          onPointerDown={startScaleYDrag}
+          className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 z-50 flex h-14 w-14 cursor-ns-resize items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[9px] font-bold text-black shadow-[0_0_20px_rgba(57,255,106,0.8)] transition-transform hover:scale-110 active:scale-95"
+          title="Dikey Esnet (Scale Y)"
+        >
+          BOY (Y)
         </div>
       </div>
 
       {/* 3. KONTROL PANELİ */}
-      <div className="mt-8 flex flex-col gap-6 border border-[#8C6D4F]/40 bg-[#0A0908]/95 p-6 rounded shadow-xl w-full max-w-[900px]">
+      <div className="mt-12 flex flex-col gap-6 border border-[#8C6D4F]/40 bg-[#0A0908]/95 p-6 rounded shadow-xl w-full max-w-[950px]">
         
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-          {/* Sol Kolon */}
+        {/* Sliders & Buttons Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+          
+          {/* Sol Kolon: Pozisyon (Shift X & Y) */}
           <div className="flex flex-col gap-4">
-            {/* Shift X (Sola/Sağa) */}
-            <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-xs">
+            <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] font-semibold border-b border-[#8C6D4F]/20 pb-1">
+              Pozisyon İnce Ayarı (Translation)
+            </h3>
+
+            {/* Shift X */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between text-xs font-mono">
                 <span className="text-[#A8988B]">Yatay Kaydırma (Shift X)</span>
-                <span className="text-[#39FF6A] font-mono">{offsetX}px</span>
+                <span className="text-[#39FF6A]">{offsetX}px</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <button
-                  type="button"
-                  onClick={() => setOffsetX((x) => parseFloat((x - 0.5).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                  onClick={() => setOffsetX((x) => parseFloat((x - 1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-1 rounded text-[11px] hover:border-[#D4AF37]"
                 >
-                  -0.5
+                  -1
+                </button>
+                <button
+                  onClick={() => setOffsetX((x) => parseFloat((x - 0.1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-1 rounded text-[11px] hover:border-[#D4AF37] text-amber-500"
+                >
+                  -0.1
                 </button>
                 <input
                   type="range"
                   min="-100"
                   max="100"
-                  step="0.5"
+                  step="0.1"
                   value={offsetX}
                   onChange={(e) => setOffsetX(parseFloat(e.target.value))}
-                  className="flex-1 accent-[#D4AF37]"
+                  className="flex-1 mx-2 accent-[#D4AF37]"
                 />
                 <button
-                  type="button"
-                  onClick={() => setOffsetX((x) => parseFloat((x + 0.5).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                  onClick={() => setOffsetX((x) => parseFloat((x + 0.1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-1 rounded text-[11px] hover:border-[#D4AF37] text-amber-500"
                 >
-                  +0.5
+                  +0.1
+                </button>
+                <button
+                  onClick={() => setOffsetX((x) => parseFloat((x + 1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-1 rounded text-[11px] hover:border-[#D4AF37]"
+                >
+                  +1
                 </button>
               </div>
             </div>
 
-            {/* Shift Y (Yukarı/Aşağı) */}
-            <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-xs">
+            {/* Shift Y */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between text-xs font-mono">
                 <span className="text-[#A8988B]">Dikey Kaydırma (Shift Y)</span>
-                <span className="text-[#39FF6A] font-mono">{offsetY}px</span>
+                <span className="text-[#39FF6A]">{offsetY}px</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <button
-                  type="button"
-                  onClick={() => setOffsetY((y) => parseFloat((y - 0.5).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                  onClick={() => setOffsetY((y) => parseFloat((y - 1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-1 rounded text-[11px] hover:border-[#D4AF37]"
                 >
-                  -0.5
+                  -1
+                </button>
+                <button
+                  onClick={() => setOffsetY((y) => parseFloat((y - 0.1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-1 rounded text-[11px] hover:border-[#D4AF37] text-amber-500"
+                >
+                  -0.1
                 </button>
                 <input
                   type="range"
                   min="-100"
                   max="100"
-                  step="0.5"
+                  step="0.1"
                   value={offsetY}
                   onChange={(e) => setOffsetY(parseFloat(e.target.value))}
-                  className="flex-1 accent-[#D4AF37]"
+                  className="flex-1 mx-2 accent-[#D4AF37]"
                 />
                 <button
-                  type="button"
-                  onClick={() => setOffsetY((y) => parseFloat((y + 0.5).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                  onClick={() => setOffsetY((y) => parseFloat((y + 0.1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-1 rounded text-[11px] hover:border-[#D4AF37] text-amber-500"
                 >
-                  +0.5
+                  +0.1
+                </button>
+                <button
+                  onClick={() => setOffsetY((y) => parseFloat((y + 1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/35 px-2 py-1 rounded text-[11px] hover:border-[#D4AF37]"
+                >
+                  +1
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Sağ Kolon */}
+          {/* Sağ Kolon: Boyut / Esnetme (Scale X & Y) */}
           <div className="flex flex-col gap-4">
-            {/* Scale (Boyutlandırma) */}
-            <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-xs">
-                <span className="text-[#A8988B]">Resim Boyutu (Scale)</span>
-                <span className="text-[#39FF6A] font-mono">{scale.toFixed(4)}</span>
+            <div className="flex justify-between items-center border-b border-[#8C6D4F]/20 pb-1">
+              <h3 className="text-xs uppercase tracking-widest text-[#D4AF37] font-semibold">
+                Esnetme ve Ölçek Ayarı (Scale)
+              </h3>
+              <label className="flex items-center gap-1.5 cursor-pointer text-[10px] text-amber-500">
+                <input
+                  type="checkbox"
+                  checked={linkScales}
+                  onChange={(e) => setLinkScales(e.target.checked)}
+                  className="accent-[#D4AF37]"
+                />
+                <span>EN/BOY KİLİTLE</span>
+              </label>
+            </div>
+
+            {/* Scale X */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between text-xs font-mono">
+                <span className="text-[#A8988B]">Yatay Genişlik (Scale X)</span>
+                <span className="text-[#39FF6A]">{scaleX.toFixed(5)}</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <button
-                  type="button"
-                  onClick={() => setScale((s) => parseFloat((s - 0.001).toFixed(4)))}
-                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                  onClick={() => changeScaleX(-0.005)}
+                  className="bg-black border border-[#8C6D4F]/35 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
                 >
-                  -0.001
+                  -0.005
+                </button>
+                <button
+                  onClick={() => changeScaleX(-0.0001)}
+                  className="bg-black border border-[#8C6D4F]/35 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                >
+                  -0.0001
                 </button>
                 <input
                   type="range"
                   min="0.80"
                   max="1.20"
-                  step="0.0005"
-                  value={scale}
-                  onChange={(e) => setScale(parseFloat(e.target.value))}
-                  className="flex-1 accent-[#D4AF37]"
+                  step="0.0001"
+                  value={scaleX}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setScaleX(val);
+                    if (linkScales) setScaleY(val);
+                  }}
+                  className="flex-1 mx-2 accent-[#D4AF37]"
                 />
                 <button
-                  type="button"
-                  onClick={() => setScale((s) => parseFloat((s + 0.001).toFixed(4)))}
-                  className="bg-black border border-[#8C6D4F]/35 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37]"
+                  onClick={() => changeScaleX(0.0001)}
+                  className="bg-black border border-[#8C6D4F]/35 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
                 >
-                  +0.001
+                  +0.0001
+                </button>
+                <button
+                  onClick={() => changeScaleX(0.005)}
+                  className="bg-black border border-[#8C6D4F]/35 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                >
+                  +0.005
                 </button>
               </div>
             </div>
 
-            {/* Şeffaflık (Opacity) */}
-            <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-xs">
-                <span className="text-[#A8988B]">Üst Katman Şeffaflığı (Opacity)</span>
-                <span className="text-[#39FF6A] font-mono">{(opacity * 100).toFixed(0)}%</span>
+            {/* Scale Y */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between text-xs font-mono">
+                <span className="text-[#A8988B]">Dikey Yükseklik (Scale Y)</span>
+                <span className="text-[#39FF6A]">{scaleY.toFixed(5)}</span>
               </div>
-              <input
-                type="range"
-                min="0.1"
-                max="1.0"
-                step="0.05"
-                value={opacity}
-                onChange={(e) => setOpacity(parseFloat(e.target.value))}
-                className="w-full accent-[#D4AF37]"
-              />
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => changeScaleY(-0.005)}
+                  className="bg-black border border-[#8C6D4F]/35 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                >
+                  -0.005
+                </button>
+                <button
+                  onClick={() => changeScaleY(-0.0001)}
+                  className="bg-black border border-[#8C6D4F]/35 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                >
+                  -0.0001
+                </button>
+                <input
+                  type="range"
+                  min="0.80"
+                  max="1.20"
+                  step="0.0001"
+                  value={scaleY}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setScaleY(val);
+                    if (linkScales) setScaleX(val);
+                  }}
+                  className="flex-1 mx-2 accent-[#D4AF37]"
+                />
+                <button
+                  onClick={() => changeScaleY(0.0001)}
+                  className="bg-black border border-[#8C6D4F]/35 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                >
+                  +0.0001
+                </button>
+                <button
+                  onClick={() => changeScaleY(0.005)}
+                  className="bg-black border border-[#8C6D4F]/35 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                >
+                  +0.005
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Alt Satır: Değer Çıktısı ve Reset */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between border-t border-[#8C6D4F]/20 pt-4 mt-2">
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
-              Kopyalanacak Kod Değerleri
+        {/* Alt Satır: Şeffaflık, Değerler ve Reset */}
+        <div className="flex flex-col md:flex-row gap-6 items-center justify-between border-t border-[#8C6D4F]/20 pt-6 mt-2">
+          
+          {/* Şeffaflık (Opacity) */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[#A8988B]">Üst Katman Şeffaflığı:</span>
+            <input
+              type="range"
+              min="0.05"
+              max="1.0"
+              step="0.05"
+              value={opacity}
+              onChange={(e) => setOpacity(parseFloat(e.target.value))}
+              className="w-32 accent-[#D4AF37]"
+            />
+            <span className="text-xs text-[#39FF6A] font-mono">{(opacity * 100).toFixed(0)}%</span>
+          </div>
+
+          {/* Kopyalanacak Değer Çıktısı */}
+          <div className="flex flex-col gap-1 items-center md:items-start">
+            <span className="text-[9px] uppercase tracking-widest text-[#D4AF37] font-semibold">
+              Kopyalanacak Hizalama Değerleri
             </span>
-            <pre className="bg-black/60 border border-[#8C6D4F]/20 px-4 py-2 rounded text-sm text-[#39FF6A] select-all font-mono">
-              {`offsetX: ${offsetX}, offsetY: ${offsetY}, scale: ${scale}`}
+            <pre className="bg-black/60 border border-[#8C6D4F]/20 px-4 py-2 rounded text-xs text-[#39FF6A] select-all font-mono">
+              {`offsetX: ${offsetX}, offsetY: ${offsetY}, scaleX: ${scaleX}, scaleY: ${scaleY}`}
             </pre>
           </div>
 
           <button
             type="button"
             onClick={() => {
-              setOffsetX(0);
-              setOffsetY(0);
-              setScale(1.0);
+              setOffsetX(-1.0);
+              setOffsetY(7.0);
+              setScaleX(1.0045);
+              setScaleY(1.0045);
             }}
             className="border border-[#8C6D4F]/50 px-4 py-2 text-xs rounded hover:border-[#D4AF37] active:bg-white/5 transition-all text-[#EAD8C7]"
           >
-            Tüm Değerleri Sıfırla
+            Sıfırla (Başlangıç)
           </button>
         </div>
       </div>
