@@ -276,33 +276,61 @@ export const ProjectsStage: React.FC = () => {
               className="flex h-full w-full"
             >
               <div className="relative h-full w-full overflow-hidden bg-[#0B0A09]">
-                <iframe
-                  key={project.githubUrl}
-                  src={project.githubUrl}
-                  title={project.title}
-                  sandbox="allow-scripts allow-same-origin allow-popups"
-                  referrerPolicy="no-referrer"
-                  onLoad={() => window.setTimeout(() => setLoaded(true), 900)}
-                  className="pointer-events-none absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500"
-                  style={{
-                    width: '250%',
-                    height: '250%',
-                    transform: 'scale(0.4)',
-                    // Erst zeigen, wenn die Seite wirklich steht: sonst blitzt
-                    // ihr weisser Ladezustand im Deckel auf.
-                    opacity: loaded ? 1 : 0,
-                  }}
-                />
-                {/* Faellt auf eine Karte zurueck, falls eine Seite das Einbetten
-                    verbietet: sie liegt darunter und bleibt dann sichtbar. */}
-                <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-br from-[#1A1512] to-[#0A0908] p-6">
-                  <span
-                    className="text-[1.4cqw] uppercase leading-none text-[#C99E5D]"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                {aligning ? (
+                  // Beim Ausrichten zaehlt Sichtbarkeit, nicht Inhalt: ein
+                  // schwarzes Portfolio auf einem schwarzen Deckel laesst sich
+                  // nicht einpassen.
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        'repeating-conic-gradient(#F7E7C4 0% 25%, #8C3B1E 0% 50%) 0 0 / 12% 12%',
+                      boxShadow: 'inset 0 0 0 10px #1B6FE0',
+                    }}
                   >
-                    {project.title}
-                  </span>
-                </div>
+                    {[
+                      'left-0 top-0',
+                      'right-0 top-0',
+                      'right-0 bottom-0',
+                      'left-0 bottom-0',
+                    ].map((place) => (
+                      <span
+                        key={place}
+                        className={`absolute h-[8%] w-[6%] bg-[#0A0908] ${place}`}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <iframe
+                    key={project.githubUrl}
+                    src={project.githubUrl}
+                    title={project.title}
+                    sandbox="allow-scripts allow-same-origin allow-popups"
+                    referrerPolicy="no-referrer"
+                    onLoad={() => window.setTimeout(() => setLoaded(true), 900)}
+                    className="pointer-events-none absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500"
+                    style={{
+                      width: '250%',
+                      height: '250%',
+                      transform: 'scale(0.4)',
+                      // Erst zeigen, wenn die Seite wirklich steht: sonst blitzt
+                      // ihr weisser Ladezustand im Deckel auf.
+                      opacity: loaded ? 1 : 0,
+                    }}
+                  />
+                    {/* Faellt auf eine Karte zurueck, falls eine Seite das
+                        Einbetten verbietet. */}
+                    <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-br from-[#1A1512] to-[#0A0908] p-6">
+                      <span
+                        className="text-[1.4cqw] uppercase leading-none text-[#C99E5D]"
+                        style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                      >
+                      {project.title}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
 
             </motion.div>
