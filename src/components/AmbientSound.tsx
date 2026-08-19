@@ -91,10 +91,7 @@ export const AmbientSound: React.FC = () => {
       aria-pressed={enabled}
       aria-label={enabled ? 'Klang ausschalten' : 'Klang einschalten'}
       title={enabled ? 'Klang aus' : 'Klang an'}
-      className="fixed bottom-4 z-50 flex h-9 w-9 items-center justify-center rounded-full border border-[#8C6D4F]/60 bg-black/60 text-[#E8DFD8] backdrop-blur-sm transition-all duration-300 hover:border-[#D4AF37] hover:text-[#F7E7C4] lg:bottom-5"
-      style={{
-        left: 'calc(4vw + 24px)'
-      }}
+      className="fixed bottom-6 left-6 z-50 flex h-11 w-11 items-center justify-center rounded-full border border-[#8C6D4F]/60 bg-black/60 text-[#E8DFD8] backdrop-blur-sm transition-all duration-300 hover:border-[#D4AF37] hover:text-[#F7E7C4] lg:bottom-10 lg:left-12"
     >
       <span
         className={`block h-2.5 w-2.5 rounded-full transition-all duration-500 ${
