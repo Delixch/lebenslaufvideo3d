@@ -158,7 +158,7 @@ const projects: Project[] = [
   },
 ];
 
-export const ProjectsSection: React.FC = () => {
+export const KararizKaldiyimProje: React.FC = () => {
   const [isMobile, setIsMobile] = React.useState(
     () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
   );
@@ -333,4 +333,4 @@ export const ProjectsSection: React.FC = () => {
   );
 };
 
-export default ProjectsSection;
+export default KararizKaldiyimProje;
