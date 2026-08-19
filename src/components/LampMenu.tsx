@@ -188,14 +188,14 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
             animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
             exit={{ opacity: 0, scale: 0.35, x: 34, y: -22 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="pointer-events-auto absolute w-[56vw] max-w-[232px] px-5 pb-14 pt-4"
+            className="pointer-events-auto absolute w-[56vw] max-w-[232px] pb-14 pl-5 pr-11 pt-4"
             style={{
               // Rechts unter der Laterne aufgehaengt, Wachstumspunkt oben rechts.
               // Links neben der Laterne, in der leeren Nebelflaeche unter dem
               // Schriftzug — dort deckt die Blase nichts Wichtiges zu.
               // Oben links ist die groesste freie Nebelflaeche; dort deckt die
               // Blase weder Schlagzeile noch Laterne zu.
-              top: '52px',
+              top: '36px',
               left: '-32px',
               transformOrigin: 'top right',
               // Kein flaches Gelb: warm und hell im Kern, zu den Raendern hin
