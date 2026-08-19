@@ -18,36 +18,54 @@ const ARROWS_OUT = [
 ];
 
 /**
- * Kern mit vier Pfeilen, die der Reihe nach aufleuchten — nach aussen heisst
- * oeffnen, nach innen einholen. Ersetzt jede Beschriftung.
+ * Kern mit vier Pfeilen, die ruhig atmen: sie ruecken zwei Pixel zur Mitte und
+ * werden dabei heller, dann wieder zurueck. Nach aussen heisst oeffnen, nach
+ * innen einholen — das ersetzt jede Beschriftung.
  */
 const ArrowMark: React.FC<{ direction: 'in' | 'out'; tone: string; core: string }> = ({
   direction,
   tone,
   core,
-}) => (
-  <svg viewBox="0 0 36 36" className="h-full w-full overflow-visible">
-    <circle cx="18" cy="18" r="3.4" fill={core} />
-    {(direction === 'in' ? ARROWS_IN : ARROWS_OUT).map((d, index) => (
-      <motion.path
-        key={d}
-        d={d}
-        fill="none"
-        stroke={tone}
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        animate={{ opacity: [0.2, 1, 0.2] }}
-        transition={{
-          duration: 1.8,
-          times: [0, 0.35, 1],
-          repeat: Infinity,
-          delay: index * 0.18,
-        }}
-      />
-    ))}
-  </svg>
-);
+}) => {
+  // Jeder Pfeil atmet auf seiner eigenen Achse zur Mitte hin.
+  const drift = [
+    { x: 0, y: 2.5 },
+    { x: -2.5, y: 0 },
+    { x: 0, y: -2.5 },
+    { x: 2.5, y: 0 },
+  ];
+
+  return (
+    <svg viewBox="0 0 36 36" className="h-full w-full overflow-visible">
+      <circle cx="18" cy="18" r="3" fill={core} />
+      {(direction === 'in' ? ARROWS_IN : ARROWS_OUT).map((d, index) => (
+        <motion.g
+          key={d}
+          animate={{
+            x: [0, drift[index].x, 0],
+            y: [0, drift[index].y, 0],
+            opacity: [0.45, 1, 0.45],
+          }}
+          transition={{
+            duration: 1.9,
+            ease: 'easeInOut',
+            repeat: Infinity,
+            delay: index * 0.12,
+          }}
+        >
+          <path
+            d={d}
+            fill="none"
+            stroke={tone}
+            strokeWidth="1.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </motion.g>
+      ))}
+    </svg>
+  );
+};
 
 interface LampMenuProps {
   /** Position und Groesse des Laternenglases, vom Hero ausgemessen. */
@@ -152,7 +170,7 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
         }}
       >
         {!open && (
-          <span className="absolute left-1/2 top-full mt-1 h-8 w-8 -translate-x-1/2">
+          <span className="absolute left-1/2 top-full mt-1 h-[26px] w-[26px] -translate-x-1/2">
             <ArrowMark direction="out" tone="rgba(255,226,172,0.85)" core="rgba(255,214,140,0.9)" />
           </span>
         )}
@@ -271,12 +289,12 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Menü schliessen"
-              className="group absolute bottom-3 right-4 h-11 w-11"
+              className="group absolute bottom-3 right-4 h-9 w-9"
             >
               <ArrowMark
                 direction="in"
-                tone="rgba(255,226,172,0.92)"
-                core="rgba(255,220,150,0.95)"
+                tone="rgba(58,36,18,0.95)"
+                core="rgba(58,36,18,0.85)"
               />
             </button>
           </motion.nav>
