@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects } from '../lib/projects';
+import { LampMoths } from './LampMoths';
 
 /**
  * Lage des Bildschirms auf dem Hintergrundbild, in Prozent der Buehne, dazu die
@@ -83,7 +84,7 @@ const quadTransform = (
 };
 
 /** Mitte des Laternenglases im Hintergrundbild. */
-const LAMP = [0.797, 0.055] as const;
+const LAMP = [0.8022, 0.1395] as const;
 
 /**
  * Die Projekte auf der Strassenbuehne: ein aufgeklapptes Notebook, in dem das
@@ -130,6 +131,7 @@ export const ProjectsStage: React.FC = () => {
   const plateRef = useRef<HTMLImageElement | null>(null);
   const [transform, setTransform] = useState<string>('');
   const [lamp, setLamp] = useState({ left: '81%', top: '25%' });
+  const [bulb, setBulb] = useState({ x: 0, y: 0, size: 40 });
 
   // Das Bild wird beschnitten dargestellt; ohne diese Rechnung sitzen die
   // Eckpunkte irgendwo, sobald sich das Fensterformat aendert.
@@ -148,6 +150,7 @@ export const ProjectsStage: React.FC = () => {
 
       const [lampX, lampY] = toStage(LAMP);
       setLamp({ left: `${lampX}px`, top: `${lampY}px` });
+      setBulb({ x: lampX, y: lampY, size: box.width * 0.028 });
     };
 
     measure();
@@ -370,6 +373,9 @@ export const ProjectsStage: React.FC = () => {
           opacity: 'calc(0.4 + var(--lamp-intensity, 1) * 0.6)',
         }}
       />
+
+      {/* Nachtfalter um die Laterne */}
+      <LampMoths centerX={bulb.x} centerY={bulb.y} bulbSize={bulb.size} active={bulb.size > 1} />
 
       <div className="absolute left-[3.5cqw] top-[7cqh] max-w-[22cqw]">
         <p className="text-[0.85cqw] font-semibold uppercase tracking-[0.42em] text-[#C99E5D]">
