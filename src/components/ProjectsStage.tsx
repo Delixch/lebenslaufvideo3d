@@ -351,7 +351,7 @@ export const ProjectsStage: React.FC = () => {
             das ganze Fenster nutzen, begrenzt nur durch die Fensterhoehe. */}
         <div className="mt-10 flex w-[92vw] max-w-[1700px] -translate-x-1/2 justify-center left-1/2 relative">
           <div
-            className="relative inline-block"
+            className="relative w-full"
             style={
               aligning
                 ? {
@@ -366,7 +366,7 @@ export const ProjectsStage: React.FC = () => {
               src="/ipad-buehne.png"
               alt=""
               onLoad={() => window.dispatchEvent(new Event('resize'))}
-              className="block h-auto w-auto max-h-[74svh] max-w-[92vw]"
+              className="block w-full h-auto"
             />
 
             <div className="absolute inset-0" style={{ containerType: 'size' }}>
