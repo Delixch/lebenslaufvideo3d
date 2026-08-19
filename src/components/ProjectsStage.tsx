@@ -237,7 +237,7 @@ export const ProjectsStage: React.FC = () => {
                   sandbox="allow-scripts allow-same-origin allow-popups"
                   referrerPolicy="no-referrer"
                   onLoad={() => window.setTimeout(() => setLoaded(true), 900)}
-                  className="pointer-events-none absolute left-0 top-0 origin-top-left border-0 transition-opacity duration-500"
+                  className="pointer-events-none absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500"
                   style={{
                     width: '250%',
                     height: '250%',
