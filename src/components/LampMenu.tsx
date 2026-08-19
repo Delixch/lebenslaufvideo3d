@@ -123,6 +123,26 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
       window.clearTimeout(timer);
     };
   }, [open]);
+  
+  // Sayfa kaydırıldığında (scroll yapıldığında) menüyü ve lambayı otomatik kapat
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const startScroll = window.scrollY;
+    const handleScroll = () => {
+      const diff = Math.abs(window.scrollY - startScroll);
+      if (diff > 120) { // Yaklaşık 3cm (120px) kaydığında kapatır
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [open]);
 
   if (!active) {
     return null;
@@ -135,24 +155,7 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
 
   return (
     <div ref={wrapRef} className="pointer-events-none absolute inset-0 z-[45] md:hidden">
-      {/* Im Foto brennt die Laterne bereits; solange sie aus sein soll, wird das
-          Glas abgedunkelt. */}
-      <motion.span
-        aria-hidden="true"
-        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-        animate={{ opacity: open ? 0 : 1 }}
-        transition={{ duration: 0.45 }}
-        style={{
-          top: coords.top,
-          left: coords.left,
-          width: `calc(${coords.width} * 2.6)`,
-          height: `calc(${coords.width} * 2.6)`,
-          background:
-            'radial-gradient(circle, rgba(10,8,6,0.96) 0%, rgba(10,8,6,0.9) 34%, rgba(12,10,8,0.6) 58%, rgba(14,11,9,0.25) 76%, transparent 100%)',
-          mixBlendMode: 'multiply',
-          filter: 'blur(4px)',
-        }}
-      />
+
 
       {/* Schaltflaeche auf dem Glas; groesser als das Glas, damit der Daumen trifft */}
       <button
