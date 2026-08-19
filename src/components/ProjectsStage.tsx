@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects } from '../lib/projects';
 
@@ -7,19 +7,82 @@ import { projects } from '../lib/projects';
  * Drehung, mit der die Flaeche auf den aufgeklappten Deckel gelegt wird. Alle
  * Feinjustage passiert hier — sonst nirgends.
  */
-const SCREEN = {
-  left: '21.4%',
-  top: '9.2%',
-  width: '49.6%',
-  height: '60.5%',
-  rotateY: -13.5,
-  rotateX: 1.4,
-  skewY: 3.4,
-  perspective: 1500,
+const SCREEN_QUAD = {
+  topLeft: [0.213, 0.389],
+  topRight: [0.478, 0.372],
+  bottomRight: [0.512, 0.703],
+  bottomLeft: [0.253, 0.716],
+} as const;
+
+/** Aufloesung der Flaeche, die auf den Deckel gelegt wird. */
+const PANEL = { width: 1440, height: 900 };
+
+/**
+ * Loest ein lineares Gleichungssystem per Gauss-Elimination.
+ */
+const solve = (matrix: number[][], rhs: number[]): number[] => {
+  const size = rhs.length;
+  const rows = matrix.map((row, index) => [...row, rhs[index]]);
+
+  for (let column = 0; column < size; column += 1) {
+    let pivot = column;
+    for (let row = column + 1; row < size; row += 1) {
+      if (Math.abs(rows[row][column]) > Math.abs(rows[pivot][column])) {
+        pivot = row;
+      }
+    }
+    [rows[column], rows[pivot]] = [rows[pivot], rows[column]];
+
+    for (let row = 0; row < size; row += 1) {
+      if (row === column) {
+        continue;
+      }
+      const factor = rows[row][column] / rows[column][column];
+      for (let k = column; k <= size; k += 1) {
+        rows[row][k] -= factor * rows[column][k];
+      }
+    }
+  }
+
+  return rows.map((row, index) => row[size] / row[index]);
+};
+
+/**
+ * Projektive Abbildung eines Rechtecks auf vier beliebige Eckpunkte, als
+ * matrix3d. Damit liegt die Flaeche exakt auf dem Deckel, statt per Augenmass
+ * gedreht zu werden.
+ */
+const quadTransform = (
+  width: number,
+  height: number,
+  corners: number[][],
+): string => {
+  const source = [
+    [0, 0],
+    [width, 0],
+    [width, height],
+    [0, height],
+  ];
+
+  const rows: number[][] = [];
+  const rhs: number[] = [];
+
+  source.forEach(([x, y], index) => {
+    const [u, v] = corners[index];
+    rows.push([x, y, 1, 0, 0, 0, -x * u, -y * u]);
+    rhs.push(u);
+    rows.push([0, 0, 0, x, y, 1, -x * v, -y * v]);
+    rhs.push(v);
+  });
+
+  const [a, b, c, d, e, f, g, h] = solve(rows, rhs);
+
+  // Spaltenweise, wie CSS es erwartet.
+  return `matrix3d(${a}, ${d}, 0, ${g}, ${b}, ${e}, 0, ${h}, 0, 0, 1, 0, ${c}, ${f}, 0, 1)`;
 };
 
 /** Mitte des Laternenglases im Hintergrundbild. */
-const LAMP = { left: '81.1%', top: '25.5%' };
+const LAMP = [0.8, 0.06] as const;
 
 /**
  * Die Projekte auf der Strassenbuehne: ein aufgeklapptes Notebook, in dem das
@@ -29,6 +92,50 @@ const LAMP = { left: '81.1%', top: '25.5%' };
 export const ProjectsStage: React.FC = () => {
   const [index, setIndex] = useState(0);
   const project = projects[index];
+  const plateRef = useRef<HTMLImageElement | null>(null);
+  const [transform, setTransform] = useState<string>('');
+  const [lamp, setLamp] = useState({ left: '81%', top: '25%' });
+
+  // Das Bild wird beschnitten dargestellt; ohne diese Rechnung sitzen die
+  // Eckpunkte irgendwo, sobald sich das Fensterformat aendert.
+  useEffect(() => {
+    const measure = () => {
+      const plate = plateRef.current;
+      if (!plate || !plate.naturalWidth) {
+        return;
+      }
+
+      const box = plate.getBoundingClientRect();
+      const ratio = plate.naturalWidth / plate.naturalHeight;
+      const boxRatio = box.width / box.height;
+
+      const drawnW = boxRatio >= ratio ? box.width : box.height * ratio;
+      const drawnH = boxRatio >= ratio ? box.width / ratio : box.height;
+      const originX = (box.width - drawnW) / 2;
+      const originY = (box.height - drawnH) / 2;
+
+      const toStage = ([fx, fy]: readonly number[]) => [
+        originX + fx * drawnW,
+        originY + fy * drawnH,
+      ];
+
+      setTransform(
+        quadTransform(PANEL.width, PANEL.height, [
+          toStage(SCREEN_QUAD.topLeft),
+          toStage(SCREEN_QUAD.topRight),
+          toStage(SCREEN_QUAD.bottomRight),
+          toStage(SCREEN_QUAD.bottomLeft),
+        ]),
+      );
+
+      const [lampX, lampY] = toStage(LAMP);
+      setLamp({ left: `${lampX}px`, top: `${lampY}px` });
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   const step = useCallback((delta: number) => {
     setIndex((current) => (current + delta + projects.length) % projects.length);
@@ -48,19 +155,21 @@ export const ProjectsStage: React.FC = () => {
     <section
       id="work-stage"
       className="relative hidden h-screen w-full overflow-hidden bg-black md:block"
-      style={{
-        backgroundImage: 'url(/projekt-buehne.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        animation: 'lampIntensity 6s infinite ease-in-out',
-      }}
+      style={{ animation: 'lampIntensity 6s infinite ease-in-out' }}
     >
+      <img
+        ref={plateRef}
+        src="/projekt-buehne.jpg"
+        alt=""
+        onLoad={() => window.dispatchEvent(new Event('resize'))}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
-          left: LAMP.left,
-          top: LAMP.top,
+          left: lamp.left,
+          top: lamp.top,
           width: '26vw',
           height: '26vw',
           background:
@@ -94,23 +203,17 @@ export const ProjectsStage: React.FC = () => {
       </div>
 
       <div
-        className="absolute"
+        className="absolute left-0 top-0 overflow-hidden"
         style={{
-          left: SCREEN.left,
-          top: SCREEN.top,
-          width: SCREEN.width,
-          height: SCREEN.height,
-          perspective: `${SCREEN.perspective}px`,
+          width: `${PANEL.width}px`,
+          height: `${PANEL.height}px`,
+          transformOrigin: '0 0',
+          transform,
+          background: '#080706',
+          opacity: transform ? 1 : 0,
         }}
       >
-        <div
-          className="h-full w-full overflow-hidden"
-          style={{
-            transform: `rotateY(${SCREEN.rotateY}deg) rotateX(${SCREEN.rotateX}deg) skewY(${SCREEN.skewY}deg)`,
-            transformOrigin: 'left center',
-            background: '#080706',
-          }}
-        >
+        <div className="h-full w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={project.number}
