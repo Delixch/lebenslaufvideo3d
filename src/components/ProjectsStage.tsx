@@ -134,6 +134,7 @@ export const ProjectsStage: React.FC = () => {
   const [bulb, setBulb] = useState({ x: 0, y: 0, size: 40 });
   const stageRef = useRef<HTMLElement | null>(null);
   const [onScreen, setOnScreen] = useState(false);
+  const [live, setLive] = useState(false);
 
   // Im Deckel laeuft eine ganze 3D-Seite. Ausserhalb des Blickfelds hat sie
   // nichts zu rechnen — sonst frisst sie die Bildrate der ganzen Seite.
@@ -226,6 +227,7 @@ export const ProjectsStage: React.FC = () => {
   };
 
   const step = useCallback((delta: number) => {
+    setLive(false);
     setLoaded(false);
     setIndex((current) => (current + delta + projects.length) % projects.length);
   }, []);
@@ -277,18 +279,33 @@ export const ProjectsStage: React.FC = () => {
         return;
       }
 
+      if (event.key === 'Escape') {
+        setLive(false);
+        return;
+      }
+
+      // Solange die Seite im Deckel bedient wird, gehoeren die Pfeiltasten ihr.
+      if (live) {
+        return;
+      }
+
       if (event.key === 'ArrowRight') step(1);
       if (event.key === 'ArrowLeft') step(-1);
     };
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [aligning, nudge, step]);
+  }, [aligning, live, nudge, step]);
 
   return (
     <section
       ref={stageRef}
       id="work-stage"
+      onPointerDown={(event) => {
+        if (live && !(event.target as HTMLElement).closest('iframe')) {
+          setLive(false);
+        }
+      }}
       className="relative hidden h-screen w-full items-center justify-center overflow-hidden bg-black md:flex"
       style={{ animation: onScreen ? 'lampIntensity 6s infinite ease-in-out' : 'none' }}
     >
@@ -468,6 +485,19 @@ export const ProjectsStage: React.FC = () => {
 
             </motion.div>
           </AnimatePresence>
+
+          {!live && (
+            <button
+              type="button"
+              onClick={() => setLive(true)}
+              aria-label="Projekt im Bildschirm bedienen"
+              className="group absolute inset-0 z-20 flex items-end justify-end p-[2cqw]"
+            >
+              <span className="rounded-full border border-[#C99E5D]/60 bg-black/70 px-[1.2cqw] py-[0.5cqh] text-[0.7cqw] font-semibold uppercase tracking-[0.28em] text-[#EAD8C7] opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                Zum Bedienen klicken
+              </span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -575,6 +605,12 @@ export const ProjectsStage: React.FC = () => {
           />
         </div>
       </div>
+
+        {live && (
+          <span className="pointer-events-none absolute left-1/2 top-[3cqh] z-40 -translate-x-1/2 rounded-full border border-[#C99E5D]/50 bg-black/75 px-[1.4cqw] py-[0.6cqh] text-[0.7cqw] font-semibold uppercase tracking-[0.3em] text-[#EAD8C7]">
+            Bedienung aktiv · Esc beendet
+          </span>
+        )}
 
         {/* Wasserglas auf dem Pflaster als Ladeanzeige */}
         <div
