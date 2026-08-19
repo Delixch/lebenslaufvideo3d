@@ -341,7 +341,7 @@ export const ProjectsStage: React.FC = () => {
           setLive(false);
         }
       }}
-      className="relative hidden h-screen w-full items-center justify-center overflow-hidden bg-black md:flex"
+      className="relative hidden h-screen w-full flex-col items-center justify-center overflow-hidden bg-black px-6 md:flex md:px-16"
       style={{ animation: onScreen ? 'lampIntensity 6s infinite ease-in-out' : 'none' }}
     >
       {/* Eine Buehne im Format des Bildes: sie passt immer ganz ins Fenster,
@@ -370,7 +370,7 @@ export const ProjectsStage: React.FC = () => {
           src="/projekt-buehne.jpg"
           alt=""
           onLoad={() => window.dispatchEvent(new Event('resize'))}
-          className="block h-auto w-auto max-h-[86svh] max-w-[96vw]"
+          className="block h-auto w-auto max-h-[58svh] max-w-[92vw]"
         />
 
         {/* Messgroesse fuer alles darin: cqw und cqh beziehen sich ab hier auf
@@ -431,43 +431,6 @@ export const ProjectsStage: React.FC = () => {
 
       {/* Nachtfalter um die Laterne */}
       <LampMoths centerX={bulb.x} centerY={bulb.y} bulbSize={bulb.size} active={onScreen && bulb.size > 1} />
-
-      <div className="absolute left-[3.5cqw] top-[7cqh] max-w-[34cqw]">
-        <p className="text-[0.8cqw] font-semibold uppercase tracking-[0.42em] text-[#C99E5D]">
-          Ausgewählte Arbeiten
-        </p>
-        <h2
-          className="mt-[1.4cqh] text-[3.4cqw] uppercase leading-[0.86]"
-          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-        >
-          <span
-            className="block text-transparent"
-            style={{
-              backgroundImage: 'linear-gradient(to bottom, #FFFFFF, #D5CBC0 55%, #605448)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-            }}
-          >
-            Ausgewählte Arbeiten.
-          </span>
-          <span
-            className="block text-transparent"
-            style={{
-              backgroundImage: 'linear-gradient(to bottom, #F7E7C4, #C99E5D 55%, #543B1A)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-            }}
-          >
-            Mit Hand gebaut.
-          </span>
-        </h2>
-        <p className="mt-[1.8cqh] max-w-[24cqw] text-[0.9cqw] font-light leading-relaxed text-[#A8988B]">
-          Jedes Projekt ist echte Arbeit für echte Menschen — keine Übungsaufgabe.
-          Mit den Pfeiltasten wechseln, in den Bildschirm klicken und selbst
-          ausprobieren.
-        </p>
-        <span className="mt-[2cqh] block h-px w-[6cqw] bg-[#C99E5D]/70" />
-      </div>
 
       <div
         className="absolute left-0 top-0 overflow-hidden"
