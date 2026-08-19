@@ -11,15 +11,9 @@ import { ContactSection } from './components/ContactSection';
 import { AmbientSound } from './components/AmbientSound';
 import { GoldFrame } from './components/GoldFrame';
 import { ScrollRail } from './components/ScrollRail';
-import { TestCalibrate } from './components/TestCalibrate';
 
 function App() {
   const [isHovered, setIsHovered] = useState(false);
-  const calibrateMode = typeof window !== 'undefined' && window.location.search.includes('calibrate');
-
-  if (calibrateMode) {
-    return <TestCalibrate />;
-  }
 
   return (
     <div className="w-full min-h-screen bg-black text-[#E8DFD8] selection:bg-[#cbb59d] selection:text-black">
