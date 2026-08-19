@@ -93,6 +93,17 @@ const LAMP = [0.797, 0.055] as const;
 export const ProjectsStage: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  // Ausrichthilfe: mit ?align an der Adresse haengen vier Griffe an den Ecken
+  // des Bildschirms. Wer sie zieht, sieht unten die fertigen Zahlen zum
+  // Einsetzen — damit ist Schaetzen aus Bildschirmfotos vorbei.
+  const [corners, setCorners] = useState<number[][]>([
+    [...SCREEN_QUAD.topLeft],
+    [...SCREEN_QUAD.topRight],
+    [...SCREEN_QUAD.bottomRight],
+    [...SCREEN_QUAD.bottomLeft],
+  ]);
+  const aligning =
+    typeof window !== 'undefined' && window.location.search.includes('align');
   const project = projects[index];
   const plateRef = useRef<HTMLImageElement | null>(null);
   const [transform, setTransform] = useState<string>('');
@@ -111,14 +122,7 @@ export const ProjectsStage: React.FC = () => {
 
       const toStage = ([fx, fy]: readonly number[]) => [fx * box.width, fy * box.height];
 
-      setTransform(
-        quadTransform(PANEL.width, PANEL.height, [
-          toStage(SCREEN_QUAD.topLeft),
-          toStage(SCREEN_QUAD.topRight),
-          toStage(SCREEN_QUAD.bottomRight),
-          toStage(SCREEN_QUAD.bottomLeft),
-        ]),
-      );
+      setTransform(quadTransform(PANEL.width, PANEL.height, corners.map(toStage)));
 
       const [lampX, lampY] = toStage(LAMP);
       setLamp({ left: `${lampX}px`, top: `${lampY}px` });
@@ -139,7 +143,37 @@ export const ProjectsStage: React.FC = () => {
       observer.disconnect();
       window.removeEventListener('resize', measure);
     };
-  }, []);
+  }, [corners]);
+
+  const dragCorner = (which: number) => (event: React.PointerEvent) => {
+    event.preventDefault();
+    const plate = plateRef.current;
+    if (!plate) {
+      return;
+    }
+
+    const move = (pointer: PointerEvent) => {
+      const box = plate.getBoundingClientRect();
+      setCorners((current) =>
+        current.map((corner, index) =>
+          index === which
+            ? [
+                Math.round(((pointer.clientX - box.left) / box.width) * 10000) / 10000,
+                Math.round(((pointer.clientY - box.top) / box.height) * 10000) / 10000,
+              ]
+            : corner,
+        ),
+      );
+    };
+
+    const stop = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', stop);
+    };
+
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', stop);
+  };
 
   const step = useCallback((delta: number) => {
     setLoaded(false);
@@ -380,6 +414,25 @@ export const ProjectsStage: React.FC = () => {
           />
         </div>
       </div>
+
+        {aligning && (
+          <>
+            {corners.map((corner, which) => (
+              <span
+                key={which}
+                onPointerDown={dragCorner(which)}
+                className="absolute z-50 h-6 w-6 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-[#D4AF37] bg-black/60"
+                style={{ left: `${corner[0] * 100}%`, top: `${corner[1] * 100}%` }}
+              />
+            ))}
+            <pre className="absolute bottom-2 left-2 z-50 bg-black/80 p-3 text-[11px] leading-tight text-[#D4AF37]">
+              {`topLeft: [${corners[0]}],
+topRight: [${corners[1]}],
+bottomRight: [${corners[2]}],
+bottomLeft: [${corners[3]}],`}
+            </pre>
+          </>
+        )}
         </div>
       </div>
     </section>
