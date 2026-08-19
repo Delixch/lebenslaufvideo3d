@@ -391,8 +391,6 @@ export const ProjectsStage: React.FC = () => {
                 live ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
-                transform: 'translate(-1px, 7px) scale(1.0045)',
-                transformOrigin: '50% 50%',
                 animation: live ? 'mouseGlow 8s infinite ease-in-out' : 'none',
               }}
             />
