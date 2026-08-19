@@ -128,3 +128,24 @@ html {
     background: rgba(212, 175, 55, 0.35);
   }
 }
+
+
+/* Laterne und alles, was von ihrem Licht lebt, haengen an einer Zahl. */
+@property --lamp-intensity {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+@keyframes lampIntensity {
+  0% { --lamp-intensity: 0.35; }
+  5% { --lamp-intensity: 0.95; }
+  9% { --lamp-intensity: 0.4; }
+  14% { --lamp-intensity: 0.9; }
+  26% { --lamp-intensity: 0.98; }
+  50% { --lamp-intensity: 0.86; }
+  53% { --lamp-intensity: 1; }
+  70% { --lamp-intensity: 1; }
+  86% { --lamp-intensity: 0.88; }
+  100% { --lamp-intensity: 1; }
+}

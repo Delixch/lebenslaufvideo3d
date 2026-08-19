@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { AboutSection } from './components/AboutSection';
-import { ProjectsSection } from './components/ProjectsSection';
+import { ProjectsStage } from './components/ProjectsStage';
 import { MobileProjectsSection } from './components/MobileProjectsSection';
 
 import { SkillsSection } from './components/SkillsSection';
@@ -21,7 +21,7 @@ function App() {
       <HeroSection isHovered={isHovered} setIsHovered={setIsHovered} />
       <AboutSection />
       <div id="work">
-        <ProjectsSection />
+        <ProjectsStage />
         <MobileProjectsSection />
       </div>
       <SkillsSection />
