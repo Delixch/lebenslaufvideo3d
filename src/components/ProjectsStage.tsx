@@ -527,41 +527,22 @@ export const ProjectsStage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Gold Bezel Frame Overlay (With Corner Brackets and Laser Sweep) */}
+              {/* Gold Bezel Frame Overlay (Solid Thick Gold Border on the Bezel) */}
               <div
-                className="absolute left-0 top-0 pointer-events-none z-45 overflow-visible"
+                className="absolute pointer-events-none z-45"
                 style={{
-                  width: `${PANEL.width}px`,
-                  height: `${PANEL.height}px`,
-                  transformOrigin: '0 0',
+                  left: '-75px',
+                  top: '-52px',
+                  width: `${PANEL.width + 150}px`,
+                  height: `${PANEL.height + 104}px`,
+                  transformOrigin: '75px 52px',
                   transform,
                   opacity: transform ? 1 : 0,
+                  border: '10px solid #D4AF37',
+                  borderRadius: '48px',
+                  boxShadow: '0 0 20px rgba(212, 175, 55, 0.45)',
                 }}
-              >
-                {/* Thin gold perimeter border */}
-                <div className="absolute inset-0 border border-[#D4AF37]/30 rounded-[24px]" />
-
-                {/* Dynamic Laser Border Pulse */}
-                <div className="absolute inset-0 rounded-[24px] overflow-hidden">
-                  <motion.div 
-                    animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                    className="w-1/3 h-full bg-gradient-to-r from-transparent via-[#D4AF37]/20 to-transparent skew-x-12"
-                  />
-                </div>
-
-                {/* Gold Corner Brackets (offset slightly outwards by 4px) */}
-                <div className="absolute inset-0 overflow-visible">
-                  {/* Top-Left */}
-                  <div className="absolute top-[-4px] left-[-4px] w-20 h-20 border-t-[5px] border-l-[5px] border-[#D4AF37] rounded-tl-[28px] shadow-[0_0_12px_rgba(212,175,55,0.5)]" />
-                  {/* Top-Right */}
-                  <div className="absolute top-[-4px] right-[-4px] w-20 h-20 border-t-[5px] border-r-[5px] border-[#D4AF37] rounded-tr-[28px] shadow-[0_0_12px_rgba(212,175,55,0.5)]" />
-                  {/* Bottom-Left */}
-                  <div className="absolute bottom-[-4px] left-[-4px] w-20 h-20 border-b-[5px] border-l-[5px] border-[#D4AF37] rounded-bl-[28px] shadow-[0_0_12px_rgba(212,175,55,0.5)]" />
-                  {/* Bottom-Right */}
-                  <div className="absolute bottom-[-4px] right-[-4px] w-20 h-20 border-b-[5px] border-r-[5px] border-[#D4AF37] rounded-br-[28px] shadow-[0_0_12px_rgba(212,175,55,0.5)]" />
-                </div>
-              </div>
+              />
 
               {/* Right Side Project Info Card */}
               <AnimatePresence mode="wait">
