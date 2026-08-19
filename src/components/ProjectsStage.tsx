@@ -692,7 +692,6 @@ export const ProjectsStage: React.FC = () => {
               {aligning && (
                 <>
                   {corners.map((corner, which) => {
-                    const away = 0;
                     const shiftX = 0;
                     const shiftY = 0;
 
