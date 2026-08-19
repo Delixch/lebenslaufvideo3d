@@ -106,14 +106,16 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
       >
         {/* Ruhiges Pulsieren am Glas */}
         <motion.span
-          className="absolute inset-0 rounded-full"
+          // Der Ring sitzt innerhalb der Trefferflaeche: der Daumen darf
+          // grosszuegig danebenlanden, das Sichtbare bleibt klein.
+          className="absolute inset-[26%] rounded-full"
           animate={
             open
               ? { boxShadow: '0 0 0 1px rgba(234,179,8,0.45)' }
               : {
                   boxShadow: [
                     '0 0 0 0 rgba(234,179,8,0.0)',
-                    '0 0 0 7px rgba(234,179,8,0.16)',
+                    '0 0 0 4px rgba(234,179,8,0.18)',
                     '0 0 0 0 rgba(234,179,8,0.0)',
                   ],
                 }
