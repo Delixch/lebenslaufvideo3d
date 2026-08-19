@@ -1,55 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { navItems, scrollToSection } from '../lib/nav';
 
-const navItems = [
-  { name: 'ÜBER MICH', href: '#about', id: 'about' },
-  { name: 'PROJEKTE', href: '#work', id: 'work' },
-  { name: 'SKILLS', href: '#skills', id: 'skills' },
-  { name: 'ERFAHRUNG', href: '#experience', id: 'experience' },
-  { name: 'KONTAKT', href: '#contact', id: 'contact' },
-];
-
-const HEADER_OFFSET = 80;
-const SETTLE_TRIES = 10;
-const SETTLE_STEP_MS = 150;
-const DRIFT_TOLERANCE = 8;
-
-/**
- * Sprung zu einem Abschnitt, der nachkorrigiert.
- *
- * Beim allerersten Aufruf steht das Layout noch nicht: iOS klappt die
- * Adressleiste ein, Schriften und Bilder setzen sich, das Overlay blendet aus.
- * Ein einmaliger Sprung landet dann zu hoch — beim zweiten Tippen stimmt es,
- * weil inzwischen alles steht. Darum wird nach dem Sprung noch etwa anderthalb
- * Sekunden lang gemessen und bei Abweichung nachgezogen.
- */
-const scrollToSection = (id: string): void => {
-  const jump = () => {
-    const element = document.getElementById(id);
-    if (!element) {
-      return 0;
-    }
-
-    const drift = element.getBoundingClientRect().top - HEADER_OFFSET;
-    if (Math.abs(drift) > DRIFT_TOLERANCE) {
-      window.scrollTo({ top: window.scrollY + drift, behavior: 'auto' });
-    }
-
-    return drift;
-  };
-
-  let tries = 0;
-  const settle = () => {
-    jump();
-    tries += 1;
-    if (tries < SETTLE_TRIES) {
-      window.setTimeout(settle, SETTLE_STEP_MS);
-    }
-  };
-
-  // Erst wenn das Overlay wirklich verschwunden ist, hat Messen einen Sinn.
-  window.setTimeout(settle, 320);
-};
+// Solange das Laternenmenue erprobt wird, bleibt der Hamburger aus.
+const SHOW_HAMBURGER = false;
 
 interface HeaderProps {
   setIsHovered: (hovered: boolean) => void;
@@ -183,6 +137,7 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
           </a>
 
           {/* Hamburger: Linien werden zum Kreuz, ein Ring pulst beim Öffnen */}
+          {SHOW_HAMBURGER && (
           <button
             onClick={() => setMenuOpen((open) => !open)}
             className="relative z-[60] flex md:hidden h-11 w-11 flex-col items-center justify-center rounded-full border border-[#8C6D4F]/40 bg-[#120F0C]/70 transition-colors active:border-[#D4AF37]"
@@ -216,6 +171,7 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
               />
             </div>
           </button>
+          )}
         </div>
 
         {/* Lesefortschritt als feine Goldlinie */}
