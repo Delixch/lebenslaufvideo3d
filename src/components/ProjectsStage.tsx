@@ -387,7 +387,7 @@ export const ProjectsStage: React.FC = () => {
             <img
               src="/ipad-buehne-on.png"
               alt=""
-              className={`absolute inset-0 block w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
+              className={`absolute left-0 top-0 w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
                 live ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
