@@ -98,7 +98,8 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
         className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           top: coords.top,
-          left: coords.left,
+          // Etwas nach rechts: der Griffpunkt sitzt sonst neben dem Glas.
+          left: `calc(${coords.left} + 10px)`,
           width: `max(56px, calc(${coords.width} * 1.6))`,
           height: `max(56px, calc(${coords.width} * 1.6))`,
         }}
