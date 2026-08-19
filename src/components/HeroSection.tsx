@@ -435,13 +435,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
   // Laternenlicht, Falter und Brummen: identisch fuer Handy und Desktop, nur
   // die ausgemessenen Koordinaten unterscheiden sich.
+  // Auf dem Handy brennt die Laterne erst, wenn jemand sie einschaltet; am
+  // Desktop geht sie wie bisher mit dem Aufloesen des Videos an.
+  const [lampOn, setLampOn] = useState(false);
+  const lampLit = isMobile ? isVideoDissolved && lampOn : isVideoDissolved;
+
   const lampLight = (
     <>
   {/* Altın Sarısı Yanan Sokak Lambası Glow Efekti (Kodla Yanma) */}
   <div 
     ref={lampCoreRef}
     className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
-      isVideoDissolved 
+      lampLit 
         ? 'opacity-100 scale-100' 
         : 'opacity-0 scale-90 blur-sm'
     }`}
@@ -452,7 +457,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       left: lampCoords.left,
       width: lampCoords.width,
       height: lampCoords.height,
-      transform: isVideoDissolved ? 'translate(-50%, -50%)' : 'scale(0.9) translate(-50%, -50%)',
+      transform: lampLit ? 'translate(-50%, -50%)' : 'scale(0.9) translate(-50%, -50%)',
       // Natriumdampflampe: warmweisser Kern, der ueber Bernstein
       // ausblutet — nicht das satte Postgelb von vorher.
       // Strassenlaternen brennen fast weiss; das Warme kommt erst
@@ -461,14 +466,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         'radial-gradient(circle, rgba(255,255,253,0.98) 0%, rgba(255,253,246,0.84) 16%, rgba(252,248,236,0.54) 34%, rgba(244,238,222,0.28) 52%, rgba(226,216,196,0.11) 72%, rgba(190,180,160,0.03) 88%, transparent 100%)',
       borderRadius: '50%',
       mixBlendMode: 'screen',
-      animation: isVideoDissolved ? 'lampFlicker 6s infinite ease-in-out' : 'none',
+      animation: lampLit ? 'lampFlicker 6s infinite ease-in-out' : 'none',
     }}
   />
 
   {/* Lichthof: traegt die Helligkeit in die Umgebung, ohne zu leuchten */}
   <div
     className={`absolute pointer-events-none transition-all duration-[2000ms] ease-in-out ${
-      isVideoDissolved ? 'opacity-100' : 'opacity-0'
+      lampLit ? 'opacity-100' : 'opacity-0'
     }`}
     style={{
       top: lampCoords.top,
@@ -489,7 +494,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
       WebkitMaskImage:
         'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
-      animation: isVideoDissolved ? 'haloBreathe 6s infinite ease-in-out' : 'none',
+      animation: lampLit ? 'haloBreathe 6s infinite ease-in-out' : 'none',
     }}
   />
 
@@ -498,11 +503,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     centerX={parseFloat(lampCoords.left)}
     centerY={parseFloat(lampCoords.top)}
     bulbSize={parseFloat(lampCoords.width)}
-    active={isVideoDissolved}
+    active={lampLit}
   />
 
   {/* Netzbrummen und Knistern, synchron zum Flackern */}
-  <LampBuzz active={isVideoDissolved} flickerTarget={lampCoreRef} />
+  <LampBuzz active={lampLit} flickerTarget={lampCoreRef} />
     </>
   );
 
@@ -1021,7 +1026,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
       {/* Die Laterne schaltet auf dem Handy das Menue. Sie sitzt bewusst ausser-
           halb der Bildebene, sonst deckt die Schlagzeile die Blase zu. */}
-      {isMobile && <LampMenu coords={lampCoords} active={isVideoDissolved} />}
+      {isMobile && (
+        <LampMenu coords={lampCoords} active={isVideoDissolved} onToggle={setLampOn} />
+      )}
     </section>
   );
 };
