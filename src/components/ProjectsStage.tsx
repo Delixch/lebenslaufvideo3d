@@ -241,13 +241,23 @@ export const ProjectsStage: React.FC = () => {
       }
     };
 
+    // Wer neben dem Deckel scrollt, will weiter — dann wird der Griff geloest,
+    // damit niemand in der Szene festsitzt.
+    const release = (event: WheelEvent) => {
+      if (!(event.target as HTMLElement)?.closest('iframe')) {
+        setLive(false);
+      }
+    };
+
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     window.addEventListener('scroll', hold, { passive: true });
+    window.addEventListener('wheel', release, { passive: true });
 
     return () => {
       document.body.style.overflow = previous;
       window.removeEventListener('scroll', hold);
+      window.removeEventListener('wheel', release);
     };
   }, [live]);
 
