@@ -431,7 +431,7 @@ export const ProjectsStage: React.FC = () => {
                   transformOrigin: '0 0',
                   transform,
                   background: '#080706',
-                  borderRadius: '44px',
+                  borderRadius: '32px',
                   opacity: transform ? 1 : 0,
                 }}
               >
