@@ -9,8 +9,11 @@ export const TestCalibrate: React.FC = () => {
   const [linkScales, setLinkScales] = useState(false);
   const [opacity, setOpacity] = useState(0.5);
   
-  // Blend mode: 'opacity' (normal overlay with transparency) or 'difference' (shows alignment differences as colored edges on black)
+  // Blend mode: 'opacity' or 'difference'
   const [blendMode, setBlendMode] = useState<'opacity' | 'difference'>('difference');
+
+  // Live test mode toggles lights on and off to simulate final user experience
+  const [lightsOn, setLightsOn] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -28,15 +31,13 @@ export const TestCalibrate: React.FC = () => {
   const [scaleYStart, setScaleYStart] = useState(1);
   const [scaleYStartDistance, setScaleYStartDistance] = useState(1);
 
-  // Global mouse listeners for smooth dragging (adjusted for display scaling)
+  // Global mouse listeners for smooth dragging
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-
-      // The container is scaled down to ~0.55 visually, so we adjust client delta by / 0.55
       const displayScale = rect.width / 1024; // exact current visual scale
 
       if (isDraggingMove) {
@@ -144,30 +145,74 @@ export const TestCalibrate: React.FC = () => {
     });
   };
 
+  // Determine current style states based on live test mode
+  const currentBlendMode = lightsOn ? 'normal' : (blendMode === 'difference' ? 'difference' : 'normal');
+
   return (
     <div className="h-screen w-full bg-[#050505] text-[#EAD8C7] font-sans flex flex-col md:flex-row items-center justify-center p-6 gap-8 overflow-hidden select-none">
       
-      {/* SOL SÜTUN: KÜÇÜLTÜLMÜŞ GÖRSEL ALANI */}
+      <style>{`
+        @keyframes testLampIntensity {
+          0% { opacity: 0.35; }
+          5% { opacity: 0.95; }
+          9% { opacity: 0.4; }
+          14% { opacity: 0.9; }
+          26% { opacity: 0.98; }
+          50% { opacity: 0.86; }
+          53% { opacity: 1; }
+          70% { opacity: 1; }
+          86% { opacity: 0.88; }
+          100% { opacity: 1; }
+        }
+        @keyframes testMouseGlow {
+          0%, 100% { opacity: 0.94; }
+          42% { opacity: 0.98; }
+          43% { opacity: 0.85; }
+          44% { opacity: 0.98; }
+          45% { opacity: 0.90; }
+          46% { opacity: 1; }
+          78% { opacity: 0.96; }
+          79% { opacity: 0.82; }
+          80% { opacity: 0.98; }
+          81% { opacity: 0.88; }
+          82% { opacity: 1; }
+        }
+        .test-lamp-glow {
+          animation: testLampIntensity 6s infinite ease-in-out;
+        }
+        .test-mouse-glow {
+          animation: testMouseGlow 8s infinite ease-in-out;
+        }
+      `}</style>
+
+      {/* SOL SÜTUN: GÖRSEL ALANI */}
       <div className="flex-1 flex flex-col items-center justify-center relative">
         <div className="mb-4 text-center max-w-md">
           <h2 className="text-lg font-bold uppercase tracking-wider text-[#D4AF37]">
             Görsel Kalibratör (Yan Yana Görünüm)
           </h2>
           <p className="text-[11px] text-[#A8988B] mt-1 leading-relaxed">
-            Fark (Difference) modunda <strong>görseller çakıştıkça ekran siyahlaşır.</strong>
-            Ortadaki daireyle <strong>Taşıyın</strong>, kenardaki dairelerle <strong>Esnedin (X/Y)</strong>.
+            Hizalamayı test etmek için **görsele tıklayıp** ışıkları yakıp söndürün.
+            Eşitleme yaparken ise **Fark (Difference)** modunu kullanın.
           </p>
         </div>
 
         {/* 1024x766 boyutundaki orijinal alanın CSS scale ile küçültülmesi (Yüzde 55) */}
         <div 
-          className="relative flex items-center justify-center overflow-visible border border-[#8C6D4F]/30 bg-black shadow-2xl rounded"
+          onClick={() => setLightsOn((prev) => !prev)}
+          className="relative flex items-center justify-center overflow-visible border border-[#8C6D4F]/30 bg-black shadow-2xl rounded cursor-pointer group"
           style={{ width: '563px', height: '421px' }}
         >
           <div 
             ref={containerRef}
             className="absolute origin-center w-[1024px] h-[766px]"
             style={{ transform: 'scale(0.55)' }}
+            onClick={(e) => {
+              // Prevent click inside container from triggering double click toggle
+              if (e.target !== e.currentTarget && !(e.target as HTMLElement).classList.contains('absolute')) {
+                e.stopPropagation();
+              }
+            }}
           >
             {/* Alt Katman: Işıksız Arka Plan */}
             <img
@@ -180,76 +225,125 @@ export const TestCalibrate: React.FC = () => {
             <img
               src="/ipad-buehne-on.png?v=3"
               alt="Overlay"
-              className="absolute inset-0 w-full h-full pointer-events-none select-none"
+              className={`absolute inset-0 w-full h-full pointer-events-none select-none transition-opacity duration-300 ${
+                lightsOn ? 'test-mouse-glow' : ''
+              }`}
               style={{
-                opacity: blendMode === 'opacity' ? opacity : 1,
+                opacity: lightsOn ? 1.0 : (blendMode === 'opacity' ? opacity : (currentBlendMode === 'difference' ? 1.0 : 0.0)),
                 transform: `translate(${offsetX}px, ${offsetY}px) scale(${scaleX}, ${scaleY})`,
                 transformOrigin: '50% 50%',
-                mixBlendMode: blendMode === 'difference' ? 'difference' : 'normal'
+                mixBlendMode: currentBlendMode
               }}
             />
 
-            {/* YEŞİL DAİRE 1: Taşıma Kolu (Merkezde) */}
-            <div
-              onPointerDown={startMoveDrag}
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex h-16 w-16 cursor-move items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_25px_rgba(57,255,106,0.9)] transition-transform hover:scale-115 active:scale-95"
-            >
-              TAŞI (X/Y)
-            </div>
+            {/* Sokak Lambası Glow Efekti (Işıklar Açıkken Animatik Yanar) */}
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-500 ${
+                lightsOn ? 'opacity-100 test-lamp-glow' : 'opacity-0'
+              }`}
+              style={{
+                left: '85.5%',
+                top: '17.8%',
+                width: '180px',
+                height: '180px',
+                background:
+                  'radial-gradient(circle, rgba(255,255,252,0.18) 0%, rgba(252,250,244,0.10) 25%, rgba(246,242,232,0.05) 50%, transparent 100%)',
+                mixBlendMode: 'screen',
+                filter: 'blur(10px)',
+              }}
+            />
 
-            {/* YEŞİL DAİRE 2: Genişlik Esnetme Kolu (Sağ Kenar Ortada) */}
-            <div
-              onPointerDown={startScaleXDrag}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-50 flex h-16 w-16 cursor-ew-resize items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_25px_rgba(57,255,106,0.9)] transition-transform hover:scale-115 active:scale-95"
-            >
-              EN (X)
-            </div>
+            {/* Sadece Kalibrasyon Modundayken (Işıklar Kapalıyken) Yeşil Kollar Görünür */}
+            {!lightsOn && (
+              <>
+                {/* YEŞİL DAİRE 1: Taşıma Kolu (Merkezde) */}
+                <div
+                  onPointerDown={startMoveDrag}
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex h-16 w-16 cursor-move items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_25px_rgba(57,255,106,0.9)] transition-transform hover:scale-115 active:scale-95"
+                >
+                  TAŞI (X/Y)
+                </div>
 
-            {/* YEŞİL DAİRE 3: Yükseklik Esnetme Kolu (Alt Kenar Ortada) */}
-            <div
-              onPointerDown={startScaleYDrag}
-              className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 z-50 flex h-16 w-16 cursor-ns-resize items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_25px_rgba(57,255,106,0.9)] transition-transform hover:scale-115 active:scale-95"
-            >
-              BOY (Y)
-            </div>
+                {/* YEŞİL DAİRE 2: Genişlik Esnetme Kolu (Sağ Kenar Ortada) */}
+                <div
+                  onPointerDown={startScaleXDrag}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-50 flex h-16 w-16 cursor-ew-resize items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_25px_rgba(57,255,106,0.9)] transition-transform hover:scale-115 active:scale-95"
+                >
+                  EN (X)
+                </div>
+
+                {/* YEŞİL DAİRE 3: Yükseklik Esnetme Kolu (Alt Kenar Ortada) */}
+                <div
+                  onPointerDown={startScaleYDrag}
+                  className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 z-50 flex h-16 w-16 cursor-ns-resize items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_25px_rgba(57,255,106,0.9)] transition-transform hover:scale-115 active:scale-95"
+                >
+                  BOY (Y)
+                </div>
+              </>
+            )}
+          </div>
+          
+          {/* Görselin üstünde gezinirken çıkan küçük ipucu */}
+          <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[9px] text-[#A8988B] opacity-0 group-hover:opacity-100 transition-opacity">
+            Tıkla: Işıkları Yak / Söndür
           </div>
         </div>
       </div>
 
-      {/* SAĞ SÜTUN: AYAR PANELS (SABİT, SCROLL YOK) */}
+      {/* SAĞ SÜTUN: AYAR PANELI */}
       <div className="w-[360px] flex flex-col gap-4 border border-[#8C6D4F]/40 bg-[#0A0908]/95 p-5 rounded shadow-xl max-h-[90vh] overflow-y-auto">
         
-        {/* Görsel Mod Seçimi */}
-        <div className="flex flex-col gap-2">
+        {/* Canlı Test Modu Butonu */}
+        <div className="flex flex-col gap-1.5">
           <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
-            Hizalama Modu (Blend Mode)
+            Canlı Test (Live Preview)
           </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setBlendMode('difference')}
-              className={`flex-1 py-1.5 text-xs rounded border transition-all ${
-                blendMode === 'difference'
-                  ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#F7E7C4] font-semibold'
-                  : 'border-[#8C6D4F]/30 bg-black/40 text-[#A8988B] hover:border-[#8C6D4F]/60'
-              }`}
-            >
-              Fark (Difference)
-            </button>
-            <button
-              onClick={() => setBlendMode('opacity')}
-              className={`flex-1 py-1.5 text-xs rounded border transition-all ${
-                blendMode === 'opacity'
-                  ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#F7E7C4] font-semibold'
-                  : 'border-[#8C6D4F]/30 bg-black/40 text-[#A8988B] hover:border-[#8C6D4F]/60'
-              }`}
-            >
-              Şeffaflık (Opacity)
-            </button>
-          </div>
+          <button
+            onClick={() => setLightsOn((prev) => !prev)}
+            className={`w-full py-2.5 rounded border text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+              lightsOn
+                ? 'border-[#39FF6A] bg-[#39FF6A]/10 text-[#39FF6A] shadow-[0_0_12px_rgba(57,255,106,0.2)] animate-pulse'
+                : 'border-[#8C6D4F]/50 bg-black/60 text-[#EAD8C7] hover:border-[#D4AF37] hover:text-[#F7E7C4]'
+            }`}
+          >
+            {lightsOn ? 'IŞIKLARI SÖNDÜR (Test Kapat)' : 'IŞIKLARI YAK (Canlı Test Et)'}
+          </button>
         </div>
 
-        {/* Şeffaflık Sürgüsü (Sadece Opacity modu seçiliyken aktif) */}
-        {blendMode === 'opacity' && (
+        {/* Görsel Mod Seçimi (Sadece Işıklar kapalıyken ayar için görünür) */}
+        {!lightsOn && (
+          <div className="flex flex-col gap-2 border-t border-[#8C6D4F]/20 pt-3">
+            <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
+              Hizalama Modu (Blend Mode)
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setBlendMode('difference')}
+                className={`flex-1 py-1.5 text-xs rounded border transition-all ${
+                  blendMode === 'difference'
+                    ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#F7E7C4] font-semibold'
+                    : 'border-[#8C6D4F]/30 bg-black/40 text-[#A8988B] hover:border-[#8C6D4F]/60'
+                }`}
+              >
+                Fark (Difference)
+              </button>
+              <button
+                onClick={() => setBlendMode('opacity')}
+                className={`flex-1 py-1.5 text-xs rounded border transition-all ${
+                  blendMode === 'opacity'
+                    ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#F7E7C4] font-semibold'
+                    : 'border-[#8C6D4F]/30 bg-black/40 text-[#A8988B] hover:border-[#8C6D4F]/60'
+                }`}
+              >
+                Şeffaflık (Opacity)
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Şeffaflık Sürgüsü */}
+        {!lightsOn && blendMode === 'opacity' && (
           <div className="flex flex-col gap-1.5 bg-black/30 p-2 border border-[#8C6D4F]/10 rounded">
             <div className="flex justify-between text-[11px]">
               <span className="text-[#A8988B]">Üst Katman Şeffaflığı</span>
@@ -267,210 +361,214 @@ export const TestCalibrate: React.FC = () => {
           </div>
         )}
 
-        {/* POZİSYON AYARLARI */}
-        <div className="flex flex-col gap-3 border-t border-[#8C6D4F]/20 pt-3">
-          <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
-            Yön Ayarları (Position)
-          </span>
-
-          {/* Shift X */}
-          <div className="flex flex-col gap-1">
-            <div className="flex justify-between text-[11px] font-mono">
-              <span className="text-[#A8988B]">Yatay Kaydırma (X)</span>
-              <span className="text-[#39FF6A]">{offsetX}px</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setOffsetX((x) => parseFloat((x - 1.0).toFixed(1)))}
-                className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
-              >
-                -1
-              </button>
-              <button
-                onClick={() => setOffsetX((x) => parseFloat((x - 0.1).toFixed(1)))}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
-              >
-                -0.1
-              </button>
-              <input
-                type="range"
-                min="-50"
-                max="50"
-                step="0.1"
-                value={offsetX}
-                onChange={(e) => setOffsetX(parseFloat(e.target.value))}
-                className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
-              />
-              <button
-                onClick={() => setOffsetX((x) => parseFloat((x + 0.1).toFixed(1)))}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
-              >
-                +0.1
-              </button>
-              <button
-                onClick={() => setOffsetX((x) => parseFloat((x + 1.0).toFixed(1)))}
-                className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
-              >
-                +1
-              </button>
-            </div>
-          </div>
-
-          {/* Shift Y */}
-          <div className="flex flex-col gap-1">
-            <div className="flex justify-between text-[11px] font-mono">
-              <span className="text-[#A8988B]">Dikey Kaydırma (Y)</span>
-              <span className="text-[#39FF6A]">{offsetY}px</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setOffsetY((y) => parseFloat((y - 1.0).toFixed(1)))}
-                className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
-              >
-                -1
-              </button>
-              <button
-                onClick={() => setOffsetY((y) => parseFloat((y - 0.1).toFixed(1)))}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
-              >
-                -0.1
-              </button>
-              <input
-                type="range"
-                min="-50"
-                max="50"
-                step="0.1"
-                value={offsetY}
-                onChange={(e) => setOffsetY(parseFloat(e.target.value))}
-                className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
-              />
-              <button
-                onClick={() => setOffsetY((y) => parseFloat((y + 0.1).toFixed(1)))}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
-              >
-                +0.1
-              </button>
-              <button
-                onClick={() => setOffsetY((y) => parseFloat((y + 1.0).toFixed(1)))}
-                className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
-              >
-                +1
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ESNETME / ÖLÇEK AYARLARI */}
-        <div className="flex flex-col gap-3 border-t border-[#8C6D4F]/20 pt-3">
-          <div className="flex justify-between items-center">
+        {/* POZİSYON AYARLARI (Sadece Işıklar kapalıyken ayar için görünür) */}
+        {!lightsOn && (
+          <div className="flex flex-col gap-3 border-t border-[#8C6D4F]/20 pt-3">
             <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
-              Esnetme Ayarları (Scale)
+              Yön Ayarları (Position)
             </span>
-            <label className="flex items-center gap-1 cursor-pointer text-[9px] text-amber-500">
-              <input
-                type="checkbox"
-                checked={linkScales}
-                onChange={(e) => setLinkScales(e.target.checked)}
-                className="accent-[#D4AF37]"
-              />
-              <span>ZİNCİRLE</span>
-            </label>
-          </div>
 
-          {/* Scale X */}
-          <div className="flex flex-col gap-1">
-            <div className="flex justify-between text-[11px] font-mono">
-              <span className="text-[#A8988B]">Enine Genişlik (Scale X)</span>
-              <span className="text-[#39FF6A]">{scaleX.toFixed(5)}</span>
+            {/* Shift X */}
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-[11px] font-mono">
+                <span className="text-[#A8988B]">Yatay Kaydırma (X)</span>
+                <span className="text-[#39FF6A]">{offsetX}px</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setOffsetX((x) => parseFloat((x - 1.0).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  -1
+                </button>
+                <button
+                  onClick={() => setOffsetX((x) => parseFloat((x - 0.1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+                >
+                  -0.1
+                </button>
+                <input
+                  type="range"
+                  min="-50"
+                  max="50"
+                  step="0.1"
+                  value={offsetX}
+                  onChange={(e) => setOffsetX(parseFloat(e.target.value))}
+                  className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
+                />
+                <button
+                  onClick={() => setOffsetX((x) => parseFloat((x + 0.1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+                >
+                  +0.1
+                </button>
+                <button
+                  onClick={() => setOffsetX((x) => parseFloat((x + 1.0).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  +1
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => changeScaleX(-0.001)}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
-              >
-                -1k
-              </button>
-              <button
-                onClick={() => changeScaleX(-0.0001)}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
-              >
-                -0.1k
-              </button>
-              <input
-                type="range"
-                min="0.90"
-                max="1.10"
-                step="0.0001"
-                value={scaleX}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  setScaleX(val);
-                  if (linkScales) setScaleY(val);
-                }}
-                className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
-              />
-              <button
-                onClick={() => changeScaleX(0.0001)}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
-              >
-                +0.1k
-              </button>
-              <button
-                onClick={() => changeScaleX(0.001)}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
-              >
-                +1k
-              </button>
-            </div>
-          </div>
 
-          {/* Scale Y */}
-          <div className="flex flex-col gap-1">
-            <div className="flex justify-between text-[11px] font-mono">
-              <span className="text-[#A8988B]">Boyuna Yükseklik (Scale Y)</span>
-              <span className="text-[#39FF6A]">{scaleY.toFixed(5)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => changeScaleY(-0.001)}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
-              >
-                -1k
-              </button>
-              <button
-                onClick={() => changeScaleY(-0.0001)}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
-              >
-                -0.1k
-              </button>
-              <input
-                type="range"
-                min="0.90"
-                max="1.10"
-                step="0.0001"
-                value={scaleY}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  setScaleY(val);
-                  if (linkScales) setScaleX(val);
-                }}
-                className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
-              />
-              <button
-                onClick={() => changeScaleY(0.0001)}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
-              >
-                +0.1k
-              </button>
-              <button
-                onClick={() => changeScaleY(0.001)}
-                className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
-              >
-                +1k
-              </button>
+            {/* Shift Y */}
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-[11px] font-mono">
+                <span className="text-[#A8988B]">Dikey Kaydırma (Y)</span>
+                <span className="text-[#39FF6A]">{offsetY}px</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setOffsetY((y) => parseFloat((y - 1.0).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  -1
+                </button>
+                <button
+                  onClick={() => setOffsetY((y) => parseFloat((y - 0.1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+                >
+                  -0.1
+                </button>
+                <input
+                  type="range"
+                  min="-50"
+                  max="50"
+                  step="0.1"
+                  value={offsetY}
+                  onChange={(e) => setOffsetY(parseFloat(e.target.value))}
+                  className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
+                />
+                <button
+                  onClick={() => setOffsetY((y) => parseFloat((y + 0.1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+                >
+                  +0.1
+                </button>
+                <button
+                  onClick={() => setOffsetY((y) => parseFloat((y + 1.0).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
+                >
+                  +1
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* ESNETME / ÖLÇEK AYARLARI (Sadece Işıklar kapalıyken ayar için görünür) */}
+        {!lightsOn && (
+          <div className="flex flex-col gap-3 border-t border-[#8C6D4F]/20 pt-3">
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
+                Esnetme Ayarları (Scale)
+              </span>
+              <label className="flex items-center gap-1 cursor-pointer text-[9px] text-amber-500">
+                <input
+                  type="checkbox"
+                  checked={linkScales}
+                  onChange={(e) => setLinkScales(e.target.checked)}
+                  className="accent-[#D4AF37]"
+                />
+                <span>ZİNCİRLE</span>
+              </label>
+            </div>
+
+            {/* Scale X */}
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-[11px] font-mono">
+                <span className="text-[#A8988B]">Enine Genişlik (Scale X)</span>
+                <span className="text-[#39FF6A]">{scaleX.toFixed(5)}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => changeScaleX(-0.001)}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                >
+                  -1k
+                </button>
+                <button
+                  onClick={() => changeScaleX(-0.0001)}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                >
+                  -0.1k
+                </button>
+                <input
+                  type="range"
+                  min="0.90"
+                  max="1.10"
+                  step="0.0001"
+                  value={scaleX}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setScaleX(val);
+                    if (linkScales) setScaleY(val);
+                  }}
+                  className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
+                />
+                <button
+                  onClick={() => changeScaleX(0.0001)}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                >
+                  +0.1k
+                </button>
+                <button
+                  onClick={() => changeScaleX(0.001)}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                >
+                  +1k
+                </button>
+              </div>
+            </div>
+
+            {/* Scale Y */}
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-[11px] font-mono">
+                <span className="text-[#A8988B]">Boyuna Yükseklik (Scale Y)</span>
+                <span className="text-[#39FF6A]">{scaleY.toFixed(5)}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => changeScaleY(-0.001)}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                >
+                  -1k
+                </button>
+                <button
+                  onClick={() => changeScaleY(-0.0001)}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                >
+                  -0.1k
+                </button>
+                <input
+                  type="range"
+                  min="0.90"
+                  max="1.10"
+                  step="0.0001"
+                  value={scaleY}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setScaleY(val);
+                    if (linkScales) setScaleX(val);
+                  }}
+                  className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
+                />
+                <button
+                  onClick={() => changeScaleY(0.0001)}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                >
+                  +0.1k
+                </button>
+                <button
+                  onClick={() => changeScaleY(0.001)}
+                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                >
+                  +1k
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ALINACAK KOD VE SIFIRLA */}
         <div className="flex flex-col gap-2 border-t border-[#8C6D4F]/20 pt-3">
