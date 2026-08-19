@@ -531,16 +531,16 @@ export const ProjectsStage: React.FC = () => {
               <div
                 className="absolute pointer-events-none z-45"
                 style={{
-                  left: '-75px',
-                  top: '-52px',
-                  width: `${PANEL.width + 150}px`,
-                  height: `${PANEL.height + 104}px`,
-                  transformOrigin: '75px 52px',
+                  left: '-36px',
+                  top: '-31px',
+                  width: `${PANEL.width + 72}px`,
+                  height: `${PANEL.height + 62}px`,
+                  transformOrigin: '36px 31px',
                   transform,
                   opacity: transform ? 1 : 0,
-                  border: '10px solid #D4AF37',
-                  borderRadius: '48px',
-                  boxShadow: '0 0 20px rgba(212, 175, 55, 0.45)',
+                  border: '28px solid #D4AF37',
+                  borderRadius: '34px',
+                  boxShadow: '0 0 25px rgba(212, 175, 55, 0.45)',
                 }}
               />
 
