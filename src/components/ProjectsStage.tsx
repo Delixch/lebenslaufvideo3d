@@ -117,10 +117,12 @@ export const ProjectsStage: React.FC = () => {
       return;
     }
 
-    setFill(6);
+    setFill(4);
+    // Langsam und mit abnehmendem Tempo bis knapp unter drei Viertel: voll wird
+    // das Glas erst, wenn die Seite wirklich steht — sonst luegt die Anzeige.
     const timer = window.setInterval(() => {
-      setFill((current) => (current < 88 ? current + (88 - current) * 0.08 + 0.6 : current));
-    }, 180);
+      setFill((current) => (current < 74 ? current + (74 - current) * 0.035 + 0.25 : current));
+    }, 220);
 
     return () => window.clearInterval(timer);
   }, [loaded, index]);
@@ -517,10 +519,12 @@ export const ProjectsStage: React.FC = () => {
         <div
           className="pointer-events-none absolute z-30 transition-opacity duration-700"
           style={{
-            left: '60.5%',
-            top: '76%',
-            width: '3.4cqw',
-            height: '9cqh',
+            // Links neben dem Notebook auf dem Pflaster, etwa halb so hoch wie
+            // das Geraet.
+            left: '7.5%',
+            top: '58%',
+            width: '6.4cqw',
+            height: '21cqh',
             opacity: loaded ? 0 : 1,
           }}
         >
