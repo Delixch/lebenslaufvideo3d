@@ -4,10 +4,10 @@ import { projects } from '../lib/projects';
 import { LampMoths } from './LampMoths';
 
 const SCREEN_QUAD = {
-  topLeft: [0.08, 0.0971],
-  topRight: [0.6183, 0.0966],
-  bottomRight: [0.6231, 0.637],
-  bottomLeft: [0.0786, 0.6372],
+  topLeft: [0.1033, 0.1231],
+  topRight: [0.7731, 0.1158],
+  bottomRight: [0.7731, 0.7925],
+  bottomLeft: [0.0998, 0.7856],
 } as const;
 
 const PANEL = { width: 1440, height: 900 };
@@ -508,7 +508,7 @@ export const ProjectsStage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -14 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute left-[64.5cqw] top-1/2 flex w-[18.5cqw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-[1.6cqw] py-[2.2cqh] backdrop-blur-md"
+                  className="absolute right-[1.5cqw] top-1/2 flex w-[23cqw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-[1.8cqw] py-[2.4cqh] backdrop-blur-md"
                 >
                   <p className="text-[0.72cqw] font-semibold uppercase tracking-[0.34em] text-[#C99E5D]">
                     {project.number} / Projekt
@@ -620,7 +620,7 @@ export const ProjectsStage: React.FC = () => {
               <div
                 className="pointer-events-none absolute z-30 transition-opacity duration-700"
                 style={{
-                  left: '0.8%',
+                  left: '2%',
                   top: '58%',
                   width: '6.4cqw',
                   height: '21cqh',
