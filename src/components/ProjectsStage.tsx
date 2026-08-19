@@ -647,10 +647,10 @@ export const ProjectsStage: React.FC = () => {
               <div
                 className="pointer-events-none absolute z-30 transition-opacity duration-700"
                 style={{
-                  left: '2%',
-                  top: '58%',
-                  width: '6.4cqw',
-                  height: '21cqh',
+                  left: '0.5%',
+                  top: '54%',
+                  width: '5.0cqw',
+                  height: '25cqh',
                   opacity: loaded ? 0 : 1,
                 }}
               >
