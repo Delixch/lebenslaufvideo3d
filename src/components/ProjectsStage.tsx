@@ -4,10 +4,10 @@ import { projects } from '../lib/projects';
 import { LampMoths } from './LampMoths';
 
 const SCREEN_QUAD = {
-  topLeft: [0.1033, 0.1231],
-  topRight: [0.7731, 0.1158],
-  bottomRight: [0.7731, 0.7925],
-  bottomLeft: [0.0998, 0.7856],
+  topLeft: [0.1033, 0.1275],
+  topRight: [0.7731, 0.1197],
+  bottomRight: [0.7731, 0.7899],
+  bottomLeft: [0.1006, 0.788],
 } as const;
 
 const PANEL = { width: 1440, height: 900 };
@@ -77,8 +77,7 @@ export const ProjectsStage: React.FC = () => {
     [...SCREEN_QUAD.bottomRight],
     [...SCREEN_QUAD.bottomLeft],
   ]);
-  const aligning =
-    typeof window !== 'undefined' && window.location.search.includes('align');
+  const aligning = false;
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [fill, setFill] = useState(0);
