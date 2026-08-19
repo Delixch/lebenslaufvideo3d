@@ -152,14 +152,20 @@ export const ProjectsStage: React.FC = () => {
       return;
     }
 
+    const away = 76;
+    const shiftX = which === 0 || which === 3 ? -away : away;
+    const shiftY = which === 0 || which === 1 ? -away : away;
+
     const move = (pointer: PointerEvent) => {
       const box = plate.getBoundingClientRect();
       setCorners((current) =>
         current.map((corner, index) =>
           index === which
             ? [
-                Math.round(((pointer.clientX - box.left) / box.width) * 10000) / 10000,
-                Math.round(((pointer.clientY - box.top) / box.height) * 10000) / 10000,
+                Math.round(((pointer.clientX - shiftX - box.left) / box.width) * 10000) /
+                  10000,
+                Math.round(((pointer.clientY - shiftY - box.top) / box.height) * 10000) /
+                  10000,
               ]
             : corner,
         ),
@@ -262,6 +268,7 @@ export const ProjectsStage: React.FC = () => {
           transformOrigin: '0 0',
           transform,
           background: '#080706',
+          borderRadius: '18px',
           opacity: transform ? 1 : 0,
         }}
       >
@@ -445,14 +452,34 @@ export const ProjectsStage: React.FC = () => {
 
         {aligning && (
           <>
-            {corners.map((corner, which) => (
-              <span
-                key={which}
-                onPointerDown={dragCorner(which)}
-                className="absolute z-50 h-6 w-6 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-[#D4AF37] bg-black/60"
-                style={{ left: `${corner[0] * 100}%`, top: `${corner[1] * 100}%` }}
-              />
-            ))}
+            {corners.map((corner, which) => {
+              // Der Griff sitzt zwei Zentimeter neben der Ecke, damit die Hand
+              // nicht verdeckt, was sie gerade einpassen soll. Der kleine Punkt
+              // markiert die Ecke selbst.
+              const away = 76;
+              const shiftX = which === 0 || which === 3 ? -away : away;
+              const shiftY = which === 0 || which === 1 ? -away : away;
+
+              return (
+                <React.Fragment key={which}>
+                  <span
+                    className="pointer-events-none absolute z-50 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#39FF6A]"
+                    style={{ left: `${corner[0] * 100}%`, top: `${corner[1] * 100}%` }}
+                  />
+                  <span
+                    onPointerDown={dragCorner(which)}
+                    className="absolute z-50 flex h-8 w-8 cursor-grab items-center justify-center rounded-full border-2 border-white bg-[#39FF6A] text-[10px] font-bold text-black shadow-[0_0_0_4px_rgba(0,0,0,0.6)]"
+                    style={{
+                      left: `${corner[0] * 100}%`,
+                      top: `${corner[1] * 100}%`,
+                      transform: `translate(calc(-50% + ${shiftX}px), calc(-50% + ${shiftY}px))`,
+                    }}
+                  >
+                    {which + 1}
+                  </span>
+                </React.Fragment>
+              );
+            })}
             <pre className="absolute bottom-2 left-2 z-50 bg-black/80 p-3 text-[11px] leading-tight text-[#D4AF37]">
               {`topLeft: [${corners[0]}],
 topRight: [${corners[1]}],
