@@ -125,8 +125,20 @@ export const ProjectsStage: React.FC = () => {
     };
 
     measure();
+
+    // Der Beobachter ist der eigentliche Ausloeser: das Bild bekommt seine
+    // endgueltige Groesse erst nach dem Laden, und ohne ihn bliebe die
+    // Abbildung auf dem Stand von davor.
+    const observer = new ResizeObserver(measure);
+    if (plateRef.current) {
+      observer.observe(plateRef.current);
+    }
+
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
   }, []);
 
   const step = useCallback((delta: number) => {
