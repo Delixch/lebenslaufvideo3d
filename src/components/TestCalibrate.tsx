@@ -342,22 +342,43 @@ export const TestCalibrate: React.FC = () => {
           </div>
         )}
 
-        {/* Şeffaflık Sürgüsü */}
+        {/* Şeffaflık Butonları */}
         {!lightsOn && blendMode === 'opacity' && (
           <div className="flex flex-col gap-1.5 bg-black/30 p-2 border border-[#8C6D4F]/10 rounded">
-            <div className="flex justify-between text-[11px]">
-              <span className="text-[#A8988B]">Üst Katman Şeffaflığı</span>
-              <span className="text-[#39FF6A] font-mono">{(opacity * 100).toFixed(0)}%</span>
+            <span className="text-[11px] text-[#A8988B] font-mono mb-1">Üst Katman Şeffaflığı (Opacity)</span>
+            <div className="flex items-center gap-1.5 justify-between">
+              <button
+                type="button"
+                onClick={() => setOpacity((o) => parseFloat(Math.max(0.05, o - 0.1).toFixed(2)))}
+                className="bg-black border border-[#8C6D4F]/40 px-2.5 py-1 rounded text-xs hover:border-[#D4AF37] font-semibold"
+              >
+                -10%
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpacity((o) => parseFloat(Math.max(0.05, o - 0.05).toFixed(2)))}
+                className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+              >
+                -5%
+              </button>
+              <span className="flex-1 text-center font-mono font-bold text-[#39FF6A] text-xs">
+                {(opacity * 100).toFixed(0)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => setOpacity((o) => parseFloat(Math.min(1.0, o + 0.05).toFixed(2)))}
+                className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+              >
+                +5%
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpacity((o) => parseFloat(Math.min(1.0, o + 0.1).toFixed(2)))}
+                className="bg-black border border-[#8C6D4F]/40 px-2.5 py-1 rounded text-xs hover:border-[#D4AF37] font-semibold"
+              >
+                +10%
+              </button>
             </div>
-            <input
-              type="range"
-              min="0.1"
-              max="1.0"
-              step="0.05"
-              value={opacity}
-              onChange={(e) => setOpacity(parseFloat(e.target.value))}
-              className="w-full accent-[#D4AF37] cursor-pointer"
-            />
           </div>
         )}
 
@@ -370,86 +391,108 @@ export const TestCalibrate: React.FC = () => {
 
             {/* Shift X */}
             <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-[11px] font-mono">
-                <span className="text-[#A8988B]">Yatay Kaydırma (X)</span>
-                <span className="text-[#39FF6A]">{offsetX}px</span>
-              </div>
-              <div className="flex items-center gap-1">
+              <span className="text-[11px] text-[#A8988B] font-mono">Yatay Kaydırma (X)</span>
+              <div className="flex items-center gap-1.5 justify-between bg-black/40 p-1.5 border border-[#8C6D4F]/20 rounded">
                 <button
-                  onClick={() => setOffsetX((x) => parseFloat((x - 1.0).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
+                  type="button"
+                  onClick={() => setOffsetX((x) => parseFloat((x - 5).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/30 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37] font-semibold"
+                >
+                  -5
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOffsetX((x) => parseFloat((x - 1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-xs hover:border-[#D4AF37]"
                 >
                   -1
                 </button>
                 <button
+                  type="button"
                   onClick={() => setOffsetX((x) => parseFloat((x - 0.1).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
                 >
                   -0.1
                 </button>
-                <input
-                  type="range"
-                  min="-50"
-                  max="50"
-                  step="0.1"
-                  value={offsetX}
-                  onChange={(e) => setOffsetX(parseFloat(e.target.value))}
-                  className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
-                />
+                
+                <span className="flex-1 text-center font-mono font-bold text-[#39FF6A] text-xs">
+                  {offsetX}px
+                </span>
+                
                 <button
+                  type="button"
                   onClick={() => setOffsetX((x) => parseFloat((x + 0.1).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
                 >
                   +0.1
                 </button>
                 <button
-                  onClick={() => setOffsetX((x) => parseFloat((x + 1.0).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
+                  type="button"
+                  onClick={() => setOffsetX((x) => parseFloat((x + 1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-xs hover:border-[#D4AF37]"
                 >
                   +1
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOffsetX((x) => parseFloat((x + 5).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/30 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37] font-semibold"
+                >
+                  +5
                 </button>
               </div>
             </div>
 
             {/* Shift Y */}
             <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-[11px] font-mono">
-                <span className="text-[#A8988B]">Dikey Kaydırma (Y)</span>
-                <span className="text-[#39FF6A]">{offsetY}px</span>
-              </div>
-              <div className="flex items-center gap-1">
+              <span className="text-[11px] text-[#A8988B] font-mono">Dikey Kaydırma (Y)</span>
+              <div className="flex items-center gap-1.5 justify-between bg-black/40 p-1.5 border border-[#8C6D4F]/20 rounded">
                 <button
-                  onClick={() => setOffsetY((y) => parseFloat((y - 1.0).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
+                  type="button"
+                  onClick={() => setOffsetY((y) => parseFloat((y - 5).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/30 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37] font-semibold"
+                >
+                  -5
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOffsetY((y) => parseFloat((y - 1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-xs hover:border-[#D4AF37]"
                 >
                   -1
                 </button>
                 <button
+                  type="button"
                   onClick={() => setOffsetY((y) => parseFloat((y - 0.1).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
                 >
                   -0.1
                 </button>
-                <input
-                  type="range"
-                  min="-50"
-                  max="50"
-                  step="0.1"
-                  value={offsetY}
-                  onChange={(e) => setOffsetY(parseFloat(e.target.value))}
-                  className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
-                />
+                
+                <span className="flex-1 text-center font-mono font-bold text-[#39FF6A] text-xs">
+                  {offsetY}px
+                </span>
+                
                 <button
+                  type="button"
                   onClick={() => setOffsetY((y) => parseFloat((y + 0.1).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-xs hover:border-[#D4AF37] text-amber-500 font-semibold"
                 >
                   +0.1
                 </button>
                 <button
-                  onClick={() => setOffsetY((y) => parseFloat((y + 1.0).toFixed(1)))}
-                  className="bg-black border border-[#8C6D4F]/40 px-2 py-1 rounded text-xs hover:border-[#D4AF37]"
+                  type="button"
+                  onClick={() => setOffsetY((y) => parseFloat((y + 1).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-xs hover:border-[#D4AF37]"
                 >
                   +1
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOffsetY((y) => parseFloat((y + 5).toFixed(1)))}
+                  className="bg-black border border-[#8C6D4F]/30 px-2 py-0.5 rounded text-xs hover:border-[#D4AF37] font-semibold"
+                >
+                  +5
                 </button>
               </div>
             </div>
@@ -476,94 +519,108 @@ export const TestCalibrate: React.FC = () => {
 
             {/* Scale X */}
             <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-[11px] font-mono">
-                <span className="text-[#A8988B]">Enine Genişlik (Scale X)</span>
-                <span className="text-[#39FF6A]">{scaleX.toFixed(5)}</span>
-              </div>
-              <div className="flex items-center gap-1">
+              <span className="text-[11px] text-[#A8988B] font-mono">Enine Genişlik (Scale X)</span>
+              <div className="flex items-center gap-1.5 justify-between bg-black/40 p-1.5 border border-[#8C6D4F]/20 rounded">
                 <button
+                  type="button"
+                  onClick={() => changeScaleX(-0.005)}
+                  className="bg-black border border-[#8C6D4F]/30 px-2 py-0.5 rounded text-[10px] hover:border-[#D4AF37] font-semibold"
+                >
+                  -5k
+                </button>
+                <button
+                  type="button"
                   onClick={() => changeScaleX(-0.001)}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-[10px] hover:border-[#D4AF37]"
                 >
                   -1k
                 </button>
                 <button
+                  type="button"
                   onClick={() => changeScaleX(-0.0001)}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-semibold"
                 >
                   -0.1k
                 </button>
-                <input
-                  type="range"
-                  min="0.90"
-                  max="1.10"
-                  step="0.0001"
-                  value={scaleX}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value);
-                    setScaleX(val);
-                    if (linkScales) setScaleY(val);
-                  }}
-                  className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
-                />
+                
+                <span className="flex-1 text-center font-mono font-bold text-[#39FF6A] text-[11px] min-w-[65px]">
+                  {scaleX.toFixed(5)}
+                </span>
+                
                 <button
+                  type="button"
                   onClick={() => changeScaleX(0.0001)}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-semibold"
                 >
                   +0.1k
                 </button>
                 <button
+                  type="button"
                   onClick={() => changeScaleX(0.001)}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-[10px] hover:border-[#D4AF37]"
                 >
                   +1k
+                </button>
+                <button
+                  type="button"
+                  onClick={() => changeScaleX(0.005)}
+                  className="bg-black border border-[#8C6D4F]/30 px-2 py-0.5 rounded text-[10px] hover:border-[#D4AF37] font-semibold"
+                >
+                  +5k
                 </button>
               </div>
             </div>
 
             {/* Scale Y */}
             <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-[11px] font-mono">
-                <span className="text-[#A8988B]">Boyuna Yükseklik (Scale Y)</span>
-                <span className="text-[#39FF6A]">{scaleY.toFixed(5)}</span>
-              </div>
-              <div className="flex items-center gap-1">
+              <span className="text-[11px] text-[#A8988B] font-mono">Boyuna Yükseklik (Scale Y)</span>
+              <div className="flex items-center gap-1.5 justify-between bg-black/40 p-1.5 border border-[#8C6D4F]/20 rounded">
                 <button
+                  type="button"
+                  onClick={() => changeScaleY(-0.005)}
+                  className="bg-black border border-[#8C6D4F]/30 px-2 py-0.5 rounded text-[10px] hover:border-[#D4AF37] font-semibold"
+                >
+                  -5k
+                </button>
+                <button
+                  type="button"
                   onClick={() => changeScaleY(-0.001)}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-[10px] hover:border-[#D4AF37]"
                 >
                   -1k
                 </button>
                 <button
+                  type="button"
                   onClick={() => changeScaleY(-0.0001)}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-semibold"
                 >
                   -0.1k
                 </button>
-                <input
-                  type="range"
-                  min="0.90"
-                  max="1.10"
-                  step="0.0001"
-                  value={scaleY}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value);
-                    setScaleY(val);
-                    if (linkScales) setScaleX(val);
-                  }}
-                  className="flex-1 mx-1 accent-[#D4AF37] cursor-pointer"
-                />
+                
+                <span className="flex-1 text-center font-mono font-bold text-[#39FF6A] text-[11px] min-w-[65px]">
+                  {scaleY.toFixed(5)}
+                </span>
+                
                 <button
+                  type="button"
                   onClick={() => changeScaleY(0.0001)}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-bold"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-[10px] hover:border-[#D4AF37] text-amber-500 font-semibold"
                 >
                   +0.1k
                 </button>
                 <button
+                  type="button"
                   onClick={() => changeScaleY(0.001)}
-                  className="bg-black border border-[#8C6D4F]/40 px-1.5 py-1 rounded text-[10px] hover:border-[#D4AF37]"
+                  className="bg-black border border-[#8C6D4F]/30 px-1.5 py-0.5 rounded text-[10px] hover:border-[#D4AF37]"
                 >
                   +1k
+                </button>
+                <button
+                  type="button"
+                  onClick={() => changeScaleY(0.005)}
+                  className="bg-black border border-[#8C6D4F]/30 px-2 py-0.5 rounded text-[10px] hover:border-[#D4AF37] font-semibold"
+                >
+                  +5k
                 </button>
               </div>
             </div>
