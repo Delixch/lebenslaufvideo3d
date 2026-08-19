@@ -17,8 +17,6 @@ const SCREEN_QUAD = {
 /** Aufloesung der Flaeche, die auf den Deckel gelegt wird. */
 const PANEL = { width: 1440, height: 900 };
 
-/** Groesse des Hintergrundbildes; sie gibt das Format der Buehne vor. */
-const PLATE = { width: 1672, height: 941 };
 
 /**
  * Loest ein lineares Gleichungssystem per Gauss-Elimination.
@@ -153,22 +151,23 @@ export const ProjectsStage: React.FC = () => {
       {/* Eine Buehne im Format des Bildes: sie passt immer ganz ins Fenster,
           und alles darin rechnet in Prozent dieser Flaeche. Damit kann nichts
           ueberstehen, egal wie das Fenster steht. */}
-      <div
-        className="relative"
-        style={{
-          aspectRatio: `${PLATE.width} / ${PLATE.height}`,
-          width: 'min(100%, calc(100vh * ' + PLATE.width / PLATE.height + '))',
-          height: 'min(100%, calc(100vw / ' + PLATE.width / PLATE.height + '))',
-          containerType: 'size',
-        }}
-      >
-      <img
-        ref={plateRef}
-        src="/projekt-buehne.jpg"
-        alt=""
-        onLoad={() => window.dispatchEvent(new Event('resize'))}
-        className="absolute inset-0 h-full w-full"
-      />
+      <div className="relative inline-block">
+        {/* Das Bild selbst spannt die Buehne auf: begrenzt durch Breite und
+            Hoehe des Fensters, also immer vollstaendig sichtbar. Alles andere
+            liegt absolut darin und rechnet in Prozent davon. */}
+        <img
+          ref={plateRef}
+          src="/projekt-buehne.jpg"
+          alt=""
+          onLoad={() => window.dispatchEvent(new Event('resize'))}
+          className="block h-auto w-auto max-h-[86svh] max-w-[96vw]"
+        />
+
+        {/* Messgroesse fuer alles darin: cqw und cqh beziehen sich ab hier auf
+            die Buehne, nicht auf das Fenster. Die Groesse selbst darf nicht am
+            Wrapper haengen, sonst faellt der durch die Groessen-Containment auf
+            null zusammen. */}
+        <div className="absolute inset-0" style={{ containerType: 'size' }}>
       <span
         aria-hidden="true"
         className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
@@ -359,6 +358,7 @@ export const ProjectsStage: React.FC = () => {
           />
         </div>
       </div>
+        </div>
       </div>
     </section>
   );
