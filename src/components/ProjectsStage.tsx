@@ -480,7 +480,7 @@ export const ProjectsStage: React.FC = () => {
                         {aligning ? (
                           <div
                             className="absolute inset-0"
-                            style={{ background: '#FFFFFF', boxShadow: 'inset 0 0 0 6px #1B6FE0' }}
+                            style={{ background: '#FFFFFF' }}
                           />
                         ) : (
                           <>
