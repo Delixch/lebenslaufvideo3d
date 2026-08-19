@@ -77,7 +77,8 @@ export const ProjectsStage: React.FC = () => {
     [...SCREEN_QUAD.bottomRight],
     [...SCREEN_QUAD.bottomLeft],
   ]);
-  const aligning = false;
+  const aligning =
+    typeof window !== 'undefined' && window.location.search.includes('align');
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [fill, setFill] = useState(0);
