@@ -8,10 +8,10 @@ import { projects } from '../lib/projects';
  * Feinjustage passiert hier — sonst nirgends.
  */
 const SCREEN_QUAD = {
-  topLeft: [0.2062, 0.3971],
-  topRight: [0.4771, 0.4157],
-  bottomRight: [0.5236, 0.7101],
-  bottomLeft: [0.2422, 0.7598],
+  topLeft: [0.2082, 0.4006],
+  topRight: [0.4764, 0.4169],
+  bottomRight: [0.5196, 0.7052],
+  bottomLeft: [0.2448, 0.761],
 } as const;
 
 /** Aufloesung der Flaeche, die auf den Deckel gelegt wird. */
@@ -268,7 +268,7 @@ export const ProjectsStage: React.FC = () => {
           transformOrigin: '0 0',
           transform,
           background: '#080706',
-          borderRadius: '18px',
+          borderRadius: '26px',
           opacity: transform ? 1 : 0,
         }}
       >
