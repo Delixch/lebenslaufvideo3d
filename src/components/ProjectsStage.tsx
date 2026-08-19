@@ -92,6 +92,7 @@ const LAMP = [0.795, 0.075] as const;
  */
 export const ProjectsStage: React.FC = () => {
   const [index, setIndex] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const project = projects[index];
   const plateRef = useRef<HTMLImageElement | null>(null);
   const [transform, setTransform] = useState<string>('');
@@ -129,6 +130,7 @@ export const ProjectsStage: React.FC = () => {
   }, []);
 
   const step = useCallback((delta: number) => {
+    setLoaded(false);
     setIndex((current) => (current + delta + projects.length) % projects.length);
   }, []);
 
@@ -234,12 +236,20 @@ export const ProjectsStage: React.FC = () => {
                   title={project.title}
                   sandbox="allow-scripts allow-same-origin allow-popups"
                   referrerPolicy="no-referrer"
-                  className="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
-                  style={{ width: '250%', height: '250%', transform: 'scale(0.4)' }}
+                  onLoad={() => window.setTimeout(() => setLoaded(true), 900)}
+                  className="pointer-events-none absolute left-0 top-0 origin-top-left border-0 transition-opacity duration-500"
+                  style={{
+                    width: '250%',
+                    height: '250%',
+                    transform: 'scale(0.4)',
+                    // Erst zeigen, wenn die Seite wirklich steht: sonst blitzt
+                    // ihr weisser Ladezustand im Deckel auf.
+                    opacity: loaded ? 1 : 0,
+                  }}
                 />
                 {/* Faellt auf eine Karte zurueck, falls eine Seite das Einbetten
                     verbietet: sie liegt darunter und bleibt dann sichtbar. */}
-                <div className="pointer-events-none absolute inset-0 -z-10 flex items-end bg-gradient-to-br from-[#1A1512] to-[#0A0908] p-6">
+                <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-br from-[#1A1512] to-[#0A0908] p-6">
                   <span
                     className="text-[1.4cqw] uppercase leading-none text-[#C99E5D]"
                     style={{ fontFamily: "'Bebas Neue', sans-serif" }}
