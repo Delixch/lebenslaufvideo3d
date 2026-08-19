@@ -377,7 +377,7 @@ export const ProjectsStage: React.FC = () => {
           >
             <img
               ref={plateRef}
-              src="/ipad-buehne.png?v=7"
+              src="/ipad-buehne.png?v=8"
               alt=""
               onLoad={() => window.dispatchEvent(new Event('resize'))}
               className="block w-full h-auto"
@@ -385,7 +385,7 @@ export const ProjectsStage: React.FC = () => {
 
             {/* Glowing Mouse Overlay */}
             <img
-              src="/ipad-buehne-on.png?v=7"
+              src="/ipad-buehne-on.png?v=8"
               alt=""
               className={`absolute left-0 top-0 w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
                 live ? 'opacity-100' : 'opacity-0'
