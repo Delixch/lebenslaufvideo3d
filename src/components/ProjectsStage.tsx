@@ -364,10 +364,7 @@ export const ProjectsStage: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* 2. RESPONSIVE VE GENİŞ İNTERAKTİF LAPTOP STAGE İÇERİĞİ */}
-        {/* Die Buehne bricht aus der Textbreite aus: sie ist ein Bild und darf
-            das ganze Fenster nutzen, begrenzt nur durch die Fensterhoehe. */}
-        <div className="mt-10 flex w-[92vw] max-w-[1700px] -translate-x-1/2 justify-center left-1/2 relative">
+        <div className="flex justify-center mt-10 w-full">
           <div
             className="relative w-full"
             style={
