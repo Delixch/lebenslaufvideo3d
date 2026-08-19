@@ -8,10 +8,10 @@ import { projects } from '../lib/projects';
  * Feinjustage passiert hier — sonst nirgends.
  */
 const SCREEN_QUAD = {
-  topLeft: [0.2082, 0.4006],
-  topRight: [0.4764, 0.4169],
-  bottomRight: [0.5196, 0.7052],
-  bottomLeft: [0.2448, 0.761],
+  topLeft: [0.2032, 0.3871],
+  topRight: [0.4791, 0.4087],
+  bottomRight: [0.5248, 0.7063],
+  bottomLeft: [0.2413, 0.7661],
 } as const;
 
 /** Aufloesung der Flaeche, die auf den Deckel gelegt wird. */
