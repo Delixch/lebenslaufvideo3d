@@ -347,6 +347,30 @@ export const ProjectsStage: React.FC = () => {
       {/* Eine Buehne im Format des Bildes: sie passt immer ganz ins Fenster,
           und alles darin rechnet in Prozent dieser Flaeche. Damit kann nichts
           ueberstehen, egal wie das Fenster steht. */}
+      <div className="w-full max-w-[1500px]">
+        <div className="mb-5 flex items-center space-x-4">
+          <span
+            className="text-[11px] font-medium uppercase tracking-[0.35em] text-[#D4AF37]"
+            style={{ fontFamily: "'Montserrat', sans-serif" }}
+          >
+            02 / AUSGEWÄHLTE ARBEITEN
+          </span>
+          <div className="h-[1px] w-20 bg-gradient-to-r from-[#D4AF37]/80 via-[#8C6D4F]/40 to-transparent" />
+        </div>
+
+        <h2
+          className="mb-6 select-none text-4xl uppercase leading-[0.85] tracking-tight sm:text-5xl lg:text-[4.2rem]"
+          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+        >
+          <span className="block bg-gradient-to-b from-[#FFFFFF] via-[#D5CBC0] to-[#605448] bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+            AUSGEWÄHLTE ARBEITEN.
+          </span>
+          <span className="block bg-gradient-to-b from-[#F7E7C4] via-[#C99E5D] to-[#543B1A] bg-clip-text text-transparent drop-shadow-[0_8px_25px_rgba(201,158,93,0.35)]">
+            MIT HAND GEBAUT.
+          </span>
+        </h2>
+      </div>
+
       <div
         className="relative inline-block"
         style={
