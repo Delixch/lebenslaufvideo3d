@@ -133,7 +133,7 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
           }
           transition={open ? { duration: 0.3 } : { duration: 2.4, repeat: Infinity }}
         >
-          {open ? 'Off' : 'On'}
+          {open ? '' : 'On'}
         </motion.span>
       </button>
 
@@ -221,9 +221,9 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
             />
 
             <motion.ul
-              className="flex flex-col gap-3"
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12 }}
+              className="flex origin-center flex-col gap-3"
+              exit={{ opacity: 0, scale: 0.62 }}
+              transition={{ duration: 0.16 }}
             >
               {navItems.map((item, index) => (
                 <motion.li
@@ -242,6 +242,51 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
                 </motion.li>
               ))}
             </motion.ul>
+
+            {/* Zeichen zum Einholen: ein Kern, vier Pfeile nach innen. Sie
+                leuchten der Reihe nach auf, damit die Richtung — hinein —
+                ohne Beschriftung lesbar ist. */}
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Menü schliessen"
+              className="group absolute left-4 top-3 h-9 w-9"
+            >
+              <svg viewBox="0 0 36 36" className="h-full w-full overflow-visible">
+                <circle cx="18" cy="18" r="3.4" fill="rgba(90,56,24,0.9)" />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="3.4"
+                  fill="none"
+                  stroke="rgba(58,36,18,0.55)"
+                  strokeWidth="1"
+                />
+                {[
+                  { d: 'M18 4 L18 11 M15 8.4 L18 11.4 L21 8.4', delay: 0 },
+                  { d: 'M32 18 L25 18 M27.6 15 L24.6 18 L27.6 21', delay: 0.18 },
+                  { d: 'M18 32 L18 25 M15 27.6 L18 24.6 L21 27.6', delay: 0.36 },
+                  { d: 'M4 18 L11 18 M8.4 15 L11.4 18 L8.4 21', delay: 0.54 },
+                ].map((arrow) => (
+                  <motion.path
+                    key={arrow.d}
+                    d={arrow.d}
+                    fill="none"
+                    stroke="rgba(58,36,18,0.9)"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    animate={{ opacity: [0.22, 1, 0.22] }}
+                    transition={{
+                      duration: 1.8,
+                      times: [0, 0.35, 1],
+                      repeat: Infinity,
+                      delay: arrow.delay,
+                    }}
+                  />
+                ))}
+              </svg>
+            </button>
           </motion.nav>
         )}
       </AnimatePresence>
