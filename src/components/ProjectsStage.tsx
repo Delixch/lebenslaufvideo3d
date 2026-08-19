@@ -8,10 +8,10 @@ import { projects } from '../lib/projects';
  * Feinjustage passiert hier — sonst nirgends.
  */
 const SCREEN_QUAD = {
-  topLeft: [0.1829, 0.2529],
-  topRight: [0.5895, 0.3032],
-  bottomRight: [0.5969, 0.6103],
-  bottomLeft: [0.2267, 0.7045],
+  topLeft: [0.1721, 0.2422],
+  topRight: [0.599, 0.295],
+  bottomRight: [0.6068, 0.6174],
+  bottomLeft: [0.2181, 0.7163],
 } as const;
 
 /** Aufloesung der Flaeche, die auf den Deckel gelegt wird. */
@@ -228,8 +228,8 @@ export const ProjectsStage: React.FC = () => {
                   key={project.githubUrl}
                   src={project.githubUrl}
                   title={project.title}
-                  loading="lazy"
-                  sandbox="allow-scripts allow-same-origin"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  referrerPolicy="no-referrer"
                   className="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
                   style={{ width: '250%', height: '250%', transform: 'scale(0.4)' }}
                 />
