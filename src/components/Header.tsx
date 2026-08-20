@@ -87,6 +87,16 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
             : 'bg-transparent border-b border-transparent'
         }`}
       >
+        {/* Auf Laptop-Hoehen steht der Kopf der Figur genau in der Menuezeile
+            und schluckt SKILLS. Ein weicher Verlauf unter der Kopfzeile gibt
+            der Navigation immer Grund, ohne den dunklen Look zu stoeren. */}
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-[190%] bg-gradient-to-b from-black/80 via-black/40 to-transparent transition-opacity duration-300 ${
+            isScrolled ? 'opacity-0' : 'opacity-100'
+          }`}
+        />
+
         <a
           href="#"
           onClick={() => setMenuOpen(false)}

@@ -531,6 +531,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       }}
     >
       <style>{`
+        /* Laptop-Hoehen (z. B. 1536x730): my-auto drueckt den Inhalt sonst
+           nach oben unter die Kopfzeile — ADNAN. verschwindet dann hinter
+           ICH BAUE. Die Ueberschrift haengt hier deshalb zusaetzlich an der
+           Bildschirmhoehe, nicht nur an der Breite, und der Inhaltsblock
+           haelt Abstand zur Kopfzeile. */
+        @media (min-width: 768px) and (max-height: 860px) {
+          .hero-headline { font-size: clamp(3.25rem, min(7vw, 14.2vh), 7.8rem); }
+          .hero-content { padding-top: 6.75rem; }
+        }
+
+        @media (min-width: 768px) and (max-height: 700px) {
+          .hero-content { padding-top: 5.75rem; padding-bottom: 1.5rem; }
+        }
+
         @keyframes haloBreathe {
           0%, 100% { opacity: 0.85; }
           8% { opacity: 0.35; }
@@ -825,8 +839,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             <div 
               className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2000ms] ease-out origin-top-right ${
                 isVideoDissolved 
-                  ? 'opacity-100 scale-[0.94] translate-y-[6vh] blur-0' 
-                  : 'opacity-0 scale-[0.91] translate-y-[8vh] blur-[15px] pointer-events-none'
+                  ? 'opacity-100 scale-[0.94] translate-y-[max(4.5rem,6vh)] blur-0' 
+                  : 'opacity-0 scale-[0.91] translate-y-[max(6rem,8vh)] blur-[15px] pointer-events-none'
               }`}
               style={{
                 maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
@@ -867,7 +881,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 playsInline
                 preload="auto"
                 onTimeUpdate={handleTimeUpdate}
-                className="h-full w-full object-cover object-center scale-[0.94] origin-top-right translate-y-[6vh]"
+                className="h-full w-full object-cover object-center scale-[0.94] origin-top-right translate-y-[max(4.5rem,6vh)]"
               />
             </div>
           </>
@@ -907,7 +921,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       </div>
 
       {/* ================= 4. CONTENT LAYER ================= */}
-      <div className="relative z-10 flex flex-col justify-between h-full w-full px-6 sm:px-12 lg:px-16 pt-6 pb-8 pointer-events-none">
+      <div className="hero-content relative z-10 flex flex-col justify-between h-full w-full px-6 sm:px-12 lg:px-16 pt-6 pb-8 pointer-events-none">
         
 
 
@@ -924,7 +938,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             {/* Massive Condensed Headline */}
             <motion.div variants={fadeUpVariants} className="relative mb-3.5 select-none">
               <h1
-                className="text-6xl sm:text-7xl md:text-8xl lg:text-[7.2rem] xl:text-[7.8rem] tracking-tight uppercase leading-[0.83]"
+                className="hero-headline text-6xl sm:text-7xl md:text-8xl lg:text-[7.2rem] xl:text-[7.8rem] tracking-tight uppercase leading-[0.83]"
                 style={{ fontFamily: "'Bebas Neue', sans-serif" }}
               >
                 {/* Line 1: I BUILD */}
