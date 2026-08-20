@@ -84,21 +84,6 @@ export const ProjectsStage: React.FC = () => {
   const [nudgeStep, setNudgeStep] = useState<number>(1);
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(1);
-  const [fill, setFill] = useState(0);
-
-  useEffect(() => {
-    if (loaded) {
-      setFill(100);
-      return;
-    }
-
-    setFill(4);
-    const timer = window.setInterval(() => {
-      setFill((current) => (current < 74 ? current + (74 - current) * 0.035 + 0.25 : current));
-    }, 220);
-
-    return () => window.clearInterval(timer);
-  }, [loaded, index]);
 
   const project = projects[index];
   const plateRef = useRef<HTMLImageElement | null>(null);
@@ -107,6 +92,7 @@ export const ProjectsStage: React.FC = () => {
   const [bulb, setBulb] = useState({ x: 0, y: 0, size: 40 });
   const stageRef = useRef<HTMLElement | null>(null);
   const [onScreen, setOnScreen] = useState(false);
+  const [nearScreen, setNearScreen] = useState(false);
   const [live, setLive] = useState(false);
 
   useEffect(() => {
@@ -120,8 +106,20 @@ export const ProjectsStage: React.FC = () => {
       { threshold: 0.15 },
     );
 
+    // Der iframe haengt an einem weiteren Rand: die fremde Seite startet erst,
+    // wenn die Buehne in Reichweite ist, und wird danach wieder abgeraeumt.
+    // Sonst laeuft z. B. die Three.js-Szene aus Projekt 09 die ganze Zeit mit.
+    const preloader = new IntersectionObserver(
+      ([entry]) => setNearScreen(entry.isIntersecting),
+      { rootMargin: '60% 0px' },
+    );
+
     watcher.observe(stage);
-    return () => watcher.disconnect();
+    preloader.observe(stage);
+    return () => {
+      watcher.disconnect();
+      preloader.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -194,30 +192,49 @@ export const ProjectsStage: React.FC = () => {
       return;
     }
 
-    const anchor = window.scrollY;
-    const hold = () => {
-      if (Math.abs(window.scrollY - anchor) > 1) {
-        window.scrollTo(0, anchor);
-      }
-    };
-
     const release = (event: WheelEvent) => {
       if (!(event.target as HTMLElement)?.closest('iframe')) {
         setLive(false);
       }
     };
 
+    // `overflow: hidden` haelt die Seite bereits fest; ein zusaetzlicher
+    // scrollTo-Handler wuerde sich nur mit dem Browser um jeden Frame streiten.
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    window.addEventListener('scroll', hold, { passive: true });
     window.addEventListener('wheel', release, { passive: true });
 
     return () => {
       document.body.style.overflow = previous;
-      window.removeEventListener('scroll', hold);
       window.removeEventListener('wheel', release);
     };
   }, [live]);
+
+  // Verlaesst die Buehne den Sichtbereich, faellt der iframe weg — beim
+  // Wiedereintritt soll das Glas also wieder von vorn laufen.
+  useEffect(() => {
+    if (!nearScreen) {
+      setLoaded(false);
+      setLive(false);
+    }
+  }, [nearScreen]);
+
+  // Ist die Buehne in Reichweite, wird der Server des naechsten Projekts schon
+  // angewaermt; der Wechsel spart dann den Verbindungsaufbau.
+  useEffect(() => {
+    if (!nearScreen) {
+      return;
+    }
+
+    const next = projects[(index + 1) % projects.length];
+    const link = document.createElement('link');
+    link.rel = 'preconnect';
+    link.href = new URL(next.githubUrl).origin;
+    link.crossOrigin = '';
+    document.head.append(link);
+
+    return () => link.remove();
+  }, [index, nearScreen]);
 
   const step = useCallback((delta: number) => {
     setLive(false);
@@ -298,7 +315,6 @@ export const ProjectsStage: React.FC = () => {
         }
       }}
       className="hidden md:block relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-32 px-6 sm:px-12 lg:px-20"
-      style={{ animation: onScreen ? 'lampIntensity 6s infinite ease-in-out' : 'none' }}
     >
       <style>{`
         @keyframes mouseGlow {
@@ -398,54 +414,65 @@ export const ProjectsStage: React.FC = () => {
 
             <div className="absolute inset-0" style={{ containerType: 'size' }}>
               {/* Lamba Işığı ve Fısıltısı */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-                style={{
-                  left: lamp.left,
-                  top: lamp.top,
-                  width: '5.6cqw',
-                  height: '5.6cqw',
-                  background:
-                    'radial-gradient(circle, rgba(255,255,253,0.98) 0%, rgba(255,253,246,0.84) 16%, rgba(252,248,236,0.54) 34%, rgba(244,238,222,0.28) 52%, rgba(226,216,196,0.11) 72%, rgba(190,180,160,0.03) 88%, transparent 100%)',
-                  mixBlendMode: 'screen',
-                  filter: 'blur(7px)',
-                  opacity: 'calc(0.55 + var(--lamp-intensity, 1) * 0.45)',
-                }}
-              />
+              {/*
+                Das Flackern haengt an `--lamp-intensity`. Die Eigenschaft erbt,
+                also wuerde die Animation am <section> in jedem Frame den Stil
+                des gesamten Teilbaums neu berechnen — inklusive iframe-Rahmen.
+                Sie sitzt darum hier, wo nur die drei Scheine daran haengen.
+              */}
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{ animation: onScreen ? 'lampIntensity 6s infinite ease-in-out' : 'none' }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+                  style={{
+                    left: lamp.left,
+                    top: lamp.top,
+                    width: '5.6cqw',
+                    height: '5.6cqw',
+                    background:
+                      'radial-gradient(circle, rgba(255,255,253,0.98) 0%, rgba(255,253,246,0.84) 16%, rgba(252,248,236,0.54) 34%, rgba(244,238,222,0.28) 52%, rgba(226,216,196,0.11) 72%, rgba(190,180,160,0.03) 88%, transparent 100%)',
+                    mixBlendMode: 'screen',
+                    filter: 'blur(7px)',
+                    opacity: 'calc(0.55 + var(--lamp-intensity, 1) * 0.45)',
+                  }}
+                />
 
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-                style={{
-                  left: lamp.left,
-                  top: lamp.top,
-                  width: '22cqw',
-                  height: '22cqw',
-                  background:
-                    'radial-gradient(circle, rgba(255,255,252,0.11) 0%, rgba(252,250,244,0.07) 14%, rgba(246,242,232,0.045) 28%, rgba(236,230,216,0.028) 42%, rgba(220,212,196,0.016) 56%, rgba(196,188,172,0.008) 70%, rgba(160,152,138,0.003) 84%, transparent 100%)',
-                  mixBlendMode: 'screen',
-                  filter: 'blur(38px)',
-                  willChange: 'opacity',
-                  opacity: 'calc(0.6 + var(--lamp-intensity, 1) * 0.4)',
-                }}
-              />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+                  style={{
+                    left: lamp.left,
+                    top: lamp.top,
+                    width: '22cqw',
+                    height: '22cqw',
+                    background:
+                      'radial-gradient(circle, rgba(255,255,252,0.11) 0%, rgba(252,250,244,0.07) 14%, rgba(246,242,232,0.045) 28%, rgba(236,230,216,0.028) 42%, rgba(220,212,196,0.016) 56%, rgba(196,188,172,0.008) 70%, rgba(160,152,138,0.003) 84%, transparent 100%)',
+                    mixBlendMode: 'screen',
+                    filter: 'blur(38px)',
+                    willChange: 'opacity',
+                    opacity: 'calc(0.6 + var(--lamp-intensity, 1) * 0.4)',
+                  }}
+                />
 
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-[50%]"
-                style={{
-                  left: lamp.left,
-                  top: '88%',
-                  width: '26cqw',
-                  height: '9cqh',
-                  background:
-                    'radial-gradient(closest-side, rgba(255,232,190,0.18), rgba(214,168,100,0.07) 55%, transparent 84%)',
-                  mixBlendMode: 'screen',
-                  filter: 'blur(16px)',
-                  opacity: 'calc(0.45 + var(--lamp-intensity, 1) * 0.55)',
-                }}
-              />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-[50%]"
+                  style={{
+                    left: lamp.left,
+                    top: '88%',
+                    width: '26cqw',
+                    height: '9cqh',
+                    background:
+                      'radial-gradient(closest-side, rgba(255,232,190,0.18), rgba(214,168,100,0.07) 55%, transparent 84%)',
+                    mixBlendMode: 'screen',
+                    filter: 'blur(16px)',
+                    opacity: 'calc(0.45 + var(--lamp-intensity, 1) * 0.55)',
+                  }}
+                />
+              </div>
 
               {/* Falter Moths */}
               <LampMoths centerX={bulb.x} centerY={bulb.y} bulbSize={bulb.size} active={onScreen && bulb.size > 1} />
@@ -461,6 +488,10 @@ export const ProjectsStage: React.FC = () => {
                   background: '#080706',
                   borderRadius: '24px',
                   opacity: transform ? 1 : 0,
+                  // Haelt Layout und Malen der fremden Seite in diesem Kasten:
+                  // was im iframe passiert, loest draussen nichts mehr aus.
+                  contain: 'paint',
+                  backfaceVisibility: 'hidden',
                 }}
               >
                 <div className="h-full w-full">
@@ -481,23 +512,28 @@ export const ProjectsStage: React.FC = () => {
                           />
                         ) : (
                           <>
-                            <iframe
-                              key={project.githubUrl}
-                              src={project.githubUrl}
-                              title={project.title}
-                              sandbox="allow-scripts allow-same-origin allow-popups"
-                              referrerPolicy="no-referrer"
-                              onLoad={() => window.setTimeout(() => setLoaded(true), 900)}
-                              className={`absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500 ${
-                                live ? '' : 'pointer-events-none'
-                              }`}
-                              style={{
-                                width: '250%',
-                                height: '250%',
-                                transform: 'scale(0.4)',
-                                opacity: loaded ? 1 : 0,
-                              }}
-                            />
+                            {nearScreen && (
+                              <iframe
+                                key={project.githubUrl}
+                                src={project.githubUrl}
+                                title={project.title}
+                                sandbox="allow-scripts allow-same-origin allow-popups"
+                                referrerPolicy="no-referrer"
+                                onLoad={() => window.setTimeout(() => setLoaded(true), 900)}
+                                className={`absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500 ${
+                                  live ? '' : 'pointer-events-none'
+                                }`}
+                                style={{
+                                  // 125 % / scale(0.8) ergibt innen 1800x1125 statt 3600x2250:
+                                  // gleicher Ausschnitt, aber ein Viertel der Rasterflaeche,
+                                  // die unter dem matrix3d-Warp neu gezeichnet werden muss.
+                                  width: '125%',
+                                  height: '125%',
+                                  transform: 'scale(0.8)',
+                                  opacity: loaded ? 1 : 0,
+                                }}
+                              />
+                            )}
                             <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-br from-[#1A1512] to-[#0A0908] p-6">
                               <span
                                 className="text-[1.4cqw] uppercase leading-none text-[#C99E5D]"
@@ -665,9 +701,13 @@ export const ProjectsStage: React.FC = () => {
                   }}
                 >
                   <div
+                    key={index}
                     className="absolute inset-x-0 bottom-0 transition-[height] duration-500 ease-out"
                     style={{
-                      height: `${fill}%`,
+                      height: loaded ? '100%' : '74%',
+                      animation: loaded
+                        ? undefined
+                        : 'glassFill 14s cubic-bezier(0.1, 0.8, 0.25, 1) forwards',
                       background:
                         'linear-gradient(to bottom, rgba(255,206,130,0.95), rgba(212,148,58,0.9) 45%, rgba(150,92,28,0.92))',
                       boxShadow: '0 0 12px rgba(234,179,8,0.5)',

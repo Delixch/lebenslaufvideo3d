@@ -149,3 +149,9 @@ html {
   86% { --lamp-intensity: 0.88; }
   100% { --lamp-intensity: 1; }
 }
+
+/* Wasserglas-Ladeanzeige: fuellt sich vom Kompositor, ohne React-Rerender. */
+@keyframes glassFill {
+  from { height: 4%; }
+  to { height: 74%; }
+}
