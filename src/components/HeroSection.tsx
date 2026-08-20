@@ -555,20 +555,48 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
           .hero-content { padding-top: 6.75rem; }
         }
 
+        /* Die Kopfzeile sitzt mittig und wandert mit der Fensterbreite; Text und
+           Knoepfe darunter hatten feste Pixelmasse. Auf 1564px endet der Absatz
+           deshalb kurz vor UEBER MICH, auf 1283px lief er bis unter PROJEKTE.
+           Umbruchbreite und Schriftgrade haengen hier an der Fensterbreite und
+           wachsen stetig mit, statt in Stufen zu springen. Die obere Grenze ist
+           der bisherige Wert, breite Schirme bleiben also unveraendert. */
+        @media (min-width: 1024px) {
+          /* Alle Werte laufen von 1283px bis 1500px hoch und stehen ab 1500px
+             genau auf den bisherigen Zahlen — breite Schirme aendern sich also
+             nicht, schmale wachsen stetig mit statt in Stufen zu springen. */
+          .hero-copy {
+            max-width: clamp(20rem, calc(50vw - 17rem), 32rem);
+            font-size: clamp(11.5px, calc(0.9217vw - 0.33px), 13.5px);
+          }
+
+          .hero-eyebrow { font-size: clamp(11px, calc(0.4608vw + 5.088px), 12px); }
+
+          .hero-cta { gap: clamp(0.75rem, calc(5.53vw - 58.95px), 1.5rem); }
+
+          .hero-cta a {
+            font-size: clamp(10px, calc(0.4608vw + 4.088px), 11px);
+            padding-top: 0.875rem;
+            padding-bottom: 0.875rem;
+            padding-left: clamp(1.25rem, calc(3.6866vw - 27.3px), 1.75rem);
+            padding-right: clamp(1.25rem, calc(3.6866vw - 27.3px), 1.75rem);
+          }
+        }
+
         @media (min-width: 768px) and (max-height: 700px) {
           .hero-content { padding-top: 5.75rem; padding-bottom: 1.5rem; }
         }
 
         @media (min-width: 768px) and (max-height: 860px) {
-          .hero-phone-scale { transform: translateX(24px) scale(0.82); }
+          .hero-phone-scale { transform: translate(24px, 12px) scale(0.82); }
         }
 
         @media (min-width: 768px) and (max-height: 780px) {
-          .hero-phone-scale { transform: translateX(40px) scale(0.7); }
+          .hero-phone-scale { transform: translate(40px, 24px) scale(0.7); }
         }
 
         @media (min-width: 768px) and (max-height: 680px) {
-          .hero-phone-scale { transform: translateX(56px) scale(0.58); }
+          .hero-phone-scale { transform: translate(56px, 36px) scale(0.58); }
         }
 
         @keyframes haloBreathe {
@@ -988,7 +1016,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             {/* Subtitle Technologies */}
             <motion.div variants={fadeUpVariants} className="mb-4">
               <p
-                className="text-[10px] sm:text-[11px] md:text-xs font-normal tracking-[0.28em] uppercase text-[#C4B29E]"
+                className="hero-eyebrow text-[10px] sm:text-[11px] md:text-xs font-normal tracking-[0.28em] uppercase text-[#C4B29E]"
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
               >
                 WEB-ENTWICKLER <span className="text-[#8C6D4F] mx-1">•</span> 3D &amp; MOTION <span className="text-[#8C6D4F] mx-1">•</span> ZÜRICH
@@ -998,7 +1026,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             {/* 3-Line Description */}
             <motion.div
               variants={fadeUpVariants}
-              className="text-xs sm:text-sm md:text-[13.5px] font-normal text-[#EAD8C7] leading-[1.8] tracking-wide max-w-lg mb-6 space-y-1"
+              className="hero-copy text-xs sm:text-sm md:text-[13.5px] font-normal text-[#EAD8C7] leading-[1.8] tracking-wide max-w-lg mb-6 space-y-1"
               style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
               <p>
@@ -1011,7 +1039,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             {/* CTA Buttons */}
             <motion.div
               variants={fadeUpVariants}
-              className="flex flex-row items-center gap-4 sm:gap-6"
+              className="hero-cta flex flex-row items-center gap-4 sm:gap-6"
               style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
               {/* Explore My Work CTA */}
