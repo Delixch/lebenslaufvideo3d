@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { AboutSection } from './components/AboutSection';
@@ -14,6 +14,16 @@ import { ScrollRail } from './components/ScrollRail';
 
 function App() {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className="w-full min-h-screen bg-black text-[#E8DFD8] selection:bg-[#cbb59d] selection:text-black">
@@ -21,8 +31,8 @@ function App() {
       <HeroSection isHovered={isHovered} setIsHovered={setIsHovered} />
       <AboutSection />
       <div id="work">
-        <ProjectsStage />
-        <MobileProjectsSection />
+        {!isMobile && <ProjectsStage />}
+        {isMobile && <MobileProjectsSection />}
       </div>
       <SkillsSection />
       <ExperienceSection />

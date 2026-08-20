@@ -157,7 +157,7 @@ export const SkillsSection: React.FC = () => {
 
               {/* Description */}
               <p
-                className="text-xs sm:text-sm text-[#A8988B] font-light leading-relaxed mb-7 max-w-xl group-hover:text-[#D5CBC0] transition-colors"
+                className="text-xs sm:text-sm text-[#EAD8C7] font-normal leading-relaxed mb-7 max-w-xl group-hover:text-[#FFF5EB] transition-colors"
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
               >
                 {block.description}

@@ -70,7 +70,7 @@ export const ContactSection: React.FC = () => {
               </motion.div>
 
               <p
-                className="text-xs sm:text-[13px] font-light text-[#A8988B] leading-relaxed max-w-md"
+                className="text-xs sm:text-[13px] font-normal text-[#EAD8C7] leading-relaxed max-w-md"
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
               >
                 Ein Projekt, eine Website, die nicht mehr passt, oder einfach eine Frage? Schreiben Sie mir — unverbindlich und ohne Fachjargon. Den ersten Schritt zu machen ist der halbe Weg.
@@ -103,7 +103,7 @@ export const ContactSection: React.FC = () => {
                 <h3 className="text-3xl text-white font-normal uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                   MAILPROGRAMM GEÖFFNET
                 </h3>
-                <p className="text-xs text-[#A8988B] font-light" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                <p className="text-xs text-[#EAD8C7] font-normal" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                   Ihre Nachricht ist vorbereitet — bitte im Mailprogramm noch abschicken. Alternativ direkt an adnan.aydin@bluewin.ch.
                 </p>
               </div>

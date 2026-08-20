@@ -357,7 +357,7 @@ export const ProjectsStage: React.FC = () => {
           </h2>
 
           <p
-            className="text-xs sm:text-sm font-light text-[#A8988B] max-w-sm mt-4 md:mt-0 leading-relaxed"
+            className="text-xs sm:text-sm font-normal text-[#EAD8C7] max-w-sm mt-4 md:mt-0 leading-relaxed"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             Wählen Sie ein Projekt aus, um es direkt im Notebook zu bedienen.
@@ -550,7 +550,7 @@ export const ProjectsStage: React.FC = () => {
                     {project.category}
                   </p>
 
-                  <p className="mt-1 text-[0.82cqw] font-light leading-relaxed text-[#A8988B]">
+                  <p className="mt-1 text-[0.82cqw] font-normal leading-relaxed text-[#EAD8C7]">
                     {project.description}
                   </p>
 
