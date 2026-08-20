@@ -378,7 +378,7 @@ export const ProjectsStage: React.FC = () => {
           >
             <img
               ref={plateRef}
-              src="/ipad-buehne.png?v=8"
+              src="/ipad-buehne.png?v=9"
               alt=""
               onLoad={() => window.dispatchEvent(new Event('resize'))}
               className="block w-full h-auto"
@@ -527,23 +527,6 @@ export const ProjectsStage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Gold Bezel Frame Overlay (Solid Thick Gold Border on the Bezel) */}
-              <div
-                className="absolute pointer-events-none z-45"
-                style={{
-                  left: '-36px',
-                  top: '-29px',
-                  width: `${PANEL.width + 72}px`,
-                  height: `${PANEL.height + 58}px`,
-                  transformOrigin: '36px 29px',
-                  transform,
-                  opacity: transform ? 1 : 0,
-                  border: '28px solid #D4AF37',
-                  borderRadius: '34px',
-                  boxShadow: '0 0 25px rgba(212, 175, 55, 0.45)',
-                }}
-              />
-
               {/* Right Side Project Info Card */}
               <AnimatePresence mode="wait">
                 <motion.div
@@ -552,7 +535,7 @@ export const ProjectsStage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -14 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute right-[1.5cqw] top-1/2 flex w-[23cqw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-[1.8cqw] py-[2.4cqh] backdrop-blur-md"
+                  className="absolute right-[1.5cqw] top-1/2 z-50 flex w-[23cqw] -translate-y-1/2 flex-col gap-3 border border-[#8C6D4F]/45 bg-[#0A0908]/85 px-[1.8cqw] py-[2.4cqh] backdrop-blur-md"
                 >
                   <p className="text-[0.72cqw] font-semibold uppercase tracking-[0.34em] text-[#C99E5D]">
                     {project.number} / Projekt
