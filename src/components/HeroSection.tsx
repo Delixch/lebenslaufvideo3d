@@ -233,7 +233,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   // Beide Bilder wurden einzeln ausgemessen; das Handybild ist hochkant und
   // zeigt die Laterne weiter oben rechts.
   const BULB_X = isMobile ? 0.670 : 0.457;
-  const BULB_Y = isMobile ? 0.159 : 0.099;
+  // 0.150 ist die Mitte des Glases, aus hero-lamp.png ausgemessen. Vorher
+  // stand hier 0.099, also die Oberkante — der Wert glich aus, dass der
+  // Schein um seine linke obere Ecke statt um seine Mitte sass. Dieser
+  // Ausgleich war eine halbe Scheinbreite und haengt damit an der
+  // Fenstergroesse; auf anderen Formaten rutschte das Licht deshalb aus
+  // der Laterne, mal zur einen, mal zur anderen Seite.
+  const BULB_Y = isMobile ? 0.159 : 0.150;
   const BULB_SIZE = isMobile ? 0.075 : 0.055;
   // Bildausschnitt: 0.5 = mittig, groesser = weiter rechts im Bild. Damit
   // ruecken Laterne und Mann nach links und die leere Flaeche schrumpft.
@@ -261,24 +267,32 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         return;
       }
 
-      const box = image.getBoundingClientRect();
-      const parent = image.parentElement?.getBoundingClientRect();
+      // Bewusst offsetWidth statt getBoundingClientRect: der Rahmen um das Bild
+      // traegt scale und translate. Ein Rect liefert Bildschirmpixel, also die
+      // bereits skalierten Masse — die Leuchtpunkte liegen aber im selben
+      // Rahmen und werden dort in unskalierten Pixeln gesetzt und erst danach
+      // mitskaliert. Beides gemischt schob den Schein je nach Seitenformat um
+      // mehrere Dutzend Pixel aus der Laterne heraus, mal nach links, mal nach
+      // rechts. offsetWidth kennt die Transformation nicht und liegt damit im
+      // selben Raum wie top und left weiter unten.
+      const boxW = image.offsetWidth;
+      const boxH = image.offsetHeight;
       const imageRatio = image.naturalWidth / image.naturalHeight;
-      const boxRatio = box.width / box.height;
+      const boxRatio = boxW / boxH;
 
       let renderedW: number;
       let renderedH: number;
       if (boxRatio >= imageRatio) {
-        renderedW = box.width;
-        renderedH = box.width / imageRatio;
+        renderedW = boxW;
+        renderedH = boxW / imageRatio;
       } else {
-        renderedH = box.height;
-        renderedW = box.height * imageRatio;
+        renderedH = boxH;
+        renderedW = boxH * imageRatio;
       }
 
       // Offsets relativ zum Container, in dem die Leuchtpunkte liegen.
-      const originX = box.left - (parent?.left ?? 0) + (box.width - renderedW) * IMAGE_FOCUS_X;
-      const originY = box.top - (parent?.top ?? 0) + (box.height - renderedH) * IMAGE_FOCUS_Y;
+      const originX = image.offsetLeft + (boxW - renderedW) * IMAGE_FOCUS_X;
+      const originY = image.offsetTop + (boxH - renderedH) * IMAGE_FOCUS_Y;
 
       setLampCoords({
         top: `${originY + BULB_Y * renderedH}px`,
@@ -516,16 +530,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
   {/* Nachtfalter im Laternenglas */}
   {/*
-    Achtung, halbe Breite Versatz: jeder Schritt von lampFlicker setzt selbst
-    ein `transform: scale(...)` und loescht damit das `translate(-50%, -50%)`
-    von oben. Der Schein wird also nicht um seine Mitte, sondern um seine
-    linke obere Ecke gesetzt — und BULB_X/BULB_Y sind an genau diesem Bild
-    ausgemessen. Wer die Falter ins Glas legen will, muss dorthin zielen, wo
-    das Licht wirklich landet, nicht dorthin, wo der Code es meint.
+    lampCoords zeigt auf die Mitte des Glases — so lesen es der Lichthof und
+    das Lampenmenue mit ihrem translate(-50%, -50%) auch. Frueher schrieb
+    jeder Schritt von lampFlicker ein eigenes `transform: scale(...)` und
+    loeschte damit die Zentrierung des Scheins; der lag dann um eine halbe
+    Breite versetzt, und die Falter zielten mit demselben Versatz hinterher.
+    Die Schritte tragen die Verschiebung jetzt selbst, also zielen die Falter
+    wieder direkt auf die Mitte.
   */}
   <LampMoths
-    centerX={parseFloat(lampCoords.left) + parseFloat(lampCoords.width) / 2}
-    centerY={parseFloat(lampCoords.top) + parseFloat(lampCoords.width) / 2}
+    centerX={parseFloat(lampCoords.left)}
+    centerY={parseFloat(lampCoords.top)}
     bulbSize={parseFloat(lampCoords.width)}
     active={lampLit}
   />
@@ -639,125 +654,125 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
           /* 0s - 2.4s: Initial Broken Neon Sparks (hizli yanip sonme) */
           0% {
             opacity: 0;
-            transform: scale(0.92);
+            transform: translate(-50%, -50%) scale(0.92);
             filter: blur(14px) brightness(0);
           }
           5% {
             opacity: 0.95;
-            transform: scale(1.02);
+            transform: translate(-50%, -50%) scale(1.02);
             filter: blur(6px) brightness(1.2);
           }
           8% {
             opacity: 0.05;
-            transform: scale(0.95);
+            transform: translate(-50%, -50%) scale(0.95);
             filter: blur(12px) brightness(0.1);
           }
           12% {
             opacity: 0.9;
-            transform: scale(1.0);
+            transform: translate(-50%, -50%) scale(1.0);
             filter: blur(7.5px) brightness(1.0);
           }
           14% {
             opacity: 0;
-            transform: scale(0.93);
+            transform: translate(-50%, -50%) scale(0.93);
             filter: blur(13px) brightness(0);
           }
           18% {
             opacity: 0.98;
-            transform: scale(1.03);
+            transform: translate(-50%, -50%) scale(1.03);
             filter: blur(5px) brightness(1.3);
           }
           21% {
             opacity: 0.15;
-            transform: scale(0.96);
+            transform: translate(-50%, -50%) scale(0.96);
             filter: blur(10px) brightness(0.2);
           }
           24% {
             opacity: 1;
-            transform: scale(1.0);
+            transform: translate(-50%, -50%) scale(1.0);
             filter: blur(7px) brightness(1.0);
           }
           
           /* 24% - 50%: Stable Glow */
           35% {
             opacity: 0.96;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
             filter: blur(7.5px) brightness(1.0);
           }
           42% {
             opacity: 0.98;
-            transform: scale(1.01);
+            transform: translate(-50%, -50%) scale(1.01);
             filter: blur(7px) brightness(1.03);
           }
           
           /* 50% - 55%: Sudden Power Dip / Flicker (gider gelir) */
           50% {
             opacity: 0.95;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
             filter: blur(7.5px) brightness(1.0);
           }
           51% {
             opacity: 0.1;
-            transform: scale(0.96);
+            transform: translate(-50%, -50%) scale(0.96);
             filter: blur(11px) brightness(0.2);
           }
           52% {
             opacity: 0.85;
-            transform: scale(1.01);
+            transform: translate(-50%, -50%) scale(1.01);
             filter: blur(8px) brightness(0.9);
           }
           53% {
             opacity: 0.03;
-            transform: scale(0.94);
+            transform: translate(-50%, -50%) scale(0.94);
             filter: blur(12px) brightness(0.05);
           }
           54% {
             opacity: 0.93;
-            transform: scale(1.02);
+            transform: translate(-50%, -50%) scale(1.02);
             filter: blur(6px) brightness(1.15);
           }
           55% {
             opacity: 1;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
             filter: blur(7px) brightness(1.0);
           }
           
           /* 55% - 85%: Stable Glow */
           70% {
             opacity: 0.97;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
             filter: blur(7px) brightness(1.0);
           }
           78% {
             opacity: 0.95;
-            transform: scale(0.99);
+            transform: translate(-50%, -50%) scale(0.99);
             filter: blur(7.5px) brightness(0.98);
           }
           
           /* 85% - 90%: Quick Double Flicker */
           85% {
             opacity: 0.96;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
             filter: blur(7px) brightness(1.0);
           }
           86% {
             opacity: 0.15;
-            transform: scale(0.95);
+            transform: translate(-50%, -50%) scale(0.95);
             filter: blur(10px) brightness(0.22);
           }
           87% {
             opacity: 0.98;
-            transform: scale(1.02);
+            transform: translate(-50%, -50%) scale(1.02);
             filter: blur(6.5px) brightness(1.1);
           }
           88% {
             opacity: 0.12;
-            transform: scale(0.95);
+            transform: translate(-50%, -50%) scale(0.95);
             filter: blur(11px) brightness(0.18);
           }
           89% {
             opacity: 1;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
             filter: blur(7px) brightness(1.0);
           }
           /* Ohne diesen Schritt laeuft transform am Ende jedes Durchlaufs auf
@@ -767,7 +782,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
              waehrend die Falter stehen blieben. */
           100% {
             opacity: 0.96;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
             filter: blur(7px) brightness(1.0);
           }
         }
