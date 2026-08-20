@@ -692,7 +692,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             transform: scale(1);
             filter: blur(7px) brightness(1.0);
           }
-          
+          /* Ohne diesen Schritt laeuft transform am Ende jedes Durchlaufs auf
+             den Grundwert des Elements zu — und das ist translate(-50%, -50%).
+             Der Schein rutschte dadurch in der letzten halben Sekunde jedes
+             Zyklus um eine halbe Kernbreite nach links oben und wieder zurueck,
+             waehrend die Falter stehen blieben. */
+          100% {
+            opacity: 0.96;
+            transform: scale(1);
+            filter: blur(7px) brightness(1.0);
+          }
+        }
+
         @keyframes lampFlickerMobile {
           0% { opacity: 0; }
           5% { opacity: 0.95; }

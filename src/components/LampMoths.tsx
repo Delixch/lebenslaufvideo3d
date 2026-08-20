@@ -10,7 +10,7 @@ interface LampMothsProps {
 }
 
 type Moth = {
-  /** Bahnradius als Anteil des Kerndurchmessers — alles unter 0.3 liegt im Glas. */
+  /** Bahnradius als Anteil des Kerndurchmessers — mit Stoss und Zittern bleibt alles unter 0.23, und so weit reicht das Glas. */
   radius: number;
   /** Umlauf pro Sekunde; Vorzeichen dreht die Richtung. */
   speed: number;
@@ -36,7 +36,7 @@ type Moth = {
  */
 const MOTHS: Moth[] = [
   {
-    radius: 0.15,
+    radius: 0.08,
     speed: 1.35,
     angle: 0,
     wobbleFreq: 3.1,
@@ -49,7 +49,7 @@ const MOTHS: Moth[] = [
     wingPhase: 0,
   },
   {
-    radius: 0.24,
+    radius: 0.12,
     speed: -0.95,
     angle: 2.1,
     wobbleFreq: 4.3,
@@ -62,7 +62,7 @@ const MOTHS: Moth[] = [
     wingPhase: 1.2,
   },
   {
-    radius: 0.3,
+    radius: 0.155,
     speed: 0.62,
     angle: 4.0,
     wobbleFreq: 2.3,
@@ -75,7 +75,7 @@ const MOTHS: Moth[] = [
     wingPhase: 2.6,
   },
   {
-    radius: 0.19,
+    radius: 0.10,
     speed: -1.7,
     angle: 5.4,
     wobbleFreq: 5.7,
@@ -131,10 +131,10 @@ export const LampMoths: React.FC<LampMothsProps> = ({ centerX, centerY, bulbSize
         // Stoss ans Glas: der Radius schnellt kurz nach aussen und faellt
         // zurueck. Jeder Falter hat seinen eigenen Takt dafuer.
         const sinceBump = (time + moth.bumpAt) % moth.bumpEvery;
-        const bump = sinceBump < 0.5 ? Math.sin((sinceBump / 0.5) * Math.PI) * 0.09 : 0;
+        const bump = sinceBump < 0.5 ? Math.sin((sinceBump / 0.5) * Math.PI) * 0.04 : 0;
 
-        const wobble = Math.sin(time * moth.wobbleFreq + moth.wobblePhase) * 0.035;
-        const jitter = Math.sin(time * 11.3 + index * 2.3) * 0.012;
+        const wobble = Math.sin(time * moth.wobbleFreq + moth.wobblePhase) * 0.02;
+        const jitter = Math.sin(time * 11.3 + index * 2.3) * 0.008;
         const radius = bulbSize * (moth.radius + wobble + jitter + bump);
 
         const angle = moth.angle + time * moth.speed;
