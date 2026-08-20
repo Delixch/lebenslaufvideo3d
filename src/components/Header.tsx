@@ -3,9 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { navItems, scrollToSection } from '../lib/nav';
 import { ArrowMark } from './LampMenu';
 
-// Solange das Laternenmenue erprobt wird, bleibt der Hamburger aus.
-const SHOW_HAMBURGER = false;
-
 interface HeaderProps {
   setIsHovered: (hovered: boolean) => void;
 }
