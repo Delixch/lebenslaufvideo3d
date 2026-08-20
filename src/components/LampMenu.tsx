@@ -173,8 +173,13 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
         }}
       >
         {!open && (
-          <span className="absolute left-1/2 top-full mt-1 h-[26px] w-[26px] -translate-x-1/2">
-            <ArrowMark direction="out" tone="rgba(255,226,172,0.85)" core="rgba(255,214,140,0.9)" />
+          <span className="absolute left-1/2 top-full mt-1 h-[34px] w-[34px] -translate-x-1/2">
+            {/* Golden radar ping wave */}
+            <span className="absolute inset-0 bg-[#D4AF37]/35 rounded-full animate-ping pointer-events-none" />
+            {/* Gold soft breathing glow */}
+            <span className="absolute inset-[-4px] bg-[#D4AF37]/45 rounded-full animate-pulse blur-[4px] pointer-events-none" />
+
+            <ArrowMark direction="out" tone="rgba(255,195,50,1)" core="rgba(255,245,210,1)" />
           </span>
         )}
       </button>
@@ -292,12 +297,12 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Menü schliessen"
-              className="group absolute bottom-3 right-4 h-9 w-9"
+              className="group absolute bottom-3 right-4 h-9 w-9 rounded-full bg-[#FFEAD4]/25 border border-[#3A2412]/40 hover:bg-[#FFEAD4]/35 active:bg-[#FFEAD4]/40 flex items-center justify-center transition-all duration-300 shadow-[0_2px_8px_rgba(58,36,18,0.15)]"
             >
               <ArrowMark
                 direction="in"
-                tone="rgba(58,36,18,0.95)"
-                core="rgba(58,36,18,0.85)"
+                tone="rgba(18,8,2,1)"
+                core="rgba(0,0,0,1)"
               />
             </button>
           </motion.nav>
