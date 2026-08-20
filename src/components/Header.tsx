@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { navItems, scrollToSection } from '../lib/nav';
+import { ArrowMark } from './LampMenu';
 
 // Solange das Laternenmenue erprobt wird, bleibt der Hamburger aus.
 const SHOW_HAMBURGER = false;
@@ -55,6 +56,19 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
 
     return () => observer.disconnect();
   }, []);
+
+  // Close mobile header bubble menu when clicking outside
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointer = (event: PointerEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.mobile-header-menu-container')) {
+        setMenuOpen(false);
+      }
+    };
+    window.addEventListener('pointerdown', onPointer);
+    return () => window.removeEventListener('pointerdown', onPointer);
+  }, [menuOpen]);
 
   // Solange das Menü offen ist, soll die Seite dahinter nicht mitscrollen.
   // Mobilde Safari kaydırma kilitlenme hatasını engellemek için geçici olarak devre dışı bırakıldı.
@@ -159,42 +173,102 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
             <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#8C6D4F] via-[#D4AF37] to-[#F7E7C4] transition-all duration-500 group-hover:w-full" />
           </a>
 
-          {/* Hamburger: Linien werden zum Kreuz, ein Ring pulst beim Öffnen */}
-          {SHOW_HAMBURGER && (
-          <button
-            onClick={() => setMenuOpen((open) => !open)}
-            className="relative z-[60] flex md:hidden h-11 w-11 flex-col items-center justify-center rounded-full border border-[#8C6D4F]/40 bg-[#120F0C]/70 transition-colors active:border-[#D4AF37]"
-            aria-label={menuOpen ? 'Menü schliessen' : 'Menü öffnen'}
-            aria-expanded={menuOpen}
-          >
-            <motion.span
-              animate={
-                menuOpen
-                  ? { opacity: 1, scale: 1.18, borderColor: 'rgba(212,175,55,0.65)' }
-                  : { opacity: 0, scale: 0.8, borderColor: 'rgba(212,175,55,0)' }
-              }
-              transition={{ duration: 0.4 }}
-              className="absolute inset-0 rounded-full border"
-            />
-            <div className="relative flex h-4 w-5 flex-col justify-between">
-              <motion.span
-                animate={menuOpen ? { rotate: 45, y: 7.25 } : { rotate: 0, y: 0 }}
-                transition={{ duration: 0.35, ease: 'easeInOut' }}
-                className="block h-[1.5px] w-5 origin-center bg-[#EAD8C7]"
-              />
-              <motion.span
-                animate={menuOpen ? { opacity: 0, x: 12 } : { opacity: 1, x: 0 }}
-                transition={{ duration: 0.25 }}
-                className="block h-[1.5px] w-5 origin-center bg-[#EAD8C7]"
-              />
-              <motion.span
-                animate={menuOpen ? { rotate: -45, y: -7.25 } : { rotate: 0, y: 0 }}
-                transition={{ duration: 0.35, ease: 'easeInOut' }}
-                className="block h-[1.5px] w-5 origin-center bg-[#EAD8C7]"
-              />
-            </div>
-          </button>
-          )}
+          {/* Mobile Scroll-Glow Menu Trigger (Only visible on mobile when scrolled down) */}
+          <div className="relative md:hidden flex items-center mobile-header-menu-container">
+            {isScrolled && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((open) => !open)}
+                  className="relative z-50 flex h-10 w-10 items-center justify-center pointer-events-auto"
+                >
+                  {!menuOpen && (
+                    <>
+                      <span className="absolute inset-0 bg-[#D4AF37]/35 rounded-full animate-ping pointer-events-none" />
+                      <span className="absolute inset-[-4px] bg-[#D4AF37]/45 rounded-full animate-pulse blur-[4px] pointer-events-none" />
+                    </>
+                  )}
+                  <ArrowMark
+                    direction={menuOpen ? 'in' : 'out'}
+                    tone={menuOpen ? 'rgba(18,8,2,1)' : 'rgba(255,195,50,1)'}
+                    core={menuOpen ? 'rgba(0,0,0,1)' : 'rgba(255,245,210,1)'}
+                  />
+                </button>
+                
+                <AnimatePresence>
+                  {menuOpen && (
+                    <motion.nav
+                      initial={{ opacity: 0, scale: 0.4, x: 20, y: -20 }}
+                      animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.35, x: 24, y: -22 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="pointer-events-auto absolute right-0 top-12 w-[56vw] max-w-[232px] pb-14 pl-5 pr-14 pt-8 shadow-[0_10px_40px_rgba(0,0,0,0.8)]"
+                      style={{
+                        transformOrigin: 'top right',
+                        background:
+                          'radial-gradient(130% 120% at 76% 20%, rgba(255,224,164,0.98) 0%, rgba(248,199,122,0.96) 26%, rgba(226,166,92,0.92) 50%, rgba(196,134,68,0.88) 72%, rgba(158,102,50,0.84) 88%, rgba(120,76,36,0.8) 100%)',
+                        backdropFilter: 'blur(14px) saturate(120%)',
+                        WebkitBackdropFilter: 'blur(14px) saturate(120%)',
+                        border: '1px solid rgba(255,214,150,0.5)',
+                        borderRadius: '58% 42% 34% 66% / 46% 62% 38% 54%',
+                      }}
+                    >
+                      {/* Zipfel zur Ecke hin */}
+                      <span
+                        aria-hidden="true"
+                        className="absolute right-3 -top-[7px] h-3.5 w-3.5 rotate-45"
+                        style={{
+                          background: 'rgba(255,224,164,0.98)',
+                          borderLeft: '1px solid rgba(255,214,150,0.5)',
+                          borderTop: '1px solid rgba(255,214,150,0.5)',
+                        }}
+                      />
+                      
+                      <motion.ul
+                        className="flex origin-center flex-col gap-3"
+                        exit={{ opacity: 0, scale: 0.62 }}
+                        transition={{ duration: 0.16 }}
+                      >
+                        {navItems.map((item, index) => {
+                          const active = activeId === item.id;
+                          return (
+                            <motion.li
+                              key={item.id}
+                              initial={{ opacity: 0, x: 10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.06 + index * 0.045, duration: 0.25 }}
+                            >
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setMenuOpen(false);
+                                  scrollToSection(item.id);
+                                }}
+                                className={`relative w-full text-right pr-5 text-[19px] uppercase tracking-[0.12em] transition-all duration-300 ${
+                                  active 
+                                    ? 'text-[#120A04] font-medium' 
+                                    : 'text-[#3A2412]/80 font-normal hover:text-[#3A2412]'
+                                }`}
+                                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                              >
+                                {item.name}
+                                {active && (
+                                  <motion.span
+                                    layoutId="mobile-header-dot"
+                                    className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#8C6D4F] shadow-[0_0_6px_rgba(140,109,79,0.9)]"
+                                  />
+                                )}
+                              </button>
+                            </motion.li>
+                          );
+                        })}
+                      </motion.ul>
+                    </motion.nav>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Lesefortschritt als feine Goldlinie */}
@@ -203,146 +277,6 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
           style={{ width: `${progress * 100}%` }}
         />
       </header>
-
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ clipPath: 'circle(0% at calc(100% - 2.6rem) 2.6rem)' }}
-            animate={{ clipPath: 'circle(150% at calc(100% - 2.6rem) 2.6rem)' }}
-            exit={{ clipPath: 'circle(0% at calc(100% - 2.6rem) 2.6rem)' }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[55] flex flex-col justify-center px-8 md:hidden"
-            style={{
-              background:
-                'radial-gradient(120% 80% at 85% 8%, rgba(212,175,55,0.10) 0%, transparent 60%), #060504',
-            }}
-          >
-            <nav className="flex flex-col gap-1">
-              {/* Home Link (Startseite) for Mobile with Gold Home Icon */}
-              <motion.a
-                key="home-mobile"
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (document.activeElement instanceof HTMLElement) {
-                    document.activeElement.blur();
-                  }
-                  setMenuOpen(false);
-                  window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth',
-                  });
-                }}
-                initial={{ opacity: 0, x: -28, filter: 'blur(6px)' }}
-                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                transition={{
-                  delay: 0.12,
-                  duration: 0.5,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="group relative flex items-baseline gap-4 py-3"
-              >
-                <span className="font-mono text-[10px] tracking-[0.3em] text-[#8C6D4F]">
-                  00
-                </span>
-                <span
-                  className="text-4xl uppercase leading-none tracking-tight text-[#C4B5A5] group-active:text-[#FFF5EB] flex items-center gap-3"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                >
-                  STARTSEITE
-                  <svg
-                    className="w-6 h-6 text-[#D4AF37] drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                    />
-                  </svg>
-                </span>
-                <span className="absolute bottom-1 left-0 h-[1px] w-0 bg-gradient-to-r from-[#D4AF37]/70 to-transparent transition-all duration-500 group-active:w-full" />
-              </motion.a>
-
-              {navItems.map((item, index) => {
-                const active = activeId === item.id;
-                return (
-                  <motion.a
-                    key={item.name}
-                    href={item.href}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      setMenuOpen(false);
-                      if (document.activeElement instanceof HTMLElement) {
-                        document.activeElement.blur();
-                      }
-                      scrollToSection(item.id);
-                    }}
-                    initial={{ opacity: 0, x: -28, filter: 'blur(6px)' }}
-                    animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                    transition={{
-                      delay: 0.18 + index * 0.07,
-                      duration: 0.5,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    className="group relative flex items-baseline gap-4 py-3"
-                  >
-                    <span
-                      className={`font-mono text-[10px] tracking-[0.3em] transition-colors duration-300 ${
-                        active ? 'text-[#F7E7C4]' : 'text-[#8C6D4F]'
-                      }`}
-                    >
-                      0{index + 1}
-                    </span>
-                    <span
-                      className={`text-4xl uppercase leading-none tracking-tight transition-colors duration-300 ${
-                        active
-                          ? 'bg-gradient-to-b from-[#F7E7C4] via-[#C99E5D] to-[#7A5A28] bg-clip-text text-transparent'
-                          : 'text-[#C4B5A5] group-active:text-[#FFF5EB]'
-                      }`}
-                      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                    >
-                      {item.name}
-                    </span>
-                    {active && (
-                      <motion.span
-                        layoutId="menu-marker"
-                        className="absolute -left-4 top-1/2 h-8 w-[2px] -translate-y-1/2 bg-gradient-to-b from-[#D4AF37] to-transparent shadow-[0_0_12px_rgba(212,175,55,0.8)]"
-                      />
-                    )}
-                    <span className="absolute bottom-1 left-0 h-[1px] w-0 bg-gradient-to-r from-[#D4AF37]/70 to-transparent transition-all duration-500 group-active:w-full" />
-                  </motion.a>
-                );
-              })}
-            </nav>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.18 + navItems.length * 0.07, duration: 0.5 }}
-              className="mt-12 border-t border-[#8C6D4F]/25 pt-6"
-            >
-              <a
-                href="mailto:adnan.aydin@bluewin.ch"
-                onClick={() => setMenuOpen(false)}
-                className="block text-sm tracking-[0.2em] text-[#EAD8C7]"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
-                adnan.aydin@bluewin.ch
-              </a>
-              <p
-                className="mt-2 text-[10px] uppercase tracking-[0.3em] text-[#8C6D4F]"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
-                Zürich · Schweiz
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 };

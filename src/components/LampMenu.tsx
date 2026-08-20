@@ -22,7 +22,7 @@ const ARROWS_OUT = [
  * werden dabei heller, dann wieder zurueck. Nach aussen heisst oeffnen, nach
  * innen einholen — das ersetzt jede Beschriftung.
  */
-const ArrowMark: React.FC<{ direction: 'in' | 'out'; tone: string; core: string }> = ({
+export const ArrowMark: React.FC<{ direction: 'in' | 'out'; tone: string; core: string }> = ({
   direction,
   tone,
   core,
@@ -86,7 +86,31 @@ interface LampMenuProps {
  */
 export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) => {
   const [open, setOpen] = useState(false);
+  const [activeId, setActiveId] = useState('about');
   const wrapRef = useRef<HTMLDivElement | null>(null);
+
+  // Track active section on scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '-40% 0px -50% 0px' }
+    );
+
+    navItems.forEach((item) => {
+      const section = document.getElementById(item.id);
+      if (section) {
+        observer.observe(section);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     onToggle(open);
@@ -214,7 +238,7 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
             animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
             exit={{ opacity: 0, scale: 0.35, x: 34, y: -22 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="pointer-events-auto absolute w-[56vw] max-w-[232px] pb-14 pl-5 pr-11 pt-4"
+            className="pointer-events-auto absolute w-[56vw] max-w-[232px] pb-14 pl-5 pr-14 pt-8"
             style={{
               // Rechts unter der Laterne aufgehaengt, Wachstumspunkt oben rechts.
               // Links neben der Laterne, in der leeren Nebelflaeche unter dem
@@ -272,22 +296,36 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
               exit={{ opacity: 0, scale: 0.62 }}
               transition={{ duration: 0.16 }}
             >
-              {navItems.map((item, index) => (
-                <motion.li
-                  key={item.id}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.06 + index * 0.045, duration: 0.25 }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => choose(item.id)}
-                    className="w-full text-right text-[11.5px] font-semibold uppercase tracking-[0.26em] text-[#3A2412] transition-all active:font-bold active:text-[#120A04]"
+              {navItems.map((item, index) => {
+                const active = activeId === item.id;
+                return (
+                  <motion.li
+                    key={item.id}
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.06 + index * 0.045, duration: 0.25 }}
                   >
-                    {item.name}
-                  </button>
-                </motion.li>
-              ))}
+                    <button
+                      type="button"
+                      onClick={() => choose(item.id)}
+                      className={`relative w-full text-right pr-5 text-[19px] uppercase tracking-[0.12em] transition-all duration-300 ${
+                        active 
+                          ? 'text-[#120A04] font-medium' 
+                          : 'text-[#3A2412]/80 font-normal hover:text-[#3A2412]'
+                      }`}
+                      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                    >
+                      {item.name}
+                      {active && (
+                        <motion.span
+                          layoutId="mobile-nav-dot"
+                          className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#8C6D4F] shadow-[0_0_6px_rgba(140,109,79,0.9)]"
+                        />
+                      )}
+                    </button>
+                  </motion.li>
+                );
+              })}
             </motion.ul>
 
             {/* Zeichen zum Einholen: ein Kern, vier Pfeile nach innen. Sie
