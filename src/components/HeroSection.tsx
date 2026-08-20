@@ -41,6 +41,10 @@ interface HeroSectionProps {
 }
 
 const MOBILE_QUERY = '(max-width: 767px)';
+// Laptop-Format: breit, aber flach. object-cover schneidet dort oben und
+// unten je rund 60px weg — genug, um die Spitze der Laterne zu kappen und
+// den Kopf des Mannes in die Menuezeile zu heben.
+const FLAT_QUERY = '(min-width: 768px) and (max-height: 860px)';
 
 // Web Audio API Sentezleyicisi: Arızalı neon sokak lambası uğultusu ve kıvılcım patlamaları üretir
 class NeonBuzzSynth {
@@ -171,10 +175,18 @@ class NeonBuzzSynth {
 export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovered }) => {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
+  const [isFlat, setIsFlat] = useState(() => window.matchMedia(FLAT_QUERY).matches);
 
   useEffect(() => {
     const query = window.matchMedia(MOBILE_QUERY);
     const update = () => setIsMobile(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia(FLAT_QUERY);
+    const update = () => setIsFlat(query.matches);
     query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
   }, []);
@@ -226,6 +238,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   // Bildausschnitt: 0.5 = mittig, groesser = weiter rechts im Bild. Damit
   // ruecken Laterne und Mann nach links und die leere Flaeche schrumpft.
   const IMAGE_FOCUS_X = isMobile ? 0.5 : 0.92;
+  // 0.5 = mittig, kleiner = weiter oben im Bild.
+  const IMAGE_FOCUS_Y = !isMobile && isFlat ? 0.06 : 0.5;
 
   const lampImageRef = useRef<HTMLImageElement | null>(null);
   const lampCoreRef = useRef<HTMLDivElement | null>(null);
@@ -264,7 +278,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
       // Offsets relativ zum Container, in dem die Leuchtpunkte liegen.
       const originX = box.left - (parent?.left ?? 0) + (box.width - renderedW) * IMAGE_FOCUS_X;
-      const originY = box.top - (parent?.top ?? 0) + (box.height - renderedH) / 2;
+      const originY = box.top - (parent?.top ?? 0) + (box.height - renderedH) * IMAGE_FOCUS_Y;
 
       setLampCoords({
         top: `${originY + BULB_Y * renderedH}px`,
@@ -285,7 +299,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
-  }, [BULB_X, BULB_Y, BULB_SIZE, IMAGE_FOCUS_X]);
+  }, [BULB_X, BULB_Y, BULB_SIZE, IMAGE_FOCUS_X, IMAGE_FOCUS_Y]);
 
   // Neon Uğultu ve Kıvılcım Sentezleyici Ref'leri
   const neonSynthRef = useRef<NeonBuzzSynth | null>(null);
@@ -543,6 +557,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
         @media (min-width: 768px) and (max-height: 700px) {
           .hero-content { padding-top: 5.75rem; padding-bottom: 1.5rem; }
+        }
+
+        @media (min-width: 768px) and (max-height: 860px) {
+          .hero-phone-scale { transform: translateX(24px) scale(0.82); }
+        }
+
+        @media (min-width: 768px) and (max-height: 780px) {
+          .hero-phone-scale { transform: translateX(40px) scale(0.7); }
+        }
+
+        @media (min-width: 768px) and (max-height: 680px) {
+          .hero-phone-scale { transform: translateX(56px) scale(0.58); }
         }
 
         @keyframes haloBreathe {
@@ -854,7 +880,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 src="/hero-lamp.png" 
                 alt="Adnan Aydin - Final"
                 className="h-full w-full object-cover"
-                style={{ objectPosition: `${IMAGE_FOCUS_X * 100}% center` }}
+                style={{ objectPosition: `${IMAGE_FOCUS_X * 100}% ${IMAGE_FOCUS_Y * 100}%` }}
               />
 
               {lampLight}
@@ -881,7 +907,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 playsInline
                 preload="auto"
                 onTimeUpdate={handleTimeUpdate}
-                className="h-full w-full object-cover object-center scale-[0.94] origin-top-right translate-y-[max(4.5rem,6vh)]"
+                className="h-full w-full object-cover scale-[0.94] origin-top-right translate-y-[max(4.5rem,6vh)]"
+                style={{ objectPosition: `50% ${IMAGE_FOCUS_Y * 100}%` }}
               />
             </div>
           </>
@@ -1045,6 +1072,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                   transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
                   className="relative flex flex-col items-center pointer-events-auto cursor-pointer"
                 >
+                  {/* Der Rahmen misst feste 170x340px. Auf einem hohen Schirm
+                      steht der Mann fast 1000px hoch, da wirkt das Handy klein.
+                      Auf Laptop-Hoehen schrumpft der Mann mit dem Bild, das
+                      Handy aber nicht — es wurde groesser als er und klebte an
+                      seiner Schulter. Diese Huelle zieht es entsprechend der
+                      Bildschirmhoehe zusammen und rueckt es nach rechts weg. */}
+                  <div className="hero-phone-scale flex flex-col items-center">
                   {/* Text above the phone */}
                   <div className="flex flex-col items-center mb-2.5 text-center select-none">
                     <span className="text-[8px] font-semibold tracking-[0.3em] uppercase text-[#D4AF37] animate-pulse">
@@ -1078,6 +1112,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                       {/* Glass glare effect */}
                       <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 pointer-events-none z-20" />
                     </div>
+                  </div>
                   </div>
                 </motion.div>
               )}
