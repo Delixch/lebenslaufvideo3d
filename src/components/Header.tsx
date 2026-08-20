@@ -89,9 +89,32 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
 
         {/* Desktop-Navigation mit aktivem Zustand */}
         <nav
-          className="hidden md:flex items-center space-x-8 lg:space-x-10 text-[11px] tracking-[0.28em] font-light uppercase absolute left-1/2 -translate-x-1/2"
+          className="hidden md:flex items-center space-x-8 lg:space-x-10 text-[11px] tracking-[0.28em] font-medium uppercase absolute left-1/2 -translate-x-1/2"
           style={{ fontFamily: "'Montserrat', sans-serif" }}
         >
+          {/* Home Link with Blinking Icon */}
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="relative group py-1 flex items-center justify-center text-[#C8B8A6] hover:text-[#FFF5EB] mr-6"
+            title="Startseite"
+          >
+            <svg
+              className="w-4.5 h-4.5 text-[#D4AF37] animate-pulse drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </a>
+
           {navItems.map((item) => {
             const active = activeId === item.id;
             return (
@@ -101,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className={`relative group py-1 transition-colors duration-300 ${
-                  active ? 'text-[#F7E7C4]' : 'text-[#C4B5A5] hover:text-[#FFF5EB]'
+                  active ? 'text-[#F7E7C4]' : 'text-[#C8B8A6] hover:text-[#FFF5EB]'
                 }`}
               >
                 {item.name}

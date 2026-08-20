@@ -179,7 +179,7 @@ export const ExperienceSection: React.FC = () => {
                   </span>
                   
                   <p 
-                    className="text-xs sm:text-[13px] font-light text-[#A8988B] leading-[1.7] max-w-lg group-hover:text-[#D5CBC0] transition-colors"
+                    className="text-xs sm:text-[13px] font-normal text-[#EAD8C7] leading-[1.7] max-w-lg group-hover:text-[#FFF5EB] transition-colors"
                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                   >
                     {stop.description}

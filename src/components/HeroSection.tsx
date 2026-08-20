@@ -938,7 +938,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             {/* 3-Line Description */}
             <motion.div
               variants={fadeUpVariants}
-              className="text-xs sm:text-sm md:text-[13.5px] font-light text-[#A8988B] leading-[1.8] tracking-wide max-w-lg mb-6 space-y-1"
+              className="text-xs sm:text-sm md:text-[13.5px] font-normal text-[#EAD8C7] leading-[1.8] tracking-wide max-w-lg mb-6 space-y-1"
               style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
               <p>

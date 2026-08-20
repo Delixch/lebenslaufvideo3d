@@ -214,7 +214,7 @@ export const MobileProjectsSection: React.FC = () => {
           </h2>
 
           <p
-            className="text-xs sm:text-sm font-light text-[#A8988B] leading-relaxed"
+            className="text-xs sm:text-sm font-normal text-[#EAD8C7] leading-relaxed"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             Jedes Projekt ist echte Arbeit für echte Menschen — keine Übungsaufgabe.
