@@ -210,31 +210,36 @@ export const ProjectsStage: React.FC = () => {
     };
   }, [live]);
 
-  // Verlaesst die Buehne den Sichtbereich, faellt der iframe weg — beim
-  // Wiedereintritt soll das Glas also wieder von vorn laufen.
+  // Endet die Bedienung, faellt der iframe weg und das Standbild uebernimmt
+  // wieder — beim naechsten Mal soll das Glas also von vorn laufen.
+  useEffect(() => {
+    if (!live) {
+      setLoaded(false);
+    }
+  }, [live]);
+
+  // Wer die Buehne verlaesst, bedient sie nicht mehr.
   useEffect(() => {
     if (!nearScreen) {
-      setLoaded(false);
       setLive(false);
     }
   }, [nearScreen]);
 
-  // Ist die Buehne in Reichweite, wird der Server des naechsten Projekts schon
-  // angewaermt; der Wechsel spart dann den Verbindungsaufbau.
+  // Ist die Buehne in Reichweite, wird der Server des gezeigten Projekts schon
+  // angewaermt: dann steht die Seite kurz nach dem Klick.
   useEffect(() => {
     if (!nearScreen) {
       return;
     }
 
-    const next = projects[(index + 1) % projects.length];
     const link = document.createElement('link');
     link.rel = 'preconnect';
-    link.href = new URL(next.githubUrl).origin;
+    link.href = new URL(project.githubUrl).origin;
     link.crossOrigin = '';
     document.head.append(link);
 
     return () => link.remove();
-  }, [index, nearScreen]);
+  }, [nearScreen, project.githubUrl]);
 
   const step = useCallback((delta: number) => {
     setLive(false);
@@ -512,7 +517,33 @@ export const ProjectsStage: React.FC = () => {
                           />
                         ) : (
                           <>
-                            {nearScreen && (
+                            {/* Grund, falls ein Standbild fehlt. */}
+                            <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-br from-[#1A1512] to-[#0A0908] p-6">
+                              <span
+                                className="text-[1.4cqw] uppercase leading-none text-[#C99E5D]"
+                                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                              >
+                                {project.title}
+                              </span>
+                            </div>
+
+                            {/*
+                              Im Ruhezustand steht hier nur ein Standbild. Eine
+                              fremde Seite unter dem matrix3d-Warp laufen zu
+                              lassen kostet in jedem Frame Rasterflaeche — und
+                              das fuer etwas, das die meiste Zeit nur angeschaut
+                              wird. Die Aufnahmen macht scripts/shots.mjs.
+                            */}
+                            <img
+                              src={`/shots/${project.number}.webp`}
+                              alt=""
+                              loading="lazy"
+                              decoding="async"
+                              className="absolute left-0 top-0 z-[5] h-full w-full object-cover object-top"
+                            />
+
+                            {/* Die echte Seite kommt erst auf Zuruf. */}
+                            {live && (
                               <iframe
                                 key={project.githubUrl}
                                 src={project.githubUrl}
@@ -520,9 +551,7 @@ export const ProjectsStage: React.FC = () => {
                                 sandbox="allow-scripts allow-same-origin allow-popups"
                                 referrerPolicy="no-referrer"
                                 onLoad={() => window.setTimeout(() => setLoaded(true), 900)}
-                                className={`absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500 ${
-                                  live ? '' : 'pointer-events-none'
-                                }`}
+                                className="absolute left-0 top-0 z-10 origin-top-left border-0 transition-opacity duration-500"
                                 style={{
                                   // 125 % / scale(0.8) ergibt innen 1800x1125 statt 3600x2250:
                                   // gleicher Ausschnitt, aber ein Viertel der Rasterflaeche,
@@ -534,14 +563,6 @@ export const ProjectsStage: React.FC = () => {
                                 }}
                               />
                             )}
-                            <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-br from-[#1A1512] to-[#0A0908] p-6">
-                              <span
-                                className="text-[1.4cqw] uppercase leading-none text-[#C99E5D]"
-                                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                              >
-                                {project.title}
-                              </span>
-                            </div>
                           </>
                         )}
                       </div>
@@ -687,7 +708,9 @@ export const ProjectsStage: React.FC = () => {
                   top: '54%',
                   width: '5.0cqw',
                   height: '25cqh',
-                  opacity: loaded ? 0 : 1,
+                  // Das Standbild steht sofort; gewartet wird nur auf die
+                  // echte Seite, also zeigt sich das Glas auch nur dann.
+                  opacity: live && !loaded ? 1 : 0,
                 }}
               >
                 <div
@@ -701,7 +724,7 @@ export const ProjectsStage: React.FC = () => {
                   }}
                 >
                   <div
-                    key={index}
+                    key={`${index}-${live}`}
                     className="absolute inset-x-0 bottom-0 transition-[height] duration-500 ease-out"
                     style={{
                       height: loaded ? '100%' : '74%',
