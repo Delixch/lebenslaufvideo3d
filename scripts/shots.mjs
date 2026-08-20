@@ -41,6 +41,13 @@ const SETTLE_MS = Number(process.env.SETTLE_MS) || 6000;
 const SLOW = new Set(['07', '08', '09']);
 const SLOW_MS = Number(process.env.SLOW_MS) || 70000;
 
+/**
+ * Bilder von Hand. Projekt 07 zeigt beim ersten Besuch ein Cookie-Fenster,
+ * das quer ueber der Seite liegt — die Aufnahme dort ist von Hand gemacht und
+ * wird nur ueberschrieben, wenn jemand die Nummer ausdruecklich nennt.
+ */
+const MANUAL = new Set(['07']);
+
 const CHROME_CANDIDATES = [
   process.env.CHROME_PATH,
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -136,9 +143,13 @@ const connect = async (socketUrl) => {
 };
 
 const wanted = process.argv.slice(2);
-const projects = readProjects().filter(
-  (project) => !wanted.length || wanted.includes(project.number),
+const projects = readProjects().filter((project) =>
+  wanted.length ? wanted.includes(project.number) : !MANUAL.has(project.number),
 );
+
+if (!wanted.length && MANUAL.size) {
+  process.stdout.write(`uebersprungen (von Hand): ${[...MANUAL].join(', ')}\n`);
+}
 
 mkdirSync(path.join(root, 'public/shots'), { recursive: true });
 const profile = mkdtempSync(path.join(tmpdir(), 'buehne-shots-'));
