@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Seite nicht gefunden | Adnan Aydin</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #060504;
+      color: #E8DFD8;
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background Glows */
+    .glow-1 {
+      position: absolute;
+      top: 10%;
+      left: 15%;
+      width: 25rem;
+      height: 25rem;
+      background: rgba(212, 175, 55, 0.05);
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .glow-2 {
+      position: absolute;
+      bottom: 10%;
+      right: 15%;
+      width: 20rem;
+      height: 20rem;
+      background: rgba(140, 109, 79, 0.05);
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Top Logo Bar */
+    .logo-container {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      color: #FFF5EB;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    /* Content Wrapper */
+    .content {
+      position: relative;
+      z-index: 5;
+      max-width: 500px;
+      width: 100%;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* 404 Title */
+    .error-code {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 6.5rem;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to bottom, #F7E7C4, #C99E5D, #543B1A);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 4px 15px rgba(201, 158, 93, 0.25));
+    }
+
+    .error-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.08em;
+      color: #FFF;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+
+    /* Video Frame resembling the iPad / Premium Card */
+    .video-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #100D0B;
+      border: 1px solid rgba(140, 109, 79, 0.4);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.08);
+      cursor: pointer;
+    }
+
+    .video-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.4), transparent);
+    }
+
+    /* Precision crosshairs in the corners */
+    .corner-pin {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-color: rgba(212, 175, 55, 0.5);
+      border-style: solid;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .pin-tl { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+    .pin-tr { top: 6px; right: 6px; border-width: 1px 1px 0 0; }
+    .pin-bl { bottom: 6px; left: 6px; border-width: 0 0 1px 1px; }
+    .pin-br { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Custom Unmute Overlay Button */
+    .sound-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+      z-index: 8;
+    }
+
+    .sound-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sound-btn {
+      background: rgba(16, 13, 11, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.6);
+      color: #EAD8C7;
+      padding: 0.6rem 1.2rem;
+      border-radius: 30px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .sound-btn:hover {
+      border-color: #D4AF37;
+      color: #FFF;
+      transform: scale(1.05);
+    }
+
+    /* Subtext description */
+    .description {
+      font-size: 12.5px;
+      color: #EAD8C7;
+      line-height: 1.6;
+      margin-bottom: 2.2rem;
+      font-weight: 400;
+    }
+
+    /* Return Button */
+    .btn-gold {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #EAD8C7;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      border: 1px solid rgba(140, 109, 79, 0.5);
+      background: transparent;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .btn-gold::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(to right, #8C6D4F, #D4AF37, #F7E7C4);
+      transition: width 0.4s ease;
+    }
+
+    .btn-gold:hover {
+      border-color: #D4AF37;
+      color: #FFF;
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.12);
+    }
+
+    .btn-gold:hover::before {
+      width: 100%;
+    }
+
+    .btn-gold span {
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-gold:hover span {
+      transform: translateX(-3px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+
+  <!-- Top Brand Logo -->
+  <div class="logo-container">
+    <a href="/" class="logo">Adnan.</a>
+  </div>
+
+  <!-- Main Container -->
+  <div class="content">
+    
+    <div class="error-code">404</div>
+    <div class="error-title">Seite nicht gefunden</div>
+
+    <!-- Video Box resembling iPad frame -->
+    <div class="video-card" id="videoContainer">
+      <div class="corner-pin pin-tl"></div>
+      <div class="corner-pin pin-tr"></div>
+      <div class="corner-pin pin-bl"></div>
+      <div class="corner-pin pin-br"></div>
+
+      <!-- Video element -->
+      <video id="errorVideo" autoplay loop muted playsinline>
+        <source src="videos/404.mp4" type="video/mp4">
+        Ihr Browser unterstützt dieses Videoformat nicht.
+      </video>
+
+      <!-- Click to Unmute Overlay -->
+      <div class="sound-overlay" id="soundOverlay">
+        <button class="sound-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          Ton Einschalten
+        </button>
+      </div>
+    </div>
+
+    <!-- Explanation -->
+    <p class="description">
+      Die gesuchte Seite existiert nicht oder wurde verschoben. Selbst Adnan rätselt bereits, wohin sie verschwunden sein könnte...
+    </p>
+
+    <!-- Return Link -->
+    <a href="/" class="btn-gold">
+      <span>←</span> Zurück zur Startseite
+    </a>
+
+  </div>
+
+  <script>
+    const video = document.getElementById('errorVideo');
+    const overlay = document.getElementById('soundOverlay');
+    const container = document.getElementById('videoContainer');
+
+    // Click anywhere on the video frame to unmute and restart
+    container.addEventListener('click', () => {
+      if (video.muted) {
+        video.muted = false;
+        // Optional: restart video from beginning so user hears the speech from start
+        video.currentTime = 0;
+        overlay.classList.add('fade-out');
+      } else {
+        video.muted = true;
+        overlay.classList.remove('fade-out');
+      }
+    });
+
+    // Make sure autoplay works and handles user interaction rules
+    window.addEventListener('DOMContentLoaded', () => {
+      video.play().catch(error => {
+        console.log("Autoplay was prevented, waiting for user click.", error);
+      });
+    });
+  </script>
+</body>
+</html>
