@@ -15,6 +15,11 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  // Auf dem Handy uebernimmt die Laterne das Menue, solange oben nicht
+  // gescrollt ist — der Hamburger taucht erst beim Scrollen auf. Zwischen
+  // 768px und 1024px gibt es die Laterne nicht und die waagrechte Leiste passt
+  // nicht daneben; dort muss der Hamburger deshalb von Anfang an da sein.
+  const [isPhone, setIsPhone] = useState(() => window.matchMedia('(max-width: 767px)').matches);
   const [activeId, setActiveId] = useState('');
   const [progress, setProgress] = useState(0);
 
@@ -28,6 +33,13 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsPhone(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
   }, []);
 
   // Aktiver Abschnitt: der oberste, der die Bildschirmmitte kreuzt.
@@ -109,9 +121,15 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
         </a>
 
         {/* Desktop-Navigation mit aktivem Zustand */}
+        {/* Erst ab lg: die Leiste ist mittig gesetzt und rund 610px breit, der
+            Knopf REDEN WIR steht rechts. Unter 1042px laufen beide ineinander,
+            unter 916px trifft die Leiste zusaetzlich das Wort ADNAN. Darunter
+            uebernehmen Laternenmenue und Hamburger. Der Abstand zwischen den
+            Punkten waechst von 12px bei 1024 auf die bisherigen 40px bei 1280,
+            damit die Leiste am unteren Ende ueberhaupt hineinpasst. */}
         <nav
-          className="hidden md:flex items-center space-x-8 lg:space-x-10 text-[11px] tracking-[0.28em] font-medium uppercase absolute left-1/2 -translate-x-1/2"
-          style={{ fontFamily: "'Montserrat', sans-serif" }}
+          className="hidden lg:flex items-center text-[11px] tracking-[0.28em] font-medium uppercase absolute left-1/2 -translate-x-1/2"
+          style={{ fontFamily: "'Montserrat', sans-serif", gap: 'clamp(0.5rem, calc(10.9375vw - 100px), 2.5rem)' }}
         >
           {/* Home Link with Blinking Icon */}
           <a
@@ -122,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="relative group py-1 flex items-center justify-center text-[#C8B8A6] hover:text-[#FFF5EB] mr-6"
+            className="relative group py-1 flex items-center justify-center text-[#C8B8A6] hover:text-[#FFF5EB] mr-0 xl:-mr-4"
             title="Startseite"
           >
             <svg
@@ -181,8 +199,8 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
           </a>
 
           {/* Mobile Scroll-Glow Menu Trigger (Only visible on mobile when scrolled down) */}
-          <div className="relative md:hidden flex items-center mobile-header-menu-container">
-            {isScrolled && (
+          <div className="relative lg:hidden flex items-center mobile-header-menu-container">
+            {(isScrolled || !isPhone) && (
               <>
                 <button
                   type="button"
