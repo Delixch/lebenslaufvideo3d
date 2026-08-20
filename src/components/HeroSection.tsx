@@ -500,10 +500,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     }}
   />
 
-  {/* Nachtfalter um die Laterne */}
+  {/* Nachtfalter im Laternenglas */}
+  {/*
+    Achtung, halbe Breite Versatz: jeder Schritt von lampFlicker setzt selbst
+    ein `transform: scale(...)` und loescht damit das `translate(-50%, -50%)`
+    von oben. Der Schein wird also nicht um seine Mitte, sondern um seine
+    linke obere Ecke gesetzt — und BULB_X/BULB_Y sind an genau diesem Bild
+    ausgemessen. Wer die Falter ins Glas legen will, muss dorthin zielen, wo
+    das Licht wirklich landet, nicht dorthin, wo der Code es meint.
+  */}
   <LampMoths
-    centerX={parseFloat(lampCoords.left)}
-    centerY={parseFloat(lampCoords.top)}
+    centerX={parseFloat(lampCoords.left) + parseFloat(lampCoords.width) / 2}
+    centerY={parseFloat(lampCoords.top) + parseFloat(lampCoords.width) / 2}
     bulbSize={parseFloat(lampCoords.width)}
     active={lampLit}
   />

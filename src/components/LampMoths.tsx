@@ -10,44 +10,100 @@ interface LampMothsProps {
 }
 
 type Moth = {
+  /** Bahnradius als Anteil des Kerndurchmessers — alles unter 0.3 liegt im Glas. */
   radius: number;
-  angle: number;
+  /** Umlauf pro Sekunde; Vorzeichen dreht die Richtung. */
   speed: number;
+  angle: number;
   wobbleFreq: number;
   wobblePhase: number;
+  /** Flachdrueckung der Ellipse: von vorn gesehen ist das Glas keine Scheibe. */
   tilt: number;
+  /** Groesse als Anteil des Kerndurchmessers. */
   size: number;
-  diveAt: number;
+  /** Sekunden zwischen zwei Stoessen ans Glas. */
+  bumpEvery: number;
+  bumpAt: number;
+  wingFreq: number;
   wingPhase: number;
 };
 
-const MOTH_COUNT = 12;
-
-const createMoths = (): Moth[] =>
-  Array.from({ length: MOTH_COUNT }, (_, index) => ({
-    radius: 1.1 + Math.random() * 2.2,
-    angle: Math.random() * Math.PI * 2,
-    // Halbe fliegen herum, halbe dagegen; sonst wirkt es wie ein Karussell.
-    speed: (0.25 + Math.random() * 0.5) * (index % 2 === 0 ? 1 : -1),
-    wobbleFreq: 2.5 + Math.random() * 3.5,
-    wobblePhase: Math.random() * Math.PI * 2,
-    tilt: 0.45 + Math.random() * 0.35,
-    size: 3 + Math.random() * 3,
-    diveAt: 3 + Math.random() * 7,
-    wingPhase: Math.random() * Math.PI * 2,
-  }));
+/**
+ * Vier Falter, und zwar mit Absicht von Hand gesetzt statt ausgewuerfelt:
+ * die Zahlen sind gegeneinander verstimmt (1.35 / 0.95 / 0.62 / 1.70 Umlaeufe,
+ * Stoesse alle 3.1 / 4.7 / 6.3 / 8.9 s), damit sich kein gemeinsamer Takt
+ * einstellt. Sobald zwei im Gleichschritt laufen, sieht man die Mechanik.
+ */
+const MOTHS: Moth[] = [
+  {
+    radius: 0.15,
+    speed: 1.35,
+    angle: 0,
+    wobbleFreq: 3.1,
+    wobblePhase: 0,
+    tilt: 0.54,
+    size: 0.05,
+    bumpEvery: 3.1,
+    bumpAt: 0.4,
+    wingFreq: 22,
+    wingPhase: 0,
+  },
+  {
+    radius: 0.24,
+    speed: -0.95,
+    angle: 2.1,
+    wobbleFreq: 4.3,
+    wobblePhase: 1.7,
+    tilt: 0.7,
+    size: 0.042,
+    bumpEvery: 4.7,
+    bumpAt: 2.2,
+    wingFreq: 27,
+    wingPhase: 1.2,
+  },
+  {
+    radius: 0.3,
+    speed: 0.62,
+    angle: 4.0,
+    wobbleFreq: 2.3,
+    wobblePhase: 3.4,
+    tilt: 0.44,
+    size: 0.058,
+    bumpEvery: 6.3,
+    bumpAt: 1.1,
+    wingFreq: 19,
+    wingPhase: 2.6,
+  },
+  {
+    radius: 0.19,
+    speed: -1.7,
+    angle: 5.4,
+    wobbleFreq: 5.7,
+    wobblePhase: 5.1,
+    tilt: 0.62,
+    size: 0.036,
+    bumpEvery: 8.9,
+    bumpAt: 3.7,
+    wingFreq: 31,
+    wingPhase: 4.1,
+  },
+];
 
 /**
- * Nachtfalter um die Laterne.
+ * Nachtfalter im Laternenglas.
  *
- * Keine Bilder, keine Physik-Bibliothek: jede Motte fliegt eine Ellipse, der
- * zwei ungleiche Schwingungen überlagert sind — daraus entsteht das zittrige,
- * unentschlossene Flattern. Ab und zu stösst eine kurz zum Licht vor und kehrt
- * wieder um. Alles läuft in einer einzigen Schleife über transform.
+ * Sie fliegen nicht mehr aussen herum, sondern sind drin gefangen: dunkle
+ * Silhouetten vor dem Leuchtkern, die ab und zu gegen das Glas stossen und
+ * dabei kurz aufblitzen, wenn das Licht von vorn auf die Fluegel faellt. Das
+ * Flackern der Laterne selbst bleibt unangetastet — daran haengt das Knistern
+ * in LampBuzz.
+ *
+ * Keine Bilder, keine Physik-Bibliothek: jeder Falter fliegt eine Ellipse, der
+ * zwei ungleiche Schwingungen ueberlagert sind. Alles laeuft in einer einzigen
+ * Schleife ueber transform und opacity.
  */
 export const LampMoths: React.FC<LampMothsProps> = ({ centerX, centerY, bulbSize, active }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mothsRef = useRef<Moth[]>(createMoths());
 
   useEffect(() => {
     if (!active || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -66,36 +122,38 @@ export const LampMoths: React.FC<LampMothsProps> = ({ centerX, centerY, bulbSize
     const tick = (now: number) => {
       const time = (now - start) / 1000;
 
-      mothsRef.current.forEach((moth, index) => {
+      MOTHS.forEach((moth, index) => {
         const element = elements[index];
         if (!element) {
           return;
         }
 
-        // Anflug ans Licht: kurzes Einatmen des Radius, dann zurück.
-        const sinceDive = (time + moth.diveAt) % 9;
-        const dive = sinceDive < 0.9 ? Math.sin((sinceDive / 0.9) * Math.PI) * 0.55 : 0;
+        // Stoss ans Glas: der Radius schnellt kurz nach aussen und faellt
+        // zurueck. Jeder Falter hat seinen eigenen Takt dafuer.
+        const sinceBump = (time + moth.bumpAt) % moth.bumpEvery;
+        const bump = sinceBump < 0.5 ? Math.sin((sinceBump / 0.5) * Math.PI) * 0.09 : 0;
 
-        const wobble = Math.sin(time * moth.wobbleFreq + moth.wobblePhase) * 0.22;
-        const jitter = Math.sin(time * 11.3 + index) * 0.05;
-        const radius = bulbSize * (moth.radius + wobble + jitter - dive);
+        const wobble = Math.sin(time * moth.wobbleFreq + moth.wobblePhase) * 0.035;
+        const jitter = Math.sin(time * 11.3 + index * 2.3) * 0.012;
+        const radius = bulbSize * (moth.radius + wobble + jitter + bump);
 
         const angle = moth.angle + time * moth.speed;
         const x = centerX + Math.cos(angle) * radius;
         const y = centerY + Math.sin(angle) * radius * moth.tilt;
 
-        // Näher am Licht heller — Falter fangen den Schein auf ihren Flügeln.
-        const closeness = Math.max(0, 1 - radius / (bulbSize * 3.4));
-        const wings = 0.55 + Math.abs(Math.sin(time * 26 + moth.wingPhase)) * 0.45;
+        // Die vordere Haelfte der Bahn liegt zwischen Auge und Gluehfaden:
+        // dort ist der Falter am dunkelsten. Hinten verschluckt ihn das Licht.
+        const front = (Math.sin(angle) + 1) / 2;
+        const wings = 0.5 + Math.abs(Math.sin(time * moth.wingFreq + moth.wingPhase)) * 0.5;
+        const size = bulbSize * moth.size;
 
-        element.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scaleY(${wings.toFixed(
-          3,
-        )})`;
-        element.style.opacity = (0.35 + closeness * 0.5).toFixed(3);
-        element.style.filter = `blur(${(0.6 - closeness * 0.4).toFixed(2)}px) brightness(${(
-          0.5 +
-          closeness * 1.6
-        ).toFixed(2)})`;
+        element.style.width = `${size.toFixed(2)}px`;
+        element.style.height = `${(size * 0.62).toFixed(2)}px`;
+        element.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(
+          1,
+        )}px) translate(-50%, -50%) scaleY(${wings.toFixed(3)})`;
+        // Beim Stoss blitzt er auf, sonst bleibt er Schatten.
+        element.style.opacity = (0.3 + front * 0.62 + bump * 1.4).toFixed(3);
       });
 
       frame = requestAnimationFrame(tick);
@@ -111,15 +169,15 @@ export const LampMoths: React.FC<LampMothsProps> = ({ centerX, centerY, bulbSize
 
   return (
     <div ref={containerRef} className="pointer-events-none absolute inset-0" aria-hidden="true">
-      {mothsRef.current.map((moth, index) => (
+      {MOTHS.map((_, index) => (
         <span
           key={index}
           className="absolute left-0 top-0 rounded-full"
           style={{
-            width: `${moth.size}px`,
-            height: `${moth.size * 0.62}px`,
+            // Gegen das Licht gesehen ist ein Falter fast schwarz; nur der
+            // Rand der Fluegel laesst etwas durch.
             background:
-              'radial-gradient(circle at 40% 40%, rgba(232,220,196,0.9), rgba(120,104,82,0.75) 55%, rgba(40,34,26,0.9) 100%)',
+              'radial-gradient(circle at 42% 38%, rgba(26,20,14,0.96), rgba(38,28,18,0.92) 58%, rgba(96,74,44,0.55) 100%)',
             willChange: 'transform, opacity',
           }}
         />

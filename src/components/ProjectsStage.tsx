@@ -136,7 +136,9 @@ export const ProjectsStage: React.FC = () => {
 
       const [lampX, lampY] = toStage(LAMP);
       setLamp({ left: `${lampX}px`, top: `${lampY}px` });
-      setBulb({ x: lampX, y: lampY, size: box.width * 0.028 });
+      // Derselbe Durchmesser wie der Leuchtkern unten (5.6cqw), damit
+      // LampMoths hier und im Hero dieselbe Bezugsgroesse bekommt.
+      setBulb({ x: lampX, y: lampY, size: box.width * 0.056 });
     };
 
     measure();
