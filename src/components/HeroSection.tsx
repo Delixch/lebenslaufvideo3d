@@ -174,6 +174,14 @@ class NeonBuzzSynth {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovered }) => {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+  // Die Buehnenschicht liegt `fixed` ueber dem ganzen Fenster und blieb bisher
+  // den kompletten Scroll ueber stehen: zwei Videos in Dauerschleife, ein
+  // bildschirmfuellendes Foto mit Maske und die Scheine der Laterne wurden
+  // hinter jedem Abschnitt weitergezeichnet. Sichtbar ist davon nichts, sobald
+  // der Hero oben aus dem Bild ist.
+  const heroRef = useRef<HTMLElement | null>(null);
+  const buehneRef = useRef<HTMLDivElement | null>(null);
+  const [heroImBild, setHeroImBild] = useState(true);
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
   const [isFlat, setIsFlat] = useState(() => window.matchMedia(FLAT_QUERY).matches);
 
@@ -197,6 +205,21 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) {
+      return;
+    }
+
+    const beobachter = new IntersectionObserver(
+      ([eintrag]) => setHeroImBild(eintrag.isIntersecting),
+      // Ein Streifen Vorlauf: die Schicht steht wieder, bevor sie ins Bild kommt.
+      { rootMargin: '20% 0px' },
+    );
+    beobachter.observe(hero);
+    return () => beobachter.disconnect();
   }, []);
 
   // 3D Phone Mockup Physics and States
@@ -227,6 +250,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const [showPhone, setShowPhone] = useState(false);
   const [isVideoDissolved, setIsVideoDissolved] = useState(false);
   const soundPlayedRef = useRef(false);
+
+  // Videos anhalten, sobald die Schicht nicht mehr zu sehen ist. Ein pausiertes
+  // Video dekodiert keine Bilder mehr — nur ausblenden reicht dafuer nicht.
+  useEffect(() => {
+    const buehne = buehneRef.current;
+    if (!buehne) {
+      return;
+    }
+
+    buehne.querySelectorAll('video').forEach((video) => {
+      if (heroImBild) {
+        void video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }, [heroImBild, isMobile, isVideoDissolved]);
 
   // Aus hero-lamp.png ausgemessen: Mitte des Laternenglases und seine Breite,
   // jeweils als Anteil am Bild.
@@ -552,6 +592,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
   return (
     <section
+      ref={heroRef}
       className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none"
       style={{
         // Gleicher Startzeitpunkt wie das Flackern der Laterne, damit beide
@@ -830,7 +871,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       )}
 
       {/* ================= 2. FIXED VIDEO LAYER ================= */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end">
+      <div
+        ref={buehneRef}
+        className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
+        style={{
+          // `visibility` statt `display`: das Layout bleibt unangetastet, aber
+          // der Browser zeichnet und komponiert die Schicht nicht mehr.
+          visibility: heroImBild ? 'visible' : 'hidden',
+        }}
+      >
         {/* Desktop Video — landscape, right-aligned */}
         {/* Nur ein Element im DOM: autoPlay laedt auch versteckte Videos komplett,
             display:none haette den zweiten Clip trotzdem heruntergeladen. */}
@@ -920,7 +969,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               <img 
                 ref={lampImageRef}
                 onLoad={() => window.dispatchEvent(new Event('resize'))}
-                src="/hero-lamp.png" 
+                src="/hero-lamp.webp" 
                 alt="Adnan Aydin - Final"
                 className="h-full w-full object-cover"
                 style={{ objectPosition: `${IMAGE_FOCUS_X * 100}% ${IMAGE_FOCUS_Y * 100}%` }}
@@ -1143,13 +1192,21 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
                     {/* Inner Screen */}
                     <div className="w-full h-full rounded-[1.65rem] overflow-hidden bg-black relative z-10">
+                      {/*
+                        Dieser Clip ist 2.3 MB gross und laeuft in einem Kasten
+                        von 164x334 Punkten — er muesste in der Groesse neu
+                        kodiert werden. Was hier geht: der Rahmen haengt an
+                        `showPhone` und wird erst bei Sekunde 7.4 eingehaengt,
+                        und der Beobachter weiter oben haelt das Video an,
+                        sobald der Hero aus dem Bild ist.
+                      */}
                       <video
                         src="/videos/mobilvideoana.mp4"
                         autoPlay
                         muted
                         loop
                         playsInline
-                        preload="auto"
+                        preload="metadata"
                         className="w-full h-full object-cover"
                       />
                       {/* Glass glare effect */}
