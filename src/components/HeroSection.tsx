@@ -873,13 +873,32 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         />
       )}
 
-      {/* ================= 2. FIXED VIDEO LAYER ================= */}
+      {/* ================= 2. BUEHNENSCHICHT ================= */}
+      {/*
+        `absolute` statt `fixed`, und das ist der Kern: eine feste Schicht
+        entkommt dem overflow-hidden ihres Abschnitts und liegt dann den
+        ganzen Scroll ueber unter der Seite. Unter iOS zeichnet Safari beim
+        Schwungscrollen kachelweise; ist eine Kachel fuer den neuen
+        Scrollstand noch nicht gerastert, scheint durch sie hindurch, was
+        darunter liegt — hier also das Hero-Foto, mitten im Abschnitt
+        darunter und mit der harten Kachelkante als Verraeter.
+
+        Ein z-index hilft dagegen nicht: er ordnet nur, was gezeichnet wird,
+        und eine nicht gerasterte Kachel wird eben nicht gezeichnet. Nur wenn
+        die Schicht dort gar nicht erst existiert, kann sie auch nicht
+        durchscheinen. Der Abschnitt ist h-screen und overflow-hidden, also
+        deckt sie bei Scrollstand 0 unveraendert das Fenster und wird ab da
+        sauber abgeschnitten.
+
+        Preis: der Hintergrund bleibt beim Weiterscrollen nicht mehr stehen,
+        sondern faehrt mit. Genau dieses Stehenbleiben hatte Adnan zuvor als
+        "Hintergrund haengt" gemeldet.
+      */}
       <div
         ref={buehneRef}
-        className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
+        className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
         style={{
-          // `visibility` statt `display`: das Layout bleibt unangetastet, aber
-          // der Browser zeichnet und komponiert die Schicht nicht mehr.
+          // Haelt die beiden Videos an, sobald der Hero aus dem Bild ist.
           visibility: heroImBild ? 'visible' : 'hidden',
         }}
       >
