@@ -175,7 +175,7 @@ export const MobileProjectsSection: React.FC = () => {
 
   return (
     <section
-      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-24 fluid-gutter block min-[1200px]:hidden"
+      className="relative z-10 w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-24 fluid-gutter block min-[1200px]:hidden"
     >
       <div className="max-w-7xl mx-auto w-full relative z-10">
         <motion.div

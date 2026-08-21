@@ -215,8 +215,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
     const beobachter = new IntersectionObserver(
       ([eintrag]) => setHeroImBild(eintrag.isIntersecting),
-      // Ein Streifen Vorlauf: die Schicht steht wieder, bevor sie ins Bild kommt.
-      { rootMargin: '20% 0px' },
+      // Ein schmaler Streifen Vorlauf, damit die Schicht schon steht, bevor
+      // sie beim Zurueckscrollen ins Bild kommt. Vorher waren es 20% - das
+      // hielt sie nach dem Hero unnoetig lange sichtbar, und genau in diesem
+      // Fenster blitzte auf dem iPad beim Wischen kurz das Hero-Foto durch.
+      { rootMargin: '8% 0px' },
     );
     beobachter.observe(hero);
     return () => beobachter.disconnect();

@@ -21,7 +21,7 @@ export const ContactSection: React.FC = () => {
   return (
     <footer
       id="contact"
-      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 md:pt-16 pb-16 fluid-gutter overflow-hidden scroll-mt-20 md:scroll-mt-0"
+      className="relative z-10 w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 md:pt-16 pb-16 fluid-gutter overflow-hidden scroll-mt-20 md:scroll-mt-0"
     >
       <div className="max-w-7xl mx-auto w-full relative z-10">
         

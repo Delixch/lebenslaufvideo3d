@@ -38,7 +38,7 @@ function App() {
       <Header setIsHovered={setIsHovered} />
       <HeroSection isHovered={isHovered} setIsHovered={setIsHovered} />
       <AboutSection />
-      <div id="work" className="scroll-mt-20 md:scroll-mt-0">
+      <div id="work" className="relative z-10 scroll-mt-20 md:scroll-mt-0">
         {!isMobile && <ProjectsStage />}
         {isMobile && <MobileProjectsSection />}
       </div>

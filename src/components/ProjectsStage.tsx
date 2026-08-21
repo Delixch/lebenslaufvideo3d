@@ -321,7 +321,7 @@ export const ProjectsStage: React.FC = () => {
           setLive(false);
         }
       }}
-      className="hidden min-[1200px]:block relative w-full overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-32 fluid-gutter"
+      className="hidden min-[1200px]:block relative z-10 w-full overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-32 fluid-gutter"
     >
       <style>{`
         @keyframes mouseGlow {
