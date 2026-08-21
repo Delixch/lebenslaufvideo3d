@@ -942,7 +942,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       */}
       <div
         ref={buehneRef}
-        className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
+        className="absolute inset-0 z-0 isolate overflow-hidden pointer-events-none bg-black flex items-center justify-end"
         style={{
           // Haelt die beiden Videos an, sobald der Hero aus dem Bild ist.
           visibility: heroImBild ? 'visible' : 'hidden',
@@ -1113,7 +1113,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       </div>
 
       {/* ================= 4. CONTENT LAYER ================= */}
-      <div className="hero-content relative z-10 flex flex-col justify-between h-full w-full px-6 sm:px-12 lg:px-16 pt-6 pb-8 pointer-events-none">
+      {/*
+        `isolate` + eigene Compositing-Ebene: WebKit malt Buehne (z-0) und
+        Inhalt (z-10) sonst beim Schwungscrollen aus getrennten Kachel-Rastern
+        neu, und ein Kachel-Versatz laesst die Figur kurz durch Menue/Inhalt
+        durchscheinen. `isolation: isolate` zwingt einen eigenen Stacking-
+        Context, translateZ(0) eine eigene GPU-Ebene — beide Ebenen koennen
+        sich dann nicht mehr ineinander mischen.
+      */}
+      <div
+        className="hero-content isolate relative z-10 flex flex-col justify-between h-full w-full px-6 sm:px-12 lg:px-16 pt-6 pb-8 pointer-events-none"
+        style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+      >
         
 
 

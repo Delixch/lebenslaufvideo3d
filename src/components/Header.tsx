@@ -93,11 +93,12 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full flex items-center justify-between px-6 md:px-16 py-5 md:py-6 pointer-events-auto z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 w-full isolate flex items-center justify-between px-6 md:px-16 py-5 md:py-6 pointer-events-auto z-50 transition-all duration-300 ${
           isScrolled
             ? 'bg-[#0A0806]/95 backdrop-blur-md border-b border-[#8C6D4F]/15'
             : 'bg-transparent border-b border-transparent'
         }`}
+        style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
       >
         {/* Auf Laptop-Hoehen steht der Kopf der Figur genau in der Menuezeile
             und schluckt SKILLS. Ein weicher Verlauf unter der Kopfzeile gibt

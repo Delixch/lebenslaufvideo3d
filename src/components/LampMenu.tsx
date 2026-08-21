@@ -178,7 +178,11 @@ export const LampMenu: React.FC<LampMenuProps> = ({ coords, active, onToggle }) 
   };
 
   return (
-    <div ref={wrapRef} className="pointer-events-none absolute inset-0 z-[45] md:hidden">
+    <div
+      ref={wrapRef}
+      className="pointer-events-none isolate absolute inset-0 z-[45] md:hidden"
+      style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+    >
 
 
       {/* Schaltflaeche auf dem Glas; groesser als das Glas, damit der Daumen trifft */}
