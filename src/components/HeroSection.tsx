@@ -528,7 +528,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     
     // Der Auftritt haengt am Fingerschnippen kurz vor Schluss, nicht an einer
     // festen Sekunde: sonst loest ein kuerzerer Schnitt den Moment nie aus.
-    const cue = video.duration ? Math.max(0.4, video.duration - 2.6) : 7.4;
+    const cue = video.duration ? Math.max(0.4, video.duration - 0.9) : 7.4;
 
     if (video.currentTime >= cue) {
       setShowPhone(true);
