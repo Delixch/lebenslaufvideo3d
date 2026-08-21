@@ -213,16 +213,40 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       return;
     }
 
+    // Zwei Waechter nebeneinander, absichtlich. Sie schalten die Schicht ab,
+    // sobald der Hero durch ist - das Durchscheinen im Uebergang beseitigen
+    // sie nicht, wohl aber den schlimmen Fall, dass die Schicht noch unter
+    // dem Kontaktformular steht.
+    //
+    // Der Beobachter allein reichte nicht: unter iOS meldet er sich beim
+    // Schwungscrollen zu spaet, und dann stand die Schicht noch beim
+    // Kontaktformular. Ein Scroll-Waechter allein reichte auch nicht - beim
+    // ersten Versuch hing er an requestAnimationFrame, und genau das wird
+    // unter iOS waehrend des Schwungs ausgehungert, also lief er nie. Der
+    // Zaehler steht deshalb jetzt unmittelbar im scroll-Ereignis: teuer ist
+    // das nicht, gelesen wird nur window.scrollY, und selbst wenn iOS die
+    // Ereignisse grob zusammenfasst, kommt am Ende des Schwungs eines an.
     const beobachter = new IntersectionObserver(
       ([eintrag]) => setHeroImBild(eintrag.isIntersecting),
-      // Ein schmaler Streifen Vorlauf, damit die Schicht schon steht, bevor
-      // sie beim Zurueckscrollen ins Bild kommt. Vorher waren es 20% - das
-      // hielt sie nach dem Hero unnoetig lange sichtbar, und genau in diesem
-      // Fenster blitzte auf dem iPad beim Wischen kurz das Hero-Foto durch.
       { rootMargin: '8% 0px' },
     );
     beobachter.observe(hero);
-    return () => beobachter.disconnect();
+
+    const pruefe = () => {
+      const hoehe = hero.offsetHeight || window.innerHeight;
+      if (window.scrollY > hoehe * 1.05) {
+        setHeroImBild(false);
+      }
+    };
+
+    pruefe();
+    window.addEventListener('scroll', pruefe, { passive: true });
+    window.addEventListener('resize', pruefe, { passive: true });
+    return () => {
+      beobachter.disconnect();
+      window.removeEventListener('scroll', pruefe);
+      window.removeEventListener('resize', pruefe);
+    };
   }, []);
 
   // 3D Phone Mockup Physics and States
@@ -896,7 +920,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       */}
       <div
         ref={buehneRef}
-        className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
+        className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
         style={{
           // Haelt die beiden Videos an, sobald der Hero aus dem Bild ist.
           visibility: heroImBild ? 'visible' : 'hidden',
