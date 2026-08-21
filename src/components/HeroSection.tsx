@@ -526,8 +526,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
     
-    // Parmak şıklatma videosunun 7.4. saniyesinde telefonu göster ve kalıcı yap (bir daha yok olmasın)
-    if (video.currentTime >= 7.4) {
+    // Der Auftritt haengt am Fingerschnippen kurz vor Schluss, nicht an einer
+    // festen Sekunde: sonst loest ein kuerzerer Schnitt den Moment nie aus.
+    const cue = video.duration ? Math.max(0.4, video.duration - 2.6) : 7.4;
+
+    if (video.currentTime >= cue) {
       setShowPhone(true);
       setIsVideoDissolved(true); // Adam duman/sis efektiyle yok olmaya başlar
       
