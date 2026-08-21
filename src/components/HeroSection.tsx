@@ -942,7 +942,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       */}
       <div
         ref={buehneRef}
-        className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
+        className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
         style={{
           // Haelt die beiden Videos an, sobald der Hero aus dem Bild ist.
           visibility: heroImBild ? 'visible' : 'hidden',
