@@ -4,9 +4,22 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
   background-color: #000;
 }
+
+/*
+  Hier stand `overflow-x: hidden` als Notnagel gegen waagrechten Ueberlauf.
+  Er kostet mehr, als er einbringt: er macht body zu einem Scrollbehaelter,
+  obwohl gescrollt wird das Fenster. `position: sticky` sucht sich dann body
+  als Bezug, body scrollt nie, und das Kleben bleibt im ganzen Projekt
+  wirkungslos - nachgemessen an einem Versuchsaufbau, dessen Huelle
+  `position: sticky` meldete und beim Scrollen trotzdem mitwanderte.
+
+  Gebraucht wird er nicht mehr. Der Ueberlauf ist an der Wurzel behoben:
+  dem Projektabschnitt fehlte als einzigem `overflow-hidden`, und zwei
+  Abschnitte standen auf `w-screen` statt `w-full` - 100vw zaehlt die
+  Bildlaufleiste mit.
+*/
 
 /* Masaüstü tarayıcılar (Edge, Chrome, Safari) için gerçek altın sarısı kaydırma çubuğu */
 * {

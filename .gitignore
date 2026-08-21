@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Adnans Aufnahmen zur Fehlersuche, gehoeren nicht ins Repo
+fenomen/
