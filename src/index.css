@@ -5,6 +5,10 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: #000;
+  /* Kein waagrechtes Gummiband auf Tablets: das verschiebt beim ersten Wisch
+     die ganze Szene zur Seite. Anders als `overflow-x: hidden` macht das den
+     Body nicht zum Scrollbehaelter und laesst `position: sticky` in Ruhe. */
+  overscroll-behavior-x: none;
 }
 
 /*

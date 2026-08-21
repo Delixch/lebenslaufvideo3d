@@ -642,7 +642,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   return (
     <section
       ref={heroRef}
-      className="relative w-screen h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none"
+      className="relative w-full h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none"
       style={{
         // Gleicher Startzeitpunkt wie das Flackern der Laterne, damit beide
         // Animationen im selben Frame anlaufen.
