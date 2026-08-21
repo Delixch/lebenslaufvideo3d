@@ -526,8 +526,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
     
-    // Parmak şıklatma videosunun 7.4. saniyesinde telefonu göster ve kalıcı yap (bir daha yok olmasın)
-    if (video.currentTime >= 7.4) {
+    // Der Auftritt haengt am Fingerschnippen kurz vor Schluss, nicht an einer
+    // festen Sekunde: sonst loest ein kuerzerer Schnitt den Moment nie aus.
+    const cue = video.duration ? Math.max(0.4, video.duration - 0.46) : 7.4;
+
+    if (video.currentTime >= cue) {
       setShowPhone(true);
       setIsVideoDissolved(true); // Adam duman/sis efektiyle yok olmaya başlar
       
@@ -1046,9 +1049,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
             {/* Ön Plandaki Yürüyen Adam Videosu (Süre dolunca sisle yok olur) - Ortalanmış konumda */}
             <div
               className={`absolute inset-0 h-full w-full overflow-hidden transition-all duration-[2200ms] ease-out origin-center ${
-                isVideoDissolved 
-                  ? 'opacity-0 scale-[0.98] blur-[30px] pointer-events-none' 
-                  : 'opacity-100 scale-100 blur-0'
+                isVideoDissolved
+                  ? 'opacity-0 scale-[0.88] -translate-y-[3vh] blur-[40px] pointer-events-none'
+                  : 'opacity-100 scale-100 translate-y-0 blur-0'
               }`}
               style={{
                 maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.8) 38%, #000 55%)',
@@ -1056,7 +1059,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
               }}
             >
               <video
-                src="/videos/333.mp4"
+                src="/videos/111.mp4"
                 poster={HERO_POSTER}
                 autoPlay
                 muted
