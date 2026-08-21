@@ -642,7 +642,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   return (
     <section
       ref={heroRef}
-      className="relative w-full h-screen overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none"
+      className="relative w-full h-[100svh] overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black cursor-none"
       style={{
         // Gleicher Startzeitpunkt wie das Flackern der Laterne, damit beide
         // Animationen im selben Frame anlaufen.
@@ -946,6 +946,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         style={{
           // Haelt die beiden Videos an, sobald der Hero aus dem Bild ist.
           visibility: heroImBild ? 'visible' : 'hidden',
+          // Auf eine eigene Ebene heben: Safari zeichnet die grosse Flaeche
+          // sonst bei jedem Wisch neu, was als Flimmern sichtbar wird.
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          willChange: 'transform',
         }}
       >
         {/* Desktop Video — landscape, right-aligned */}
