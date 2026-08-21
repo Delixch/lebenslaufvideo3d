@@ -181,7 +181,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   // der Hero oben aus dem Bild ist.
   const heroRef = useRef<HTMLElement | null>(null);
   const buehneRef = useRef<HTMLDivElement | null>(null);
-  const abdeckungRef = useRef<HTMLDivElement | null>(null);
   const [heroImBild, setHeroImBild] = useState(true);
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
   const [isFlat, setIsFlat] = useState(() => window.matchMedia(FLAT_QUERY).matches);
@@ -214,54 +213,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       return;
     }
 
-    // Am Scrollstand statt am IntersectionObserver: der meldete sich unter
-    // iOS beim Schwungscrollen zu spaet, und dann stand die Schicht noch
-    // beim Kontaktformular. window.scrollY zu lesen loest keine
-    // Neuberechnung aus, und gerechnet wird hoechstens einmal je Bild.
-    let angemeldet = false;
-
-    const pruefe = () => {
-      angemeldet = false;
-      const hoehe = hero.offsetHeight || window.innerHeight;
-      const stand = window.scrollY;
-
-      // Die Abdeckung: eine schwarze Flaeche INNERHALB der festen Schicht,
-      // die auf dem letzten Stueck des Hero aufblendet. Das ist der Kern
-      // dieser Loesung. Der Fehler lag nie daran, dass die Schicht da war,
-      // sondern daran, dass sie ein Bild zeigte. Weil die Abdeckung in
-      // derselben Schicht liegt, wird sie mit ihr zusammen gezeichnet - es
-      // gibt zwischen beiden kein Rennen. Laesst iOS beim Schwungscrollen
-      // eine Kachel der Seite aus, schaut dort also Schwarz durch, und das
-      // faellt in diesem Entwurf nicht auf.
-      const von = hoehe * 0.45;
-      const bis = hoehe * 0.75;
-      const anteil = Math.min(1, Math.max(0, (stand - von) / (bis - von)));
-      if (abdeckungRef.current) {
-        // Direkt am Knoten, nicht ueber den Zustand: sonst wuerde React in
-        // jedem Bild des Scrollens neu zeichnen.
-        abdeckungRef.current.style.opacity = String(anteil);
-      }
-
-      // Zusaetzlich ganz abschalten, sobald der Hero durch ist - dann muss
-      // gar nichts mehr komponiert werden. 5% Vorlauf, damit die Schicht
-      // beim Zurueckscrollen schon steht, bevor der Hero wieder da ist.
-      setHeroImBild(stand < hoehe * 1.05);
-    };
-
-    const beiScroll = () => {
-      if (!angemeldet) {
-        angemeldet = true;
-        requestAnimationFrame(pruefe);
-      }
-    };
-
-    pruefe();
-    window.addEventListener('scroll', beiScroll, { passive: true });
-    window.addEventListener('resize', beiScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', beiScroll);
-      window.removeEventListener('resize', beiScroll);
-    };
+    const beobachter = new IntersectionObserver(
+      ([eintrag]) => setHeroImBild(eintrag.isIntersecting),
+      // Ein schmaler Streifen Vorlauf, damit die Schicht schon steht, bevor
+      // sie beim Zurueckscrollen ins Bild kommt. Vorher waren es 20% - das
+      // hielt sie nach dem Hero unnoetig lange sichtbar, und genau in diesem
+      // Fenster blitzte auf dem iPad beim Wischen kurz das Hero-Foto durch.
+      { rootMargin: '8% 0px' },
+    );
+    beobachter.observe(hero);
+    return () => beobachter.disconnect();
   }, []);
 
   // 3D Phone Mockup Physics and States
@@ -914,17 +875,28 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
       {/* ================= 2. BUEHNENSCHICHT ================= */}
       {/*
-        `fixed`, damit der Hintergrund stehen bleibt und der Text darueber
-        hinwegzieht - dieser Effekt war ausdruecklich gewuenscht.
+        `absolute` statt `fixed`, und das ist der Kern: eine feste Schicht
+        entkommt dem overflow-hidden ihres Abschnitts und liegt dann den
+        ganzen Scroll ueber unter der Seite. Unter iOS zeichnet Safari beim
+        Schwungscrollen kachelweise; ist eine Kachel fuer den neuen
+        Scrollstand noch nicht gerastert, scheint durch sie hindurch, was
+        darunter liegt — hier also das Hero-Foto, mitten im Abschnitt
+        darunter und mit der harten Kachelkante als Verraeter.
 
-        Eine feste Schicht entkommt dem overflow-hidden ihres Abschnitts und
-        liegt technisch unter der ganzen Seite. Statt sie deshalb aufzugeben,
-        wird sie auf dem letzten Stueck des Hero schwarz gedeckt (siehe den
-        Waechter weiter oben) und danach ganz abgeschaltet.
+        Ein z-index hilft dagegen nicht: er ordnet nur, was gezeichnet wird,
+        und eine nicht gerasterte Kachel wird eben nicht gezeichnet. Nur wenn
+        die Schicht dort gar nicht erst existiert, kann sie auch nicht
+        durchscheinen. Der Abschnitt ist h-screen und overflow-hidden, also
+        deckt sie bei Scrollstand 0 unveraendert das Fenster und wird ab da
+        sauber abgeschnitten.
+
+        Preis: der Hintergrund bleibt beim Weiterscrollen nicht mehr stehen,
+        sondern faehrt mit. Genau dieses Stehenbleiben hatte Adnan zuvor als
+        "Hintergrund haengt" gemeldet.
       */}
       <div
         ref={buehneRef}
-        className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
+        className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end"
         style={{
           // Haelt die beiden Videos an, sobald der Hero aus dem Bild ist.
           visibility: heroImBild ? 'visible' : 'hidden',
@@ -1058,20 +1030,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
 
         {/* Seamless Soft Left Edge Blend */}
         <div className="absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-black via-black/80 to-transparent pointer-events-none md:block" />
-
-        {/*
-          Die schwarze Abdeckung. Sie liegt ueber allem in dieser Schicht und
-          blendet beim Scrollen auf; ihre Deckkraft setzt der Waechter oben
-          unmittelbar am Knoten. Ab hier zeigt die Schicht nur noch die Farbe
-          des Entwurfs, und ob eine Kachel der Seite darueber schon gerastert
-          ist oder nicht, spielt keine Rolle mehr.
-        */}
-        <div
-          ref={abdeckungRef}
-          aria-hidden="true"
-          className="absolute inset-0 z-20 bg-black pointer-events-none"
-          style={{ opacity: 0 }}
-        />
 
         {/* ================= 3. ANIMATED WATERMARK EMBLEM ================= */}
         <div className="absolute bottom-6 right-6 lg:bottom-10 lg:right-12 pointer-events-none flex items-center justify-center z-10">
