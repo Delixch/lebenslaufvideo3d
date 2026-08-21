@@ -21,7 +21,7 @@ export const ContactSection: React.FC = () => {
   return (
     <footer
       id="contact"
-      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 md:pt-16 pb-16 px-6 sm:px-12 lg:px-20 overflow-hidden scroll-mt-20 md:scroll-mt-0"
+      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 md:pt-16 pb-16 fluid-gutter overflow-hidden scroll-mt-20 md:scroll-mt-0"
     >
       <div className="max-w-7xl mx-auto w-full relative z-10">
         
@@ -40,7 +40,7 @@ export const ContactSection: React.FC = () => {
                 className="flex items-center space-x-4 mb-5"
               >
                 <span
-                  className="text-[11px] font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
+                  className="fluid-eyebrow font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
                   style={{ fontFamily: "'Montserrat', sans-serif" }}
                 >
                   05 / KONTAKT
@@ -57,7 +57,7 @@ export const ContactSection: React.FC = () => {
                 className="mb-8"
               >
                 <h2
-                  className="text-5xl sm:text-6xl md:text-7xl tracking-tight uppercase leading-[0.85] select-none"
+                  className="fluid-display fluid-display-kontakt tracking-tight uppercase leading-[0.85] select-none"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                 >
                   <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#FFFFFF] via-[#D5CBC0] to-[#605448] drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
@@ -70,7 +70,7 @@ export const ContactSection: React.FC = () => {
               </motion.div>
 
               <p
-                className="text-xs sm:text-[13px] font-normal text-[#EAD8C7] leading-relaxed max-w-md"
+                className="fluid-body-s font-normal text-[#EAD8C7] leading-relaxed max-w-md"
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
               >
                 Ein Projekt, eine Website, die nicht mehr passt, oder einfach eine Frage? Schreiben Sie mir — unverbindlich und ohne Fachjargon. Den ersten Schritt zu machen ist der halbe Weg.
@@ -84,7 +84,7 @@ export const ContactSection: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-7 relative w-full rounded-sm border border-[#8C6D4F]/40 bg-[#0A0806] p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden"
+            className="lg:col-span-7 relative w-full rounded-sm border border-[#8C6D4F]/40 bg-[#0A0806] fluid-pad-gross shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden"
           >
             {/* Top Gold Horizon Edge */}
             <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/70 to-transparent" />
@@ -100,7 +100,7 @@ export const ContactSection: React.FC = () => {
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#D4AF37] text-[#D4AF37] text-sm">
                   ✓
                 </div>
-                <h3 className="text-3xl text-white font-normal uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                <h3 className="fluid-title text-white font-normal uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                   MAILPROGRAMM GEÖFFNET
                 </h3>
                 <p className="text-xs text-[#EAD8C7] font-normal" style={{ fontFamily: "'Montserrat', sans-serif" }}>

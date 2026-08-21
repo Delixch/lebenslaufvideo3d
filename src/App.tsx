@@ -9,16 +9,24 @@ import { SkillsSection } from './components/SkillsSection';
 import { ExperienceSection } from './components/ExperienceSection';
 import { ContactSection } from './components/ContactSection';
 import { AmbientSound } from './components/AmbientSound';
-import { GoldFrame } from './components/GoldFrame';
 import { ScrollRail } from './components/ScrollRail';
+
+// Ab hier traegt die Notebook-Buehne ihre Beschriftung lesbar; darunter
+// uebernimmt die Liste. Dieselbe Grenze steht als min-[1200px] in beiden
+// Abschnitten, damit zwischen den beiden nie eine Luecke entsteht.
+const SCHMAL = '(min-width: 1200px)';
 
 function App() {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  // Die Notebook-Buehne bemisst ihre gesamte Beschriftung in cqw, also an der
+  // Breite des Bildes. Unter 1200px schrumpft der Infokasten darin auf 5-7px
+  // Schriftgroesse — auf dem iPad war er nicht mehr lesbar. Darunter uebernimmt
+  // deshalb die aufklappbare Liste, die ihre Groessen selbst mitwachsen laesst.
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(!window.matchMedia(SCHMAL).matches);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -38,7 +46,6 @@ function App() {
       <ExperienceSection />
       <ContactSection />
       <AmbientSound />
-      <GoldFrame />
       <ScrollRail />
     </div>
   );

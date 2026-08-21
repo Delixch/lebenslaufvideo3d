@@ -75,7 +75,7 @@ export const ExperienceSection: React.FC = () => {
     <section
       id="experience"
       ref={containerRef}
-      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 md:pt-4 pb-24 px-6 sm:px-12 lg:px-20 overflow-hidden scroll-mt-20 md:scroll-mt-0"
+      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 md:pt-4 pb-24 fluid-gutter overflow-hidden scroll-mt-20 md:scroll-mt-0"
     >
       {/* Subtle Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-[#D4AF37]/[0.03] rounded-full blur-[150px] pointer-events-none" />
@@ -91,7 +91,7 @@ export const ExperienceSection: React.FC = () => {
           className="flex items-center space-x-4 mb-7"
         >
           <span
-            className="text-[11px] font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
+            className="fluid-eyebrow font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             04 / WERDEGANG
@@ -108,7 +108,7 @@ export const ExperienceSection: React.FC = () => {
           className="mb-16"
         >
           <h2
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] tracking-tight uppercase leading-[0.85] select-none"
+            className="fluid-display tracking-tight uppercase leading-[0.85] select-none"
             style={{ fontFamily: "'Bebas Neue', sans-serif" }}
           >
             <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#FFFFFF] via-[#D5CBC0] to-[#605448] drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
@@ -165,7 +165,7 @@ export const ExperienceSection: React.FC = () => {
                   </div>
 
                   <h3
-                    className="text-3xl sm:text-4xl tracking-wide text-white group-hover:text-[#F7E7C4] transition-colors mb-1 leading-none"
+                    className="fluid-title tracking-wide text-white group-hover:text-[#F7E7C4] transition-colors mb-1 leading-none"
                     style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                   >
                     {stop.title}
@@ -179,7 +179,7 @@ export const ExperienceSection: React.FC = () => {
                   </span>
                   
                   <p 
-                    className="text-xs sm:text-[13px] font-normal text-[#EAD8C7] leading-[1.7] max-w-lg group-hover:text-[#FFF5EB] transition-colors"
+                    className="fluid-body-s font-normal text-[#EAD8C7] leading-[1.7] max-w-lg group-hover:text-[#FFF5EB] transition-colors"
                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                   >
                     {stop.description}

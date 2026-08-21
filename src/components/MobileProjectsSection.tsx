@@ -159,12 +159,12 @@ const projects: Project[] = [
 
 export const MobileProjectsSection: React.FC = () => {
   const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+    () => typeof window !== 'undefined' && !window.matchMedia('(min-width: 1200px)').matches,
   );
 
   useEffect(() => {
-    const query = window.matchMedia('(max-width: 767px)');
-    const update = () => setIsMobile(query.matches);
+    const query = window.matchMedia('(min-width: 1200px)');
+    const update = () => setIsMobile(!query.matches);
     query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
   }, []);
@@ -175,7 +175,7 @@ export const MobileProjectsSection: React.FC = () => {
 
   return (
     <section
-      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-24 px-6 sm:px-12 block md:hidden"
+      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-24 fluid-gutter block min-[1200px]:hidden"
     >
       <div className="max-w-7xl mx-auto w-full relative z-10">
         <motion.div
@@ -186,7 +186,7 @@ export const MobileProjectsSection: React.FC = () => {
           className="flex items-center space-x-4 mb-5"
         >
           <span
-            className="text-[11px] font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
+            className="fluid-eyebrow font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             02 / AUSGEWÄHLTE ARBEITEN
@@ -202,7 +202,7 @@ export const MobileProjectsSection: React.FC = () => {
           className="flex flex-col mb-12"
         >
           <h2
-            className="text-4xl sm:text-5xl tracking-tight uppercase leading-[1.0] select-none mb-4"
+            className="fluid-display fluid-display-liste tracking-tight uppercase leading-[1.0] select-none mb-4"
             style={{ fontFamily: "'Bebas Neue', sans-serif" }}
           >
             <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#FFFFFF] via-[#D5CBC0] to-[#605448] drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
@@ -214,7 +214,7 @@ export const MobileProjectsSection: React.FC = () => {
           </h2>
 
           <p
-            className="text-xs sm:text-sm font-normal text-[#EAD8C7] leading-relaxed"
+            className="fluid-body font-normal text-[#EAD8C7] leading-relaxed"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             Jedes Projekt ist echte Arbeit für echte Menschen — keine Übungsaufgabe.
@@ -253,15 +253,15 @@ export const MobileProjectsSection: React.FC = () => {
                       }, 320);
                     }
                   }}
-                  className="w-full text-left p-6 flex justify-between items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-inset cursor-pointer"
+                  className="w-full text-left fluid-pad flex justify-between items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-inset cursor-pointer"
                 >
                   <div className="flex flex-col space-y-1.5 pr-4">
                     <div className="flex items-center space-x-2 text-[10px] font-mono tracking-[0.2em]">
-                      <span className="text-[#D4AF37] font-bold">0{project.number} //</span>
+                      <span className="text-[#D4AF37] font-bold">{project.number} //</span>
                       <span className="text-[#A8988B] uppercase">{project.category}</span>
                     </div>
                     <h3
-                      className="text-2xl sm:text-3xl tracking-tight text-white uppercase font-normal leading-[1.1]"
+                      className="fluid-title tracking-tight text-white uppercase font-normal leading-[1.1]"
                       style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                     >
                       {project.title}
@@ -289,7 +289,7 @@ export const MobileProjectsSection: React.FC = () => {
                     >
                       <div className="px-6 pb-6 pt-2 border-t border-[#8C6D4F]/15 flex flex-col space-y-6">
                         <p
-                          className="text-xs sm:text-sm font-light text-[#BDB0A4] leading-relaxed"
+                          className="fluid-body font-light text-[#BDB0A4] leading-relaxed"
                           style={{ fontFamily: "'Montserrat', sans-serif" }}
                         >
                           {project.description}

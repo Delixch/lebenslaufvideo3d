@@ -68,7 +68,7 @@ export const AboutSection: React.FC = () => {
   return (
     <section 
       id="about" 
-      className="relative w-screen min-h-screen bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 md:pt-24 pb-24 lg:pb-32 px-6 sm:px-12 lg:px-20 overflow-hidden flex items-center scroll-mt-20 md:scroll-mt-0"
+      className="relative w-screen min-h-screen bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 md:pt-24 pb-24 lg:pb-32 fluid-gutter overflow-hidden flex items-center scroll-mt-20 md:scroll-mt-0"
     >
       {/* ================= BACKGROUND GLOWS & FLOATING PARTICLES ================= */}
       <motion.div 
@@ -93,7 +93,7 @@ export const AboutSection: React.FC = () => {
           className="flex items-center space-x-4 mb-10"
         >
           <span 
-            className="text-[11px] font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
+            className="fluid-eyebrow font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             01 / ÜBER MICH
@@ -115,7 +115,7 @@ export const AboutSection: React.FC = () => {
             {/* Cinematic Headline with Glow Flare */}
             <motion.div variants={fadeUpVariants} className="relative mb-6 select-none">
               <h2
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.4rem] tracking-tight uppercase leading-[0.88]"
+                className="fluid-display fluid-display-about tracking-tight uppercase leading-[0.88]"
                 style={{ fontFamily: "'Bebas Neue', sans-serif" }}
               >
                 <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#FFFFFF] via-[#D5CBC0] to-[#605448] drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)]">
@@ -130,7 +130,7 @@ export const AboutSection: React.FC = () => {
             {/* Concise Bio Paragraph */}
             <motion.p
               variants={fadeUpVariants}
-              className="text-xs sm:text-sm md:text-[14.5px] font-light text-[#B3A497] leading-[1.85] tracking-wide mb-10 max-w-xl"
+              className="fluid-body font-light text-[#B3A497] leading-[1.85] tracking-wide mb-10 max-w-xl"
               style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
               Ich bin <span className="text-[#F3DBB3] font-medium">Adnan Aydin</span>, Web-Entwickler in Zürich. Angefangen habe ich mit dem Web-Publisher-Lehrgang — HTML, CSS, PHP, Datenbanken — danach kamen Jahre im Verkauf und in der Führung eines Betriebs. Diese Mischung prägt meine Arbeit: Ich denke ein Projekt vom Ergebnis her, nicht vom Werkzeug. Heute baue ich Auftritte mit Echtzeit-3D, Motion Design und sauberer Technik darunter.
@@ -144,7 +144,7 @@ export const AboutSection: React.FC = () => {
               {/* Stat 1 */}
               <div className="flex flex-col">
                 <span 
-                  className="text-3xl sm:text-4xl font-light text-[#F4EBE2] tracking-tight"
+                  className="fluid-title font-light text-[#F4EBE2] tracking-tight"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                 >
                   20+
@@ -157,7 +157,7 @@ export const AboutSection: React.FC = () => {
               {/* Stat 2 */}
               <div className="flex flex-col">
                 <span 
-                  className="text-3xl sm:text-4xl font-light text-[#D4AF37] tracking-tight"
+                  className="fluid-title font-light text-[#D4AF37] tracking-tight"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                 >
                   6
@@ -170,7 +170,7 @@ export const AboutSection: React.FC = () => {
               {/* Stat 3 */}
               <div className="flex flex-col">
                 <span 
-                  className="text-3xl sm:text-4xl font-light text-[#F4EBE2] tracking-tight"
+                  className="fluid-title font-light text-[#F4EBE2] tracking-tight"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                 >
                   3
@@ -183,7 +183,7 @@ export const AboutSection: React.FC = () => {
               {/* Stat 4 */}
               <div className="flex flex-col">
                 <span 
-                  className="text-3xl sm:text-4xl font-light text-[#D4AF37] tracking-tight"
+                  className="fluid-title font-light text-[#D4AF37] tracking-tight"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                 >
                   Zürich
@@ -261,7 +261,7 @@ export const AboutSection: React.FC = () => {
               <div className="relative overflow-hidden w-full max-w-[390px] aspect-[4/5] bg-black rounded-sm">
                 {/* Main Portrait */}
                 <img
-                  src="https://res.cloudinary.com/ixyonosn/image/upload/v1787056936/koltuk.png"
+                  src="https://res.cloudinary.com/ixyonosn/image/upload/f_auto,q_auto,w_780/v1787056936/koltuk.png"
                   alt="Adnan Aydin"
                   width={390}
                   height={488}

@@ -69,7 +69,7 @@ export const SkillsSection: React.FC = () => {
   return (
     <section
       id="skills"
-      className="relative w-screen bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-24 px-6 sm:px-12 lg:px-20 overflow-hidden flex flex-col justify-center scroll-mt-20 md:scroll-mt-0"
+      className="relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-24 fluid-gutter overflow-hidden flex flex-col justify-center scroll-mt-20 md:scroll-mt-0"
     >
       {/* Ambient Glows */}
       <div className="absolute top-1/3 left-1/4 w-[34rem] h-[34rem] bg-[#D4AF37]/5 rounded-full blur-[170px] pointer-events-none" />
@@ -86,7 +86,7 @@ export const SkillsSection: React.FC = () => {
           className="flex items-center space-x-4 mb-7"
         >
           <span
-            className="text-[11px] font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
+            className="fluid-eyebrow font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             03 / WERKZEUGE
@@ -103,7 +103,7 @@ export const SkillsSection: React.FC = () => {
           className="mb-10"
         >
           <h2
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] tracking-tight uppercase leading-[0.85] select-none"
+            className="fluid-display tracking-tight uppercase leading-[0.85] select-none"
             style={{ fontFamily: "'Bebas Neue', sans-serif" }}
           >
             <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#FFFFFF] via-[#D5CBC0] to-[#605448] drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
@@ -121,14 +121,14 @@ export const SkillsSection: React.FC = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-6"
+          className="grid grid-cols-1 lg:grid-cols-12 fluid-gap"
         >
           {bentoCategories.map((block) => (
             <motion.div
               key={block.title}
               variants={cardVariants}
               whileHover={{ y: -5, transition: { duration: 0.25 } }}
-              className={`${block.colSpan} relative p-8 sm:p-9 rounded-sm border border-[#8C6D4F]/35 bg-[#100D0B]/85 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-[#D4AF37]/80 hover:shadow-[0_16px_45px_rgba(212,175,55,0.14)] cursor-pointer group`}
+              className={`${block.colSpan} relative fluid-pad rounded-sm border border-[#8C6D4F]/35 bg-[#100D0B]/85 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-[#D4AF37]/80 hover:shadow-[0_16px_45px_rgba(212,175,55,0.14)] cursor-pointer group`}
             >
               {/* Top Subtle Border Highlight */}
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -149,7 +149,7 @@ export const SkillsSection: React.FC = () => {
 
               {/* Title */}
               <h3
-                className="text-3xl sm:text-4xl font-normal tracking-wide text-white mb-3 group-hover:text-[#F7E7C4] transition-colors"
+                className="fluid-title font-normal tracking-wide text-white mb-3 group-hover:text-[#F7E7C4] transition-colors"
                 style={{ fontFamily: "'Bebas Neue', sans-serif" }}
               >
                 {block.title}
@@ -157,7 +157,7 @@ export const SkillsSection: React.FC = () => {
 
               {/* Description */}
               <p
-                className="text-xs sm:text-sm text-[#EAD8C7] font-normal leading-relaxed mb-7 max-w-xl group-hover:text-[#FFF5EB] transition-colors"
+                className="fluid-body-m text-[#EAD8C7] font-normal leading-relaxed mb-7 max-w-xl group-hover:text-[#FFF5EB] transition-colors"
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
               >
                 {block.description}

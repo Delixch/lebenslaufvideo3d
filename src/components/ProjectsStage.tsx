@@ -321,7 +321,7 @@ export const ProjectsStage: React.FC = () => {
           setLive(false);
         }
       }}
-      className="hidden md:block relative w-full bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-32 px-6 sm:px-12 lg:px-20"
+      className="hidden min-[1200px]:block relative w-full overflow-hidden bg-black text-[#E8DFD8] font-sans selection:bg-[#cbb59d] selection:text-black pt-8 pb-32 fluid-gutter"
     >
       <style>{`
         @keyframes mouseGlow {
@@ -352,7 +352,7 @@ export const ProjectsStage: React.FC = () => {
           className="flex items-center space-x-4 mb-5"
         >
           <span
-            className="text-[11px] font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
+            className="fluid-eyebrow font-medium tracking-[0.35em] uppercase text-[#D4AF37]"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             02 / AUSGEWÄHLTE ARBEITEN
@@ -368,7 +368,7 @@ export const ProjectsStage: React.FC = () => {
           className="flex flex-col md:flex-row md:items-end justify-between mb-16"
         >
           <h2
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] tracking-tight uppercase leading-[0.85] select-none"
+            className="fluid-display tracking-tight uppercase leading-[0.85] select-none"
             style={{ fontFamily: "'Bebas Neue', sans-serif" }}
           >
             <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#FFFFFF] via-[#D5CBC0] to-[#605448] drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
@@ -380,7 +380,7 @@ export const ProjectsStage: React.FC = () => {
           </h2>
 
           <p
-            className="text-xs sm:text-sm font-normal text-[#EAD8C7] max-w-sm mt-4 md:mt-0 leading-relaxed"
+            className="fluid-body-m font-normal text-[#EAD8C7] max-w-sm mt-4 md:mt-0 leading-relaxed"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             Wählen Sie ein Projekt aus, um es direkt im Notebook zu bedienen.
