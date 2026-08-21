@@ -278,16 +278,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
   const [isVideoDissolved, setIsVideoDissolved] = useState(false);
   const soundPlayedRef = useRef(false);
 
-  // Videos anhalten, sobald die Schicht nicht mehr zu sehen ist. Ein pausiertes
-  // Video dekodiert keine Bilder mehr — nur ausblenden reicht dafuer nicht.
+  // Videos in der Buehnenschicht anhalten, sobald sie niemand mehr sieht.
+  //
+  // Zwei Bedingungen, und die zweite kam aus Adnans Beobachtung:
+  //  - Der Hero ist aus dem Bild.
+  //  - Das Video hat sich aufgeloest. Ab Sekunde 7.4 uebernimmt das Standbild
+  //    hero-lamp.webp, das Video steht auf Deckkraft 0 - lief mit `loop` aber
+  //    endlos weiter und wurde in jedem Bild dekodiert und komponiert,
+  //    waehrend niemand es sah.
+  //
+  // Warum das wichtig ist: auf dem iPhone gibt es dieses Problem nicht, weil
+  // dort `mobile.mp4` ohne `loop` laeuft und per `onEnded` einfach endet - ein
+  // beendetes Video dekodiert nicht mehr, die Schicht steht still. Auf dem
+  // iPad lief bisher dieselbe Endlosschleife wie auf dem Desktop, nur ohne
+  // dessen Reserven. Damit laeuft der Desktop-Zweig jetzt genauso ruhig aus
+  // wie der Handy-Zweig.
+  //
+  // Ausblenden allein genuegt nicht; ein Video hoert erst mit pause() auf zu
+  // dekodieren. Das Video im Handyrahmen ist nicht betroffen - es liegt
+  // ausserhalb dieser Schicht und ist sichtbar.
   useEffect(() => {
     const buehne = buehneRef.current;
     if (!buehne) {
       return;
     }
 
+    const wirdGebraucht = heroImBild && !isVideoDissolved;
+
     buehne.querySelectorAll('video').forEach((video) => {
-      if (heroImBild) {
+      if (wirdGebraucht) {
         void video.play().catch(() => {});
       } else {
         video.pause();
@@ -1041,7 +1060,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 poster={HERO_POSTER}
                 autoPlay
                 muted
-                loop
                 playsInline
                 preload="auto"
                 onTimeUpdate={handleTimeUpdate}
