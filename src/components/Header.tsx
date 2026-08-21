@@ -128,8 +128,8 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
             Punkten waechst von 12px bei 1024 auf die bisherigen 40px bei 1280,
             damit die Leiste am unteren Ende ueberhaupt hineinpasst. */}
         <nav
-          className="hidden lg:flex items-center text-[11px] tracking-[0.28em] font-medium uppercase absolute left-1/2 -translate-x-1/2"
-          style={{ fontFamily: "'Montserrat', sans-serif", gap: 'clamp(0.5rem, calc(10.9375vw - 100px), 2.5rem)' }}
+          className="hidden lg:flex items-center text-[9.5px] tracking-[0.12em] xl:text-[11px] xl:tracking-[0.28em] font-medium uppercase absolute left-1/2 -translate-x-1/2"
+          style={{ fontFamily: "'Montserrat', sans-serif", gap: 'clamp(0.75rem, calc(10.9375vw - 100px), 2.5rem)' }}
         >
           {/* Home Link with Blinking Icon */}
           <a
