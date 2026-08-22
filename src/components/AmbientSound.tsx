@@ -40,7 +40,7 @@ export const AmbientSound: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const video = document.querySelector('video');
+    const video = document.querySelector<HTMLVideoElement>('video[data-ambient-target]');
 
     if (!enabled) {
       if (video) {

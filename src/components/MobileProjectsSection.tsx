@@ -1,177 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-interface Project {
-  number: string;
-  title: string;
-  category: string;
-  description: string;
-  githubUrl: string;
-  tech: string[];
-  metrics: { label: string; value: string }[];
-}
-
-const projects: Project[] = [
-  {
-    number: '01',
-    title: 'Adnan Aydin \u2014 3D Portfolio',
-    category: 'ECHTZEIT-3D / WEB-ERLEBNIS',
-    description:
-      'Mein eigener Auftritt: eine einzige Three.js-Szene trägt Partikeltypografie, eine Sternbild-Navigation durch die Projekte, GLSL-Shader und scroll-getriebene Kamerafahrten. Geometrie entsteht im Web Worker, damit die Seite auch auf dem Handy flüssig bleibt.',
-    githubUrl: 'https://adnanlebenslauf.vercel.app/',
-    tech: [
-      'TypeScript',
-      'Three.js',
-      'WebGL',
-      'GLSL',
-      'GSAP',
-      'ScrollTrigger',
-      'Web Workers',
-      'Vite',
-      'SCSS',
-    ],
-    metrics: [
-      { label: 'SZENE', value: 'Ein einziges Canvas' },
-      { label: 'PHYSIK', value: 'Verlet-Seil in Echtzeit' },
-      { label: 'AUFBAU', value: 'Entity Component System' },
-    ],
-  },
-  {
-    number: '02',
-    title: 'ADNAN 3D',
-    category: 'KÜNSTLICHE INTELLIGENZ / WISSENSPLATTFORM',
-    description:
-      'Lern- und Lehrplattform rund um künstliche Intelligenz: Prompts, Serverbefehle und experimentelle Arbeiten sind gesammelt und nachvollziehbar aufbereitet. Bewusst als Werkstatt gebaut — ausprobieren, festhalten, weitergeben.',
-    githubUrl: 'https://adnanwalk.vercel.app/',
-    tech: [
-      'TypeScript',
-      'Supabase',
-      'Prompt Engineering',
-      'Server Administration',
-      'Vite',
-      'Responsive Design',
-    ],
-    metrics: [
-      { label: 'INHALT', value: 'Prompts & Befehle' },
-      { label: 'DATEN', value: 'Supabase' },
-      { label: 'ZWECK', value: 'Lernen & Lehren' },
-    ],
-  },
-  {
-    number: '03',
-    title: 'Happy Beck',
-    category: 'GASTRONOMIE / FIRMENAUFTRITT',
-    description:
-      'Webauftritt einer Schweizer Bäckerei: Sortiment, Filialen und Öffnungszeiten in einem schnellen, mobil zuerst gedachten Auftritt. Live im Einsatz und täglich von Kundschaft benutzt.',
-    githubUrl: 'https://superonline.ch',
-    tech: ['React', 'TypeScript', 'Material UI', 'Responsive Web Design'],
-    metrics: [
-      { label: 'KUNDE', value: 'Bäckerei Happy AG' },
-      { label: 'FOKUS', value: 'Mobil zuerst' },
-      { label: 'STATUS', value: 'Live' },
-    ],
-  },
-  {
-    number: '04',
-    title: 'SAZCAR GmbH',
-    category: 'AUTOWERKSTATT / FIRMENAUFTRITT',
-    description:
-      'Homepage einer Zürcher Autowerkstatt: Dienstleistungen, Standort und Kontakt auf einen glance. Schlank gebaut, damit die Seite auch auf dem Handy in Sekunden steht.',
-    githubUrl: 'https://sazcar.ch',
-    tech: ['HTML', 'CSS', 'JavaScript', 'Responsive Design'],
-    metrics: [
-      { label: 'KUNDE', value: 'SAZCAR GmbH, Zürich' },
-      { label: 'UMFANG', value: 'Auftritt & Kontakt' },
-      { label: 'STATUS', value: 'Live' },
-    ],
-  },
-  {
-    number: '05',
-    title: 'Eren Aydin \u2014 Bewerbungsportfolio',
-    category: 'PERSÖNLICHES PORTFOLIO / LEHRSTELLE',
-    description:
-      'Interaktives Bewerbungsportfolio für meinen Sohn zum Lehrbeginn 2026. Scroll-getriebene Animationen führen durch Person, Schulweg und Projekte — mobil zuerst gedacht, damit es auch auf älteren Geräten schnell lädt.',
-    githubUrl: 'https://erenaydin.ch',
-    tech: ['TypeScript', 'GSAP', 'ScrollTrigger', 'SCSS', 'Vite', 'Motion Design'],
-    metrics: [
-      { label: 'ANLASS', value: 'Lehrbeginn 2026' },
-      { label: 'AUFBAU', value: 'Scroll-Erzählung' },
-      { label: 'STATUS', value: 'Live' },
-    ],
-  },
-  {
-    number: '06',
-    title: 'Portfolie EAydin',
-    category: 'PERSÖNLICHES PORTFOLIO',
-    description:
-      'Meine erste Arbeit nach vielen Jahren zurück im Web: ein eigenes Portfolio, gebaut, um wieder in die aktuelle Front-End-Welt hineinzukommen. Aufbau, Layout und Animationen sind von Hand gesetzt, ohne Baukasten.',
-    githubUrl: 'https://erenworks.vercel.app/',
-    tech: ['HTML', 'CSS', 'SCSS', 'JavaScript', 'Responsive Design', 'Motion Design'],
-    metrics: [
-      { label: 'JAHR', value: '2025' },
-      { label: 'ANLASS', value: 'Rückkehr ins Web' },
-      { label: 'AUFBAU', value: 'Alles von Hand' },
-    ],
-  },
-  {
-    number: '07',
-    title: 'iPhone Shortcuts',
-    category: 'CREATIVE WEB DEVELOPMENT',
-    description:
-      'Eine 2025 entstandene Webseite, inspiriert von den iPhone-Kurzbefehlen. Interaktive Karten in einem klaren, modernen Layout — das Projekt stiess bei vielen Leuten auf Interesse.',
-    githubUrl: 'https://superonline.vercel.app/',
-    tech: ['React', 'Tailwind CSS', 'JavaScript', 'HTML', 'CSS', 'Responsive Design'],
-    metrics: [
-      { label: 'JAHR', value: '2025' },
-      { label: 'IDEE', value: 'iPhone-Kurzbefehle' },
-      { label: 'KERN', value: 'Interaktive Karten' },
-    ],
-  },
-  {
-    number: '08',
-    title: 'Vokabeltrainer',
-    category: 'BILDUNG / KI-GESTÜTZTES LERNEN',
-    description:
-      'Webseite für Sekundar- und Primarschüler zum Vokabeltraining: Schüler fotografieren eine Seite aus ihrem Lehrbuch, und mithilfe von KI entstehen daraus Lernkarten. Das Projekt wurde nie ganz fertiggestellt.',
-    githubUrl: 'https://vokabel-hazel.vercel.app/',
-    tech: ['React', 'Tailwind CSS', 'JavaScript', 'AI Integration', 'Responsive Design'],
-    metrics: [
-      { label: 'JAHR', value: '2024' },
-      { label: 'FÜR', value: 'Schulkinder' },
-      { label: 'STATUS', value: 'Unvollendet' },
-    ],
-  },
-  {
-    number: '09',
-    title: 'Portfolie',
-    category: 'PERSÖNLICHES PORTFOLIO',
-    description:
-      'Eines meiner ersten Projekte, entstanden 2024. Damals hatte ich noch wenig Erfahrung und bin mit der Unterstützung eines türkischen Entwicklers vorangekommen — der Anfang von allem, was danach kam.',
-    githubUrl: 'https://lebenslauf-xi.vercel.app/',
-    tech: ['React', 'Tailwind CSS', 'JavaScript', 'HTML', 'CSS'],
-    metrics: [
-      { label: 'JAHR', value: '2024' },
-      { label: 'ROLLE', value: 'Erste Schritte' },
-      { label: 'HILFE', value: 'Mit Mentor gebaut' },
-    ],
-  },
-];
+import { projects } from '../lib/projects';
 
 export const MobileProjectsSection: React.FC = () => {
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && !window.matchMedia('(min-width: 1200px)').matches,
-  );
-
-  useEffect(() => {
-    const query = window.matchMedia('(min-width: 1200px)');
-    const update = () => setIsMobile(!query.matches);
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
-
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null); // Hepsi kapalı gelsin
-
-  if (!isMobile) return null;
 
   return (
     <section
@@ -224,6 +56,7 @@ export const MobileProjectsSection: React.FC = () => {
         <div className="flex flex-col space-y-4">
           {projects.map((project, idx) => {
             const isOpen = expandedIndex === idx;
+            const panelId = `mobile-project-panel-${idx}`;
             return (
               <div
                 id={`mobile-project-${idx}`}
@@ -253,6 +86,8 @@ export const MobileProjectsSection: React.FC = () => {
                       }, 320);
                     }
                   }}
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
                   className="w-full text-left fluid-pad flex justify-between items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-inset cursor-pointer"
                 >
                   <div className="flex flex-col space-y-1.5 pr-4">
@@ -282,6 +117,7 @@ export const MobileProjectsSection: React.FC = () => {
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
+                      id={panelId}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}

@@ -10,11 +10,11 @@ import { ExperienceSection } from './components/ExperienceSection';
 import { ContactSection } from './components/ContactSection';
 import { AmbientSound } from './components/AmbientSound';
 import { ScrollRail } from './components/ScrollRail';
+import { STAGE_QUERY } from './lib/breakpoints';
 
 // Ab hier traegt die Notebook-Buehne ihre Beschriftung lesbar; darunter
 // uebernimmt die Liste. Dieselbe Grenze steht als min-[1200px] in beiden
 // Abschnitten, damit zwischen den beiden nie eine Luecke entsteht.
-const SCHMAL = '(min-width: 1200px)';
 
 function App() {
   const [isHovered, setIsHovered] = useState(false);
@@ -26,7 +26,7 @@ function App() {
   // deshalb die aufklappbare Liste, die ihre Groessen selbst mitwachsen laesst.
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(!window.matchMedia(SCHMAL).matches);
+      setIsMobile(!window.matchMedia(STAGE_QUERY).matches);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);

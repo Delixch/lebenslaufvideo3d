@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LampMoths } from './LampMoths';
 import { LampBuzz } from './LampBuzz';
 import { LampMenu } from './LampMenu';
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring, useReducedMotion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import watermarkImg from '../assets/watermark.webp';
+import { PHONE_QUERY } from '../lib/breakpoints';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -40,139 +41,14 @@ interface HeroSectionProps {
   setIsHovered: (hovered: boolean) => void;
 }
 
-const MOBILE_QUERY = '(max-width: 767px)';
+const MOBILE_QUERY = PHONE_QUERY;
 // Laptop-Format: breit, aber flach. object-cover schneidet dort oben und
 // unten je rund 60px weg — genug, um die Spitze der Laterne zu kappen und
 // den Kopf des Mannes in die Menuezeile zu heben.
 const FLAT_QUERY = '(min-width: 768px) and (max-height: 860px)';
 
-// Web Audio API Sentezleyicisi: Arızalı neon sokak lambası uğultusu ve kıvılcım patlamaları üretir
-class NeonBuzzSynth {
-  private ctx: AudioContext | null = null;
-  private humOsc: OscillatorNode | null = null;
-  private buzzOsc: OscillatorNode | null = null;
-  private humGain: GainNode | null = null;
-
-  private init() {
-    if (this.ctx) return;
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContextClass) return;
-    this.ctx = new AudioContextClass();
-  }
-
-  // Kıvılcım Çatırtısı (Beyaz gürültü ve frekans kaymalı çıtırtı)
-  public playSpark(timeOffset: number = 0) {
-    this.init();
-    if (!this.ctx) return;
-
-    const now = this.ctx.currentTime + timeOffset;
-
-    // 1. Beyaz gürültü (Statik patlama)
-    const bufferSize = this.ctx.sampleRate * 0.04; // 40ms gürültü
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-
-    const noise = this.ctx.createBufferSource();
-    noise.buffer = buffer;
-
-    const noiseFilter = this.ctx.createBiquadFilter();
-    noiseFilter.type = 'bandpass';
-    noiseFilter.frequency.setValueAtTime(1200, now);
-
-    const noiseGain = this.ctx.createGain();
-    noiseGain.gain.setValueAtTime(0, now);
-    noiseGain.gain.linearRampToValueAtTime(0.05, now + 0.003); // Hızlı atak
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035); // Hızlı sönüm
-
-    noise.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(this.ctx.destination);
-
-    noise.start(now);
-    noise.stop(now + 0.05);
-
-    // 2. Kıvılcım Pop Sesi (Çıtırtı tınısı)
-    const popOsc = this.ctx.createOscillator();
-    const popGain = this.ctx.createGain();
-    popOsc.type = 'triangle';
-    popOsc.frequency.setValueAtTime(180, now);
-    popOsc.frequency.linearRampToValueAtTime(30, now + 0.025);
-
-    popGain.gain.setValueAtTime(0, now);
-    popGain.gain.linearRampToValueAtTime(0.09, now + 0.002);
-    popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-
-    popOsc.connect(popGain);
-    popGain.connect(this.ctx.destination);
-
-    popOsc.start(now);
-    popOsc.stop(now + 0.03);
-  }
-
-  // Sürekli Neon Uğultusu (50Hz şebeke gürültüsü ve harmonikler)
-  public startHum() {
-    this.init();
-    if (!this.ctx) return;
-    if (this.humOsc) return; // Zaten uğulduyor
-
-    const now = this.ctx.currentTime;
-
-    // 50Hz temel sinüs dalgası
-    this.humOsc = this.ctx.createOscillator();
-    this.humOsc.type = 'sine';
-    this.humOsc.frequency.setValueAtTime(50, now);
-
-    // 100Hz metalik cızırtı harmonisi
-    this.buzzOsc = this.ctx.createOscillator();
-    this.buzzOsc.type = 'sawtooth';
-    this.buzzOsc.frequency.setValueAtTime(100, now);
-
-    // İçi boş eski lamba hissi veren filtre
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(140, now);
-    filter.Q.setValueAtTime(1.8, now);
-
-    this.humGain = this.ctx.createGain();
-    this.humGain.gain.setValueAtTime(0, now);
-    // Kıvılcımlardan sonra yavaşça arkaya otursun (düşük ses)
-    this.humGain.gain.linearRampToValueAtTime(0.005, now + 1.8);
-
-    this.humOsc.connect(filter);
-    this.buzzOsc.connect(filter);
-    filter.connect(this.humGain);
-    this.humGain.connect(this.ctx.destination);
-
-    this.humOsc.start(now);
-    this.buzzOsc.start(now);
-  }
-
-  // Uğultuyu durdur (fade out ile yumuşak kesim)
-  public stopHum() {
-    if (!this.ctx) return;
-    const now = this.ctx.currentTime;
-    if (this.humGain) {
-      try {
-        this.humGain.gain.setValueAtTime(this.humGain.gain.value, now);
-        this.humGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-      } catch (e) {}
-    }
-    setTimeout(() => {
-      try {
-        this.humOsc?.stop();
-        this.buzzOsc?.stop();
-      } catch (e) {}
-      this.humOsc = null;
-      this.buzzOsc = null;
-      this.humGain = null;
-    }, 500);
-  }
-}
-
 export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovered }) => {
+  const reduceMotion = useReducedMotion();
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   // Die Buehnenschicht liegt `fixed` ueber dem ganzen Fenster und blieb bisher
   // den kompletten Scroll ueber stehen: zwei Videos in Dauerschleife, ein
@@ -401,82 +277,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
     };
   }, [BULB_X, BULB_Y, BULB_SIZE, IMAGE_FOCUS_X, IMAGE_FOCUS_Y]);
 
-  // Neon Uğultu ve Kıvılcım Sentezleyici Ref'leri
-  const neonSynthRef = useRef<NeonBuzzSynth | null>(null);
-
-  // Sentezleyiciyi oluştur
-  useEffect(() => {
-    neonSynthRef.current = new NeonBuzzSynth();
-    return () => {
-      neonSynthRef.current?.stopHum();
-    };
-  }, []);
-
-  // Lamba yandığında sürekli uğultuyu ve pır-pır kıvılcım seslerini yöneten döngü
-  useEffect(() => {
-    if (!isVideoDissolved) return;
-
-    // Eğer sitenin sesi başlangıçta açıksa uğultuyu başlat
-    const isSoundEnabled = (window as any).isSiteSoundEnabled;
-    if (isSoundEnabled) {
-      neonSynthRef.current?.startHum();
-    }
-
-    const playLoopSparks = () => {
-      const isSoundEnabledNow = (window as any).isSiteSoundEnabled;
-      if (!isSoundEnabledNow || !neonSynthRef.current) return;
-
-      // 10 saniyelik lampFlicker CSS animasyonundaki pır-pır anlarıyla milisaniyelik senkronize ses kıvılcımları
-      // Başlangıç Kıvılcımları (0s - 2.4s)
-      neonSynthRef.current.playSpark(0.0);
-      neonSynthRef.current.playSpark(0.5);
-      neonSynthRef.current.playSpark(0.8);
-      neonSynthRef.current.playSpark(1.2);
-      neonSynthRef.current.playSpark(1.4);
-      neonSynthRef.current.playSpark(1.8);
-      neonSynthRef.current.playSpark(2.1);
-
-      // Ortadaki Güç Düşüşü Pır-pırları (5.0s - 5.4s)
-      neonSynthRef.current.playSpark(5.0);
-      neonSynthRef.current.playSpark(5.15);
-      neonSynthRef.current.playSpark(5.3);
-
-      // Sondaki Çift Kıvılcımlar (8.6s - 8.8s)
-      neonSynthRef.current.playSpark(8.6);
-      neonSynthRef.current.playSpark(8.8);
-    };
-
-    // İlk yandığı an kıvılcımları fırlat
-    if (isSoundEnabled) {
-      playLoopSparks();
-    }
-
-    // 10 saniyede bir döngü şeklinde kıvılcımları tekrarla (CSS keyframe süresiyle eşzamanlı)
-    const interval = setInterval(playLoopSparks, 10000);
-
-    // Global ses açma/kapama durumunu dinle (AmbientSound tıklandığında hum sesini sustur veya başlat)
-    const handleGlobalToggle = (e: Event) => {
-      const isEnabled = (e as CustomEvent).detail;
-      if (neonSynthRef.current) {
-        if (isEnabled) {
-          neonSynthRef.current.startHum();
-          // Ses yeni açıldıysa kıvılcımları anında bir kere tetikle
-          playLoopSparks();
-        } else {
-          neonSynthRef.current.stopHum();
-        }
-      }
-    };
-
-    window.addEventListener('siteSoundToggle', handleGlobalToggle);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('siteSoundToggle', handleGlobalToggle);
-      neonSynthRef.current?.stopHum();
-    };
-  }, [isVideoDissolved]);
-
   // Web Audio API ile tamamen kodla üretilen fütüristik hologram beliriş sesi (woosh & chime)
   const playHologramSound = () => {
     try {
@@ -518,6 +318,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       osc2.start(now);
       osc1.stop(now + 1.4);
       osc2.stop(now + 1.4);
+      osc2.onended = () => void ctx.close();
     } catch (e) {
       console.warn("Hologram ses sentezleyici hatası:", e);
     }
@@ -584,7 +385,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         'radial-gradient(circle, rgba(255,255,253,0.98) 0%, rgba(255,253,246,0.84) 16%, rgba(252,248,236,0.54) 34%, rgba(244,238,222,0.28) 52%, rgba(226,216,196,0.11) 72%, rgba(190,180,160,0.03) 88%, transparent 100%)',
       borderRadius: '50%',
       mixBlendMode: 'screen',
-      animation: lampLit ? 'lampFlicker 6s infinite ease-in-out' : 'none',
+      animation: lampLit && !reduceMotion ? 'lampFlicker 6s infinite ease-in-out' : 'none',
     }}
   />
 
@@ -613,7 +414,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
         'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
       WebkitMaskImage:
         'linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.45) 62%, transparent 86%)',
-      animation: lampLit ? 'haloBreathe 6s infinite ease-in-out' : 'none',
+      animation: lampLit && !reduceMotion ? 'haloBreathe 6s infinite ease-in-out' : 'none',
     }}
   />
 
@@ -646,7 +447,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
       style={{
         // Gleicher Startzeitpunkt wie das Flackern der Laterne, damit beide
         // Animationen im selben Frame anlaufen.
-        animation: lampLit ? 'lampIntensity 6s infinite ease-in-out' : 'none',
+        animation: lampLit && !reduceMotion ? 'lampIntensity 6s infinite ease-in-out' : 'none',
       }}
     >
       <style>{`
@@ -994,7 +795,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 }`}
                 style={{
                   transitionDuration: '320ms',
-                  animation: lampLit ? 'lampFlickerMobile 6s infinite ease-in-out' : 'none',
+                  animation: lampLit && !reduceMotion ? 'lampFlickerMobile 6s infinite ease-in-out' : 'none',
                 }}
               />
 
@@ -1020,6 +821,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 muted
                 playsInline
                 preload="auto"
+                data-ambient-target
                 onEnded={() => setIsVideoDissolved(true)}
                 className="h-full w-full object-cover object-[50%_top]"
               />
@@ -1071,6 +873,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isHovered, setIsHovere
                 muted
                 playsInline
                 preload="auto"
+                data-ambient-target
                 onTimeUpdate={handleTimeUpdate}
                 className="h-full w-full object-cover scale-[0.94] origin-top-right translate-y-[max(4.5rem,6vh)]"
                 style={{ objectPosition: `50% ${IMAGE_FOCUS_Y * 100}%` }}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { projects } from '../lib/projects';
 import { LampMoths } from './LampMoths';
 
@@ -69,6 +69,7 @@ const quadTransform = (
 const LAMP = [0.855, 0.178] as const;
 
 export const ProjectsStage: React.FC = () => {
+  const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [corners, setCorners] = useState<number[][]>([
@@ -304,13 +305,22 @@ export const ProjectsStage: React.FC = () => {
         return;
       }
 
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('input, textarea, select, [contenteditable="true"]')) {
+        return;
+      }
+
+      if (!onScreen) {
+        return;
+      }
+
       if (event.key === 'ArrowRight') step(1);
       if (event.key === 'ArrowLeft') step(-1);
     };
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [aligning, live, nudge, step]);
+  }, [aligning, live, nudge, step, onScreen]);
 
   return (
     <section
@@ -401,7 +411,7 @@ export const ProjectsStage: React.FC = () => {
           >
             <img
               ref={plateRef}
-              src="/ipad-buehne.png?v=9"
+              src="/ipad-buehne.webp?v=9"
               alt=""
               onLoad={() => window.dispatchEvent(new Event('resize'))}
               className="block w-full h-auto"
@@ -409,13 +419,13 @@ export const ProjectsStage: React.FC = () => {
 
             {/* Glowing Mouse Overlay */}
             <img
-              src="/ipad-buehne-on.png?v=8"
+              src="/ipad-buehne-on.webp?v=8"
               alt=""
               className={`absolute left-0 top-0 w-full h-auto transition-opacity duration-[1000ms] pointer-events-none ${
                 live ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
-                animation: live ? 'mouseGlow 8s infinite ease-in-out' : 'none',
+                animation: live && !reduceMotion ? 'mouseGlow 8s infinite ease-in-out' : 'none',
               }}
             />
 
@@ -429,7 +439,7 @@ export const ProjectsStage: React.FC = () => {
               */}
               <div
                 className="pointer-events-none absolute inset-0"
-                style={{ animation: onScreen ? 'lampIntensity 6s infinite ease-in-out' : 'none' }}
+                style={{ animation: onScreen && !reduceMotion ? 'lampIntensity 6s infinite ease-in-out' : 'none' }}
               >
                 <span
                   aria-hidden="true"
@@ -437,8 +447,8 @@ export const ProjectsStage: React.FC = () => {
                   style={{
                     left: lamp.left,
                     top: lamp.top,
-                    width: '5.6cqw',
-                    height: '5.6cqw',
+                    width: 'max(5.6cqw, 22px)',
+                    height: 'max(5.6cqw, 22px)',
                     background:
                       'radial-gradient(circle, rgba(255,255,253,0.98) 0%, rgba(255,253,246,0.84) 16%, rgba(252,248,236,0.54) 34%, rgba(244,238,222,0.28) 52%, rgba(226,216,196,0.11) 72%, rgba(190,180,160,0.03) 88%, transparent 100%)',
                     mixBlendMode: 'screen',
@@ -453,8 +463,8 @@ export const ProjectsStage: React.FC = () => {
                   style={{
                     left: lamp.left,
                     top: lamp.top,
-                    width: '22cqw',
-                    height: '22cqw',
+                    width: 'max(22cqw, 90px)',
+                    height: 'max(22cqw, 90px)',
                     background:
                       'radial-gradient(circle, rgba(255,255,252,0.11) 0%, rgba(252,250,244,0.07) 14%, rgba(246,242,232,0.045) 28%, rgba(236,230,216,0.028) 42%, rgba(220,212,196,0.016) 56%, rgba(196,188,172,0.008) 70%, rgba(160,152,138,0.003) 84%, transparent 100%)',
                     mixBlendMode: 'screen',
@@ -470,8 +480,8 @@ export const ProjectsStage: React.FC = () => {
                   style={{
                     left: lamp.left,
                     top: '88%',
-                    width: '26cqw',
-                    height: '9cqh',
+                    width: 'max(26cqw, 106px)',
+                    height: 'max(9cqh, 36px)',
                     background:
                       'radial-gradient(closest-side, rgba(255,232,190,0.18), rgba(214,168,100,0.07) 55%, transparent 84%)',
                     mixBlendMode: 'screen',

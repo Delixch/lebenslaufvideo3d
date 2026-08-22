@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { navItems, scrollToSection } from '../lib/nav';
+import { PHONE_QUERY } from '../lib/breakpoints';
 import { ArrowMark } from './LampMenu';
 
 interface HeaderProps {
@@ -19,7 +20,7 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
   // gescrollt ist — der Hamburger taucht erst beim Scrollen auf. Zwischen
   // 768px und 1024px gibt es die Laterne nicht und die waagrechte Leiste passt
   // nicht daneben; dort muss der Hamburger deshalb von Anfang an da sein.
-  const [isPhone, setIsPhone] = useState(() => window.matchMedia('(max-width: 767px)').matches);
+  const [isPhone, setIsPhone] = useState(() => window.matchMedia(PHONE_QUERY).matches);
   const [activeId, setActiveId] = useState('');
   const [progress, setProgress] = useState(0);
 
@@ -36,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ setIsHovered }) => {
   }, []);
 
   useEffect(() => {
-    const query = window.matchMedia('(max-width: 767px)');
+    const query = window.matchMedia(PHONE_QUERY);
     const update = () => setIsPhone(query.matches);
     query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
